@@ -27,7 +27,7 @@ import static com.symantec.tree.config.Constants.*;
 
 /**
  * 
- * @author Sacumen(www.sacumen.com)
+ * @author Sacumen(www.sacumen.com) <br> <br>
  * @category Node
  * @Descrition "VIP OTPAuth Creds" node with SMS, VOICE, ERROR and TOKEN outcome. If
  *             SMS,TOKEN and VOICE, it will go to "VIP Enter SecurityCode/OTP". If

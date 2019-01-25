@@ -21,7 +21,7 @@ import org.xml.sax.SAXException;
 
 /**
  * 
- * @author Sacumen(www.sacumen.com)
+ * @author Sacumen(www.sacumen.com) <br> <br>
  * Authenticate credentials using AuthenticateCredentialsRequest
  *
  */

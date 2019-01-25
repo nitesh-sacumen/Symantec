@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * @author Sacumen (www.sacumen.com)
+ * @author Sacumen (www.sacumen.com) <br> <br>
  * Utility class to read key-store values to authenticate vip requests.
  *
  */

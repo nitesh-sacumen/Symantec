@@ -22,7 +22,7 @@ import static com.symantec.tree.config.Constants.*;
 
 /**
  * 
- * @author Sacumen(www.sacumen.com)
+ * @author Sacumen(www.sacumen.com) <br> <br>
  * @category Node
  * @Descrition "VIP Poll Push Auth" node with TRUE,FALSE, UNANSWERED and ERROR outcome.
  * If TRUE, it will go to "Success".

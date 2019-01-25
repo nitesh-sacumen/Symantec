@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
  * 
- * @author Sacumen (www.sacumen.com)
+ * @author Sacumen (www.sacumen.com) <br> <br>
  * @category Node
  * @Descrition "VIP Add Credential" node with true, error and false outcome, If true, go
  *             to "VIP Authenticate Push Credentials", if error go to "Display Error" else false, go to "VIP Display Creds".

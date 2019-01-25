@@ -67,8 +67,9 @@ public class VIPSDKOTPCheck implements Node {
 	public Action process(TreeContext context) throws NodeProcessException {
 		String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
 		String otpValue = context.sharedState.get(SECURE_CODE).asString();
+		System.out.println("otp value is "+otpValue);
 		String statusCode = checkOtp.checkOtp(userName, otpValue,config.Key_Store_Path(),config.Key_Store_Password(),config.Authentication_Service_URL());
-		logger.debug("Check OTP statusCode is" + statusCode);
+		System.out.println("Check OTP statusCode is" + statusCode);
 		return sendOutput(statusCode,context);
 
 	}

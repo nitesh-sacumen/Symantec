@@ -12,6 +12,13 @@ import org.forgerock.openam.auth.node.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * @author Sacumen (www.sacumen.com) <br> <br>
+ * @category Node
+ * @Descrition "VIPSDKAddCredential" node with true and false outcome.
+ *
+ */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class, configClass = VIPSDKAddCredential.Config.class)
 public class VIPSDKAddCredential extends AbstractDecisionNode {
 
@@ -44,6 +51,7 @@ public class VIPSDKAddCredential extends AbstractDecisionNode {
 		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
 		if (credValue != null) {
 			boolean isCredAdded = addCred.addCredential(userName, credValue,STANDARD_OTP,key_store,key_store_pass);
+			System.out.println("isCredAdded is "+isCredAdded);
 			return goTo(isCredAdded).build();
 		}
 		return goTo(false).build();

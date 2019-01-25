@@ -23,7 +23,7 @@ import com.symantec.tree.config.Constants.VIPAuthStatusCode;
 
 /**
  * 
- * @author Sacumen (www.sacumen.com) 
+ * @author Sacumen (www.sacumen.com) <br> <br> 
  * Authenticate user using AuthenticateUserWithPushRequest
  *
  */

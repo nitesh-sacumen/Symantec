@@ -27,7 +27,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * 
- * @author Sacumen (www.sacumen.com)
+ * @author Sacumen (www.sacumen.com) <br> <br>
  * @Description Get user info from vip data base if user exists, else return
  *              false.
  *

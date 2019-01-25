@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * @author Sacumen (www.sacumen.com)
+ * @author Sacumen (www.sacumen.com) <br> <br>
  * @category Node
  * @Descrition "VIP Display Credential" node with VIP, SMS and VOICE outcome, If VIP, go
  *             to "VIP Enter CredentialID".If SMS and VOICE go to "VIP Enter Phone Number".

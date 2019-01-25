@@ -16,11 +16,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * @author Sacumen(www.sacumen.com)
+ * @author Sacumen(www.sacumen.com) <br> <br>
  * @category Node
  * @Descrition "VIP Check Symantec OTP" node with TRUE,FALSE and ERROR outcome.
- *             If TRUE, it will go to "Success". If False, go to "VIP OTPAuth
- *             Creds". If Error, go to "Failure".
+ *             If TRUE, it will go to "Success". If False, go to "VIP Enter SecurityCode/OTP". If Error, go to "Failure".
  *
  */
 @Node.Metadata(outcomeProvider = VIPOTPCheck.SymantecOutcomeProvider.class, configClass = VIPOTPCheck.Config.class)

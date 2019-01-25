@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import static com.symantec.tree.config.Constants.*;
 /**
  * 
- * @author Sacumen (www.sacumen.com)
+ * @author Sacumen (www.sacumen.com) <br> <br>
  * @category Node
  * @Descrition "VIP Poll Push Reg" node with TRUE,FALSE, UNANSWERED and ERROR outcome.
  * If TRUE, it will go to "Success".

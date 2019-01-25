@@ -23,7 +23,7 @@ import org.xml.sax.SAXException;
 
 /**
  * 
- * @author Sacumen (www.sacumen.com)
+ * @author Sacumen (www.sacumen.com) <br> <br>
  * getting status of poll push request using PollPushStatusRequest
  *
  */

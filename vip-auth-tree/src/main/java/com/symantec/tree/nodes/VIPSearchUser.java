@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * @author Sacumen(www.sacumen.com)
+ * @author Sacumen(www.sacumen.com) <br> <br>
  * @category Node
  * @Descrition "VIP Search User" node with TRUE,FALSE and ERROR outcome. If TRUE, it will go to "VIP Push Auth User". If False, go to
  *             "VIP Register User" and if ERROR, It will go to "VIP Display Error" Page.
@@ -82,14 +82,14 @@ public class VIPSearchUser implements Node {
 
 			if (statusCode.equalsIgnoreCase(SUCCESS_CODE)) {
 				mobNum = vipSearchUser.getMobInfo(userName,config.Key_Store_Path(),config.Key_Store_Password());
-				logger.debug("Phone Number " + mobNum);
+				System.out.println("Phone Number " + mobNum);
 
 				if (mobNum != null && mobNum.equalsIgnoreCase(NO_CRED_REGISTERED)) {
-					logger.info("No Credential Registered");
+					System.out.println("No Credential Registered");
 					context.transientState.put(NO_CREDENTIALS_REGISTERED, true);
 					return goTo(Symantec.FALSE).build();
 				} else if (mobNum != null && mobNum.equalsIgnoreCase(VIP_CRED_REGISTERED)) {
-					logger.info("VIP Credential Registered");
+					System.out.println("VIP Credential Registered");
 					return goTo(Symantec.TRUE).build();
 				} else {
 					context.sharedState.put(MOB_NUM, mobNum);

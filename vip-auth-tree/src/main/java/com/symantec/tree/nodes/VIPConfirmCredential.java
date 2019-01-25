@@ -25,7 +25,7 @@ import static com.symantec.tree.config.Constants.CONFIRM_CRED_CHOICE;
 
 /**
  * 
- * @author Sacumen (www.sacumen.com)
+ * @author Sacumen (www.sacumen.com) <br> <br>
  * @category Node
  * @Descrition "VIP Add More Creds" node with yes and no outcome, If yes, go
  *             to "VIP Display Creds" else false, go to "Success".

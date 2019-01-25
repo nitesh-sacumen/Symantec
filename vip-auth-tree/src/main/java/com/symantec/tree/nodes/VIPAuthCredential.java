@@ -16,7 +16,7 @@ import java.util.Map;
 import static com.symantec.tree.config.Constants.*;
 /**s
  * 
- * @author Sacumen (www.sacumen.com)
+ * @author Sacumen (www.sacumen.com) <br> <br>
  * @category Node
  * @Descrition "VIP Authenticate Push Credential" node with true and false outcome, If true, go
  *             to "VIP Poll Push Reg" else false, go to "VIP Enter SecurityCode/OTP".

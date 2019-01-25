@@ -5,16 +5,20 @@ import com.symantec.tree.config.Constants.VIPSDKStatusCode;
 import com.symantec.tree.nodes.VIPSearchUser.Config;
 import com.symantec.tree.request.util.GenerateActivationCode;
 
+import org.forgerock.guava.common.base.Strings;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static com.symantec.tree.config.Constants.*;
+import static org.forgerock.openam.auth.node.api.Action.send;
+
 import javax.inject.Inject;
+import javax.security.auth.callback.TextOutputCallback;
 
 /**
  * 
- * @author Sacumen (www.sacumen.com)
+ * @author Sacumen (www.sacumen.com) <br> <br>
  * @category Node
  * @Descrition "VIP Activation Code" node with true and false outcome.
  *
@@ -42,12 +46,25 @@ public class VIPGenerateActivationCode extends AbstractDecisionNode {
 	}
 
 	/**
-	 *
+	 * 
 	 */
 	@Inject
 	public VIPGenerateActivationCode(@Assisted Config config,GenerateActivationCode generateActivationCode) {
 		this.config = config;
 		this.generateActivationCode = generateActivationCode;
+	}
+	
+	/**
+	 * 
+	 * @param context
+	 * @return Action
+	 * 
+	 * Displaying activation code using TextOutputCallback
+	 */
+	private Action displayActivationCode(TreeContext context) {
+		String activationCode=context.sharedState.get(ACTIVATION_CODE).asString();
+		TextOutputCallback pcb = new TextOutputCallback(0, activationCode);
+		return send(pcb).build();
 	}
 
 	/**
@@ -55,23 +72,37 @@ public class VIPGenerateActivationCode extends AbstractDecisionNode {
 	 * @throws NodeProcessException 
 	 */
 	@Override
-	public Action process(TreeContext context) throws NodeProcessException {
-		String Stat = generateActivationCode.generateCode(config.Key_Store_Path(),config.Key_Store_Password(),config.SDK_Service_URL());
+	 public Action process(TreeContext context) throws NodeProcessException {
+    	logger.info("Inside VIP DISPLAY ERROR Page");
+    	String Stat = generateActivationCode.generateCode(config.Key_Store_Path(),config.Key_Store_Password(),config.SDK_Service_URL());
 		String[] array = Stat.split(",");
 		for (String s : array)
-			logger.debug("Values:" + s);
+			System.out.println("Values:" + s);
 		String status = array[0];
 		String activationCode = array[1];
-		logger.debug("Status of get Activation_code API call: " + status);
-		logger.debug("Activation code is: " + activationCode);
-
-		context.sharedState.put(ACTIVATION_CODE, activationCode);
+		System.out.println("Status of get Activation_code API call: " + status);
+		System.out.println("Activation code is: " + activationCode);
 		if (status.equalsIgnoreCase(VIPSDKStatusCode.SUCCESS_CODE)) {
-			logger.debug("Activation code generated successfully:" + status);
+			System.out.println("Activation code generated successfully:" + status);
+			context.sharedState.put(ACTIVATION_CODE,activationCode);
 			return goTo(true).build();
+
 		} else {
+			System.out.println("Activation code not generated successfully:" + status);
+			context.sharedState.put(ACTIVATION_CODE,"ERROR");
 			return goTo(false).build();
 		}
-
-	}
+    	
+//		return context.getCallback(TextOutputCallback.class).map(TextOutputCallback::getMessage)
+//                .map(String::new)
+//                .filter(name -> !Strings.isNullOrEmpty(name))
+//                .map(name -> {
+//                	return goTo(true).build();
+//                }).orElseGet(() -> {
+//					System.out.println("Displaying Activation Code");
+//					return displayActivationCode(context);
+//				});
+//                	
+    }
+	
 }

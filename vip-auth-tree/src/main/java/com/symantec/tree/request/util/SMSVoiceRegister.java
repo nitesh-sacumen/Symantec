@@ -23,7 +23,7 @@ import org.xml.sax.SAXException;
 
 /**
  * 
- * @author Sacumen (www.sacumen.com)
+ * @author Sacumen (www.sacumen.com) <br> <br>
  * Executing RegisterRequest for SMS and Voice
  */
 public class SMSVoiceRegister {

@@ -14,7 +14,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.forgerock.openam.auth.node.api.TreeContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -23,7 +22,7 @@ import org.xml.sax.SAXException;
 
 /**
  * 
- * @author Sacumen(www.sacumen.com) 
+ * @author Sacumen(www.sacumen.com) <br> <br> 
  * @Desription Getting activation code using GetActivationCode request
  *
  */
