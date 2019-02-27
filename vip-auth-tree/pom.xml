@@ -16,18 +16,31 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<artifactId>auth-tree-node-parent</artifactId>
-		<groupId>org.forgerock.am</groupId>
-		<version>6.0.0</version>
-	</parent>
-
 	<artifactId>vip-auth-tree</artifactId>
 
 	<groupId>com.symantec.tree.nodes</groupId>
 	<version>1.0</version>
 	<name>Template for an Auth Tree Node maven project</name>
 	<description>An Authentication Tree Node for ForgeRock's Identity Platform</description>
+
+	<properties>
+		<am.version>6.5.0.1</am.version>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.forgerock.am</groupId>
+				<artifactId>openam-auth-trees</artifactId>
+				<type>pom</type>
+				<scope>import</scope>
+				<version>${am.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<repositories>
 		<repository>
@@ -42,6 +55,37 @@
 
 
 	<dependencies>
+		<dependency>
+			<groupId>org.forgerock.am</groupId>
+			<artifactId>auth-node-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>26.0-jre</version>
+		</dependency>
+		<dependency>
+			<groupId>org.forgerock.am</groupId>
+			<artifactId>openam-guice-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.forgerock.commons</groupId>
+			<artifactId>forgerock-test-utils</artifactId>
+			<version>24.0.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.forgerock.am</groupId>
+			<artifactId>openam-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.forgerock.am</groupId>
+			<artifactId>openam-secrets</artifactId>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.axis2</groupId>
 			<artifactId>axis2-kernel</artifactId>
@@ -89,8 +133,14 @@
 			<version>6.9.8</version>
 			<scope>test</scope>
 		</dependency>
-		
-</dependencies>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.11.1</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
 
 
 </project>

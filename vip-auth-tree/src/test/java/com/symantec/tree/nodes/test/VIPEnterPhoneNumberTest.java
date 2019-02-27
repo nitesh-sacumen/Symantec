@@ -82,7 +82,7 @@ public class VIPEnterPhoneNumberTest {
         assertThat(result.callbacks.get(0)).isInstanceOf(NameCallback.class);
         assertThat(((NameCallback) result.callbacks.get(0)).getPrompt()).isEqualTo("Enter Your Phone Number");
         assertThat((Object) result.sharedState).isNull();
-        assertThat(sharedState).isObject().containsExactly(entry(CRED_CHOICE,"SMS"));
+        assertThat(sharedState).isObject().containsExactly((entry(CRED_CHOICE,"SMS")));
     }
 
     @Test

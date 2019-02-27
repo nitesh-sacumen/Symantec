@@ -18,10 +18,11 @@ package com.symantec.tree.nodes;
 
 import static java.util.Arrays.asList;
 import java.util.Map;
-import org.forgerock.guava.common.collect.ImmutableMap;
 import org.forgerock.openam.auth.node.api.AbstractNodeAmPlugin;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.plugins.PluginException;
+
+import com.google.common.collect.ImmutableMap;
 
 
 /**
@@ -89,7 +90,17 @@ public class VIPAuthTreeNodePlugin extends AbstractNodeAmPlugin {
 						VIPSDKEnterCredentialId.class,
 						VIPSDKOTPCheck.class,
 						VIPSDKEnterOTP.class,
-						VIPDisplayError.class
+						VIPDisplayError.class,
+						VIPDRDataCollector.class,
+						VIPAIDataCollector.class,
+						VIPIACheck.class,
+						VIPIAAuthentication.class,
+						VIPIARegistration.class,
+						VIPDRDataEval.class,
+						VIPForceDRDataEval.class,
+						VIPFetchPublicCertificate.class,
+						VIPIARiskScoreDecision.class
+
 
 						));
 	}

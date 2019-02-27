@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 import org.forgerock.openam.auth.node.api.ExternalRequestContext;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
+import static org.forgerock.json.test.assertj.AssertJJsonValueAssert.assertThat;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.forgerock.json.JsonValue.*;
-import static org.forgerock.json.test.assertj.AssertJJsonValueAssert.assertThat;
 import static org.forgerock.openam.auth.node.api.SharedStateConstants.USERNAME;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;

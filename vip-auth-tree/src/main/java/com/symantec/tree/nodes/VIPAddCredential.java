@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import static com.symantec.tree.config.Constants.*;
+
+import com.google.common.collect.ImmutableList;
 import com.symantec.tree.request.util.AddCredential;
 import com.symantec.tree.request.util.VIPGetUser;
 
 import javax.inject.Inject;
 
-import org.forgerock.guava.common.collect.ImmutableList;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.*;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;

@@ -8,8 +8,7 @@ import java.util.ResourceBundle;
 import com.google.inject.assistedinject.Assisted;
 import com.symantec.tree.request.util.VIPGetUser;
 import javax.inject.Inject;
-
-import org.forgerock.guava.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.*;
@@ -38,8 +37,7 @@ public class VIPSearchUser implements Node {
 		@Attribute(order = 100, requiredValue = true)
 		String Key_Store_Path();
 
-
-		@Attribute(order = 200, requiredValue = true)
+        @Attribute(order = 200, requiredValue = true)
 		String Key_Store_Password();
 		
 		@Attribute(order = 300, requiredValue = true)
@@ -78,20 +76,23 @@ public class VIPSearchUser implements Node {
 		context.sharedState.put(QUERY_SERVICE_URL,config.Query_Service_URL());
 		context.sharedState.put(MANAGEMENT_SERVICE_URL,config.Management_Service_URL());
 		String statusCode = vipSearchUser.viewUserInfo(userName,config.Key_Store_Path(),config.Key_Store_Password(),context);
-        String mobNum;
+        System.out.println("status code in VIP Search User"+statusCode);
+		String mobNum;
 
 			if (statusCode.equalsIgnoreCase(SUCCESS_CODE)) {
 				mobNum = vipSearchUser.getMobInfo(userName,config.Key_Store_Path(),config.Key_Store_Password());
-				System.out.println("Phone Number " + mobNum);
+				System.out.println("Phone Number in VIP Search User" + mobNum);
 
 				if (mobNum != null && mobNum.equalsIgnoreCase(NO_CRED_REGISTERED)) {
-					System.out.println("No Credential Registered");
+					System.out.println("No Credential Registered in VIP Search User");
 					context.transientState.put(NO_CREDENTIALS_REGISTERED, true);
 					return goTo(Symantec.FALSE).build();
 				} else if (mobNum != null && mobNum.equalsIgnoreCase(VIP_CRED_REGISTERED)) {
-					System.out.println("VIP Credential Registered");
+					System.out.println("VIP Credential Registered in VIP Search User");
 					return goTo(Symantec.TRUE).build();
 				} else {
+					System.out.println("Fall back options in VIP Search User");
+
 					context.sharedState.put(MOB_NUM, mobNum);
 					return goTo(Symantec.TRUE).build();
 				}

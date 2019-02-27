@@ -9,12 +9,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.forgerock.json.JsonValue.json;
 import static org.forgerock.json.JsonValue.object;
-import static org.forgerock.json.test.assertj.AssertJJsonValueAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.forgerock.json.test.assertj.AssertJJsonValueAssert.assertThat;
 
 import com.symantec.tree.nodes.VIPOTPAuth;
 import com.symantec.tree.request.util.SmsDeviceRegister;
@@ -118,7 +118,7 @@ public class VIPOTPAuthTest {
         //THEN
         assertThat(result.outcome).isEqualTo("SMS");
         assertThat(result.callbacks).isEmpty();
-        assertThat(result.sharedState).isObject().contains(CRED_CHOICE,"SMS");
+        assertThat(result.sharedState).isObject().contains(entry(CRED_CHOICE,"SMS"));
         assertThat(sharedState).isObject().contains(entry(CRED_CHOICE,"SMS"));
     }
 	

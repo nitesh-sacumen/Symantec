@@ -4,6 +4,7 @@ import static com.symantec.tree.config.Constants.CRED_CHOICE;
 import static com.symantec.tree.config.Constants.CREDENTIAL_ID_ERROR;
 import static org.forgerock.openam.auth.node.api.Action.send;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.sm.RequiredValueValidator;
 import java.util.*;
@@ -11,8 +12,6 @@ import javax.inject.Inject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.ChoiceCallback;
 import javax.security.auth.callback.TextOutputCallback;
-
-import org.forgerock.guava.common.collect.ImmutableList;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.Action;

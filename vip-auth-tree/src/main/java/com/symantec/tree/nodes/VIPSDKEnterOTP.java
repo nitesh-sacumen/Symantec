@@ -10,9 +10,12 @@ import javax.inject.Inject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.TextOutputCallback;
+import org.forgerock.util.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.inject.assistedinject.Assisted;
+import com.sun.identity.authentication.callbacks.HiddenValueCallback;
+import com.symantec.tree.nodes.VIPRegisterUser.Config;
 
-import org.forgerock.guava.common.base.Strings;
-import org.forgerock.guava.common.collect.ImmutableList;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
@@ -36,6 +39,8 @@ public class VIPSDKEnterOTP extends SingleOutcomeNode {
 
     private static final String BUNDLE = "com/symantec/tree/nodes/VIPSDKEnterOTP";
     private final Logger logger = LoggerFactory.getLogger(VIPSDKEnterOTP.class);
+	private final Config config;
+
 
     /**
      * Configuration for the node.
@@ -46,7 +51,8 @@ public class VIPSDKEnterOTP extends SingleOutcomeNode {
      * Create the node.
      */
     @Inject
-    public VIPSDKEnterOTP() {
+    public VIPSDKEnterOTP(@Assisted Config config) {
+    	this.config = config;
     }
 
 	/**
@@ -54,7 +60,7 @@ public class VIPSDKEnterOTP extends SingleOutcomeNode {
 	 */
     @Override
     public Action process(TreeContext context) {
-    	logger.info("Collect SecurityCode started");
+    	System.out.println("Collect SecurityCode started in VIP Enter OTP");
         JsonValue sharedState = context.sharedState;
         return context.getCallback(PasswordCallback.class)
                 .map(PasswordCallback::getPassword)
@@ -62,11 +68,14 @@ public class VIPSDKEnterOTP extends SingleOutcomeNode {
                 .filter(password -> !Strings.isNullOrEmpty(password))
                 .map(password -> {
                 	logger.info("SecureCode has been collected and placed into the Shared State");
+                	System.out.println("Security Code: "+password);
                     return goToNext()
                         .replaceSharedState(sharedState.put(SECURE_CODE, password)).build();
                 })
                 .orElseGet(() -> {
                 	logger.info("Enter Credential ID");
+                	System.out.println("Enter Credential ID in VIP Enter OTP");
+
                     return displayCredentials(context);
                 });
     }
@@ -77,13 +86,20 @@ public class VIPSDKEnterOTP extends SingleOutcomeNode {
      * @return  list of callbacks
      */
     private Action displayCredentials(TreeContext context) {
-		List<Callback> cbList = new ArrayList<>(2);
+		List<Callback> cbList = new ArrayList<>();
 		String outputError = context.sharedState.get(OTP_ERROR).asString();
+		System.out.println("outputError "+ outputError);
 		if (outputError == null) {
+			System.out.println("no outputError...");
 			ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE, getClass().getClassLoader());
 			PasswordCallback pcb = new PasswordCallback(bundle.getString("callback.securecode"), false);
+			HiddenValueCallback hcb = new HiddenValueCallback("Enter password");
 			cbList.add(pcb);
+			cbList.add(hcb);
+			
 		} else {
+			System.out.println("outputError exist..");
+
 			TextOutputCallback tcb = new TextOutputCallback(0, outputError);
 			ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE,
 					getClass().getClassLoader());

@@ -27,7 +27,7 @@ public final class Constants {
     public static final  String MANAGEMENT_SERVICE_URL = "Management_Service_URL";
     public static final String DUPLICATE_CREDENTIAL_MESSAGE = "Duplicate Credential Message";
     public static final  String SDK_SERVICE_URL = "Sdk Service URL";
-    
+    public static final  String IA_SERVICE_URL = "IA Service URL";
 
     public static final String PUSH_DISPLAY_MESSAGE_TEXT = "push_display_message_text";
     public static final String PUSH_DISPLAY_MESSAGE_TITLE = "push_display_message_title";
@@ -75,4 +75,38 @@ public final class Constants {
     	public static final String UNANSWERED="7001";
     	public static final String REJECTED="7002";
     }
+    
+    public final class VIPIA{
+    	public VIPIA() {
+		}
+    	public static final String AUTH_DATA = "AI_Data";
+    	public static final String MOBILE_AUTH_DATA = "Mobile_AI_Data";
+    	public static final String EVENT_ID = "EventId";
+    	public static final String DEVICE_TAG = "DeviceTag";
+    	public static final String SCORE = "score";
+    	public static final String REGISTERED = "0000";
+    	public static final String NOT_REGISTERED = "6009";
+    	public static final String DEVICE_FINGERPRINT = "deviceFingerprint";
+    	public static final String DEVICE_FINGERPRINT_AFTER_REGISTRATION = "deviceFingerprintAfterRegistration";
+        public static final String DEVICE_FRIENDLY_NAME = "IA_New";
+    	public static final String TEST_AGENT = "TestAgent";
+    	public static final String SCRIPT_URL = "sript";
+    	
+    	public static final String DISABLE_LOGIN_BUTTON_SCRIPT ="document.getElementById('loginButton_0').click();";
+  
+    }
+    
+    public final class VIPDR{
+    	private VIPDR() {
+    		
+    	}
+    	
+    	public static final String VIP_DR_DATA_PAYLOAD = "VIP_DR_Data_Payload";
+    	public static final String VIP_DR_DATA_HEADER = "VIP_DR_Data_Header";
+    	public static final String VIP_DR_DATA_SIGNATURE = "VIP_DR_Data_Signature";
+
+    	
+    }
+    
+    
 }

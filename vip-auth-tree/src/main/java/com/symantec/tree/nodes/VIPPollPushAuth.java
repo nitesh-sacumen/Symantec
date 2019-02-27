@@ -5,9 +5,8 @@ import com.symantec.tree.request.util.AuthPollPush;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.inject.Inject;
-
-import org.forgerock.guava.common.base.Strings;
-import org.forgerock.guava.common.collect.ImmutableList;
+import org.forgerock.util.Strings;
+import com.google.common.collect.ImmutableList;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
