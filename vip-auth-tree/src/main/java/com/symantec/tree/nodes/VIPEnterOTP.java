@@ -62,12 +62,10 @@ public class VIPEnterOTP extends SingleOutcomeNode {
                 .filter(password -> !Strings.isNullOrEmpty(password))
                 .map(password -> {
                 	logger.info("SecureCode has been collected and placed into the Shared State");
-                	logger.debug("Mobile VIP number: " + context.sharedState.get(MOB_NUM));
                     return goToNext()
                         .replaceSharedState(sharedState.put(SECURE_CODE, password)).build();
                 })
                 .orElseGet(() -> {
-                	logger.info("Enter Credential ID");
                     return displayCredentials(context);
                 });
     }

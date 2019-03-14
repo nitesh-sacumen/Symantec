@@ -98,11 +98,11 @@ public class VIPIARiskScoreDecision implements Node{
 		String score = context.transientState.get(VIPIA.SCORE).asString();
 		int RiskScore = Integer.parseInt(score);
 		
-		if (RiskScore<=config.low_threshold()) {
+		if (RiskScore <= config.low_threshold()) {
 			debug.message("Score is LOW");
 			return goTo(Symantec.LOW).build();
 		}
-		else if((config.low_threshold() < RiskScore)&& (config.high_threshold()<RiskScore)) {
+		else if((config.low_threshold() < RiskScore)&& (config.high_threshold() >= RiskScore)) {
 			debug.message("Score is MEDIUM");
 			return goTo(Symantec.MEDIUM).build();
 		}

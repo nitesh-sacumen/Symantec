@@ -99,7 +99,10 @@ public class VIPAuthTreeNodePlugin extends AbstractNodeAmPlugin {
 						VIPDRDataEval.class,
 						VIPForceDRDataEval.class,
 						VIPFetchPublicCertificate.class,
-						VIPIARiskScoreDecision.class
+						VIPIARiskScoreDecision.class,
+						VIPDRDataOSDecisionNode.class,
+						VIPIAConfirmRisk.class,
+						VIPIADenyRisk.class
 
 
 						));

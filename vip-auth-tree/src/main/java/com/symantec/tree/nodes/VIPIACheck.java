@@ -131,11 +131,13 @@ public class VIPIACheck implements Node {
 		debug.message("DEVICE_TAG is in ia check: " + evaluateRiskResponseAttribute.get(VIPIA.DEVICE_TAG));
 
 		debug.message("SCORE is in ia check: " + evaluateRiskResponseAttribute.get(VIPIA.SCORE));
+		
+		sharedState.put(VIPIA.EVENT_ID, evaluateRiskResponseAttribute.get(VIPIA.EVENT_ID));
+		sharedState.put(VIPIA.DEVICE_TAG, evaluateRiskResponseAttribute.get(VIPIA.DEVICE_TAG));
+
 
 
 		if (status.equals(VIPIA.NOT_REGISTERED)) {
-			sharedState.put(VIPIA.EVENT_ID, evaluateRiskResponseAttribute.get(VIPIA.EVENT_ID));
-			sharedState.put(VIPIA.DEVICE_TAG, evaluateRiskResponseAttribute.get(VIPIA.DEVICE_TAG));
 
 			return goTo(Symantec.FALSE).replaceTransientState(transientState).replaceSharedState(sharedState).build();
 

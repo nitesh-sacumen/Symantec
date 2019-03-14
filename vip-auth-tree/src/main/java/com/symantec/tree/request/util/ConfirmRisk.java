@@ -21,15 +21,15 @@ import org.xml.sax.SAXException;
 
 import com.sun.identity.shared.debug.Debug;
 
-public class DenyRisk {
+public class ConfirmRisk {
 	private final Debug debug = Debug.getInstance("VIP");
 		
-	public String denyRisk(String url,String userName,String eventID, String auth_data, String deviceFriendlyName,String key_store,String key_store_pass) throws NodeProcessException {
+	public String confirmRisk(String url,String userName,String eventID,String key_store,String key_store_pass) throws NodeProcessException {
 		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
 		HttpPost post = new HttpPost(url);
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
-		String payLoad = getPayload(userName,eventID,auth_data,deviceFriendlyName);
-		debug.message("Deny Risk Request Payload: " + payLoad);
+		String payLoad = getPayload(userName,eventID);
+		debug.message("Confirm Risk Request Payload: " + payLoad);
 		String status;
 		try {
 			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
@@ -37,7 +37,7 @@ public class DenyRisk {
 			HttpResponse response = httpClient.execute(post);
 			HttpEntity entity = response.getEntity();
 			String body = IOUtils.toString(entity.getContent());
-			debug.message("Deny Risk Response is "+body);
+			debug.message("Confirm Risk Response is "+body);
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			InputSource src = new InputSource();
 			src.setCharacterStream(new StringReader(body));
@@ -45,7 +45,7 @@ public class DenyRisk {
 			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
 			status = doc.getElementsByTagName("status").item(0).getTextContent();
 			
-			debug.message("Deny Risk request response code is "+status);
+			debug.message("Confirm Risk request response code is "+status);
 			
 		} catch (IOException | ParserConfigurationException | SAXException e) {
 			throw new NodeProcessException(e);
@@ -54,17 +54,14 @@ public class DenyRisk {
 		return status;
 	}
 	
-	private String getPayload(String userName,String eventID, String auth_data, String deviceFriendlyName) {
-		debug.message("getting payload for DenyRisk Risk");
+	private String getPayload(String userName,String eventID) {
+		debug.message("getting payload for Confirm Risk");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 		       + "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "<soapenv:Header/>"
-		       + "<soapenv:Body>" + "<vip:DenyRiskRequest>" + "<vip:requestId>" + new Random().nextInt(10) + 11111
+		       + "<soapenv:Body>" + "<vip:ConfirmRiskRequest>" + "<vip:requestId>" + new Random().nextInt(10) + 11111
 		       + "</vip:requestId>" + "<vip:UserId>" + userName + "</vip:UserId>"
-		       + "<vip:EventId>" + eventID + "</vip:EventId>" + "<vip:IAAuthData>" + auth_data
-		       + "</vip:IAAuthData>"
-		       + "<vip:RememberDevice>" + true + "</vip:RememberDevice>"
-		       + "<vip:FriendlyName>" + deviceFriendlyName + "</vip:FriendlyName>"
-		       + "</vip:DenyRiskRequest>" + "</soapenv:Body>"
+		       + "<vip:EventId>" + eventID + "</vip:EventId>"
+		       + "</vip:ConfirmRiskRequest>" + "</soapenv:Body>"
 		       + "</soapenv:Envelope>";
 
 	}

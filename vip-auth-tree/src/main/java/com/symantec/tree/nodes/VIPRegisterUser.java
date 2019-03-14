@@ -3,7 +3,6 @@ package com.symantec.tree.nodes;
 import static com.symantec.tree.config.Constants.*;
 
 import com.google.inject.assistedinject.Assisted;
-import com.symantec.tree.nodes.VIPSearchUser.Config;
 import com.symantec.tree.request.util.VIPCreateUser;
 import javax.inject.Inject;
 import org.forgerock.openam.auth.node.api.*;
@@ -39,9 +38,9 @@ public class VIPRegisterUser extends AbstractDecisionNode {
 	 *
 	 */
 	@Inject
-	public VIPRegisterUser(@Assisted Config config) {
+	public VIPRegisterUser(@Assisted Config config,VIPCreateUser vIPCreateUser) {
 		this.config = config;
-		vIPCreateUser = new VIPCreateUser();
+		this.vIPCreateUser = vIPCreateUser;
 	}
 
 	/**
