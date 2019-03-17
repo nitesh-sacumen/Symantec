@@ -44,11 +44,11 @@ The vip tree nodes are now available in the tree designer to add to authenticati
 
 Following are the nodes that will be available after deploying the jar file:
 
-![nodes-1](https://user-images.githubusercontent.com/20396535/48183641-6883e600-e355-11e8-8e07-421f399cc55b.PNG)
+![p_1](https://user-images.githubusercontent.com/20396535/54488323-77137880-48c6-11e9-9985-6fe6024e7a55.PNG)
 
-![nodes-2](https://user-images.githubusercontent.com/20396535/48184091-f01e2480-e356-11e8-8707-962a3fc1110a.PNG)
+![p_2](https://user-images.githubusercontent.com/20396535/54488325-809ce080-48c6-11e9-9503-21e10cb3e8fe.PNG)
 
-![display_error](https://user-images.githubusercontent.com/20396535/48692472-2fbcfa00-ebfc-11e8-9570-141944be1d25.PNG)
+![p_3](https://user-images.githubusercontent.com/20396535/54488327-8abedf00-48c6-11e9-9935-677255b5ce33.PNG)
 
 
 * VIP DISPLAY ERROR
@@ -120,6 +120,7 @@ Attributes to be configured are:
  * List of Creds : You need to configure key-value pair as
     0 - SMS
     1 - VOICE
+    2 - TOKEN
 ```
 ![otp-auth](https://user-images.githubusercontent.com/20396535/48188130-f914f300-e362-11e8-8a38-61f611ad8450.PNG)
 
@@ -152,18 +153,12 @@ This node register user in VIP, If user dont exist. There are no configurable at
 
 * VIP Search User
 ```js
-This node search user in VIP and get user info, if user exits.
-Attributes to be configured are:
- * Keystore Path: Path for keystore file.
- * Keystore Password: Password of keystore file.
- * Authentication Service URL: VIP Authentication Service URL
- * Query Service URL: VIP Query Service URL
- * Management Service URL: VIP Management Service URL
+This node search user in VIP and get user info, if user exits. There are no configurable attributes to it.
 ```
 
 * VIP Set Configuration
 ```js
-This node search user in VIP and get user info, if user exits.
+This node set all the sevice urls which will be used to access Symantec APIs.
 Attributes to be configured are:
  * Keystore Path: Path for keystore file.
  * Keystore Password: Password of keystore file.
