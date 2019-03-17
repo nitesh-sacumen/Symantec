@@ -24,9 +24,9 @@ import com.sun.identity.shared.debug.Debug;
 public class ConfirmRisk {
 	private final Debug debug = Debug.getInstance("VIP");
 		
-	public String confirmRisk(String url,String userName,String eventID,String key_store,String key_store_pass) throws NodeProcessException {
+	public String confirmRisk(String userName,String eventID,String key_store,String key_store_pass) throws NodeProcessException {
 		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
-		HttpPost post = new HttpPost(url);
+		HttpPost post = new HttpPost(getURL());
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getPayload(userName,eventID);
 		debug.message("Confirm Risk Request Payload: " + payLoad);
@@ -64,5 +64,14 @@ public class ConfirmRisk {
 		       + "</vip:ConfirmRiskRequest>" + "</soapenv:Body>"
 		       + "</soapenv:Envelope>";
 
+	}
+	
+	/**
+	 * 
+	 * @return AuthenticationServiceURL 
+	 * @throws NodeProcessException 
+	 */
+	private String getURL() throws NodeProcessException {
+		return GetVIPServiceURL.getInstance().serviceUrls.get("AuthenticationServiceURL");
 	}
 }

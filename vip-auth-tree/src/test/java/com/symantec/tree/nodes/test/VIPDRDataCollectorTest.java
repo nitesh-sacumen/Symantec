@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.entry;
 import static org.forgerock.json.JsonValue.json;
 import static org.forgerock.json.JsonValue.object;
 import static org.forgerock.json.test.assertj.AssertJJsonValueAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -18,7 +20,9 @@ import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.openam.auth.node.api.ExternalRequestContext.Builder;
+import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.util.i18n.PreferredLocales;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -26,12 +30,20 @@ import org.testng.annotations.Test;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
 import com.symantec.tree.config.Constants.VIPDR;
 import com.symantec.tree.nodes.VIPDRDataCollector;
+import com.symantec.tree.request.util.DeviceHygieneVerification;
 
 @Test
 public class VIPDRDataCollectorTest {
 
 	@Mock
 	private VIPDRDataCollector.Config config;
+	
+	@Mock
+	private DeviceHygieneVerification deviceHygieneVerification;
+	
+	@InjectMocks
+	VIPDRDataCollector node;
+
 	
 	@BeforeMethod
 	public void before() {
@@ -41,11 +53,15 @@ public class VIPDRDataCollectorTest {
 	}
 	
 	@Test
-	public void testProcessWithNoCallbacksReturnsASingleCallback() {
-		// Given
-		VIPDRDataCollector node = new VIPDRDataCollector();
+	public void testProcessWithNoCallbacksReturnsASingleCallback() throws NodeProcessException {
+		// Given 
+		
 		JsonValue sharedState = json(object(1));
 		PreferredLocales preferredLocales = mock(PreferredLocales.class);
+		
+		String[] outcome = {VIPDR.DEVICE_HYGIENE_VERIFICATION_SUCCESS_MSG,VIPDR.DEVICE_HYGIENE_VERIFICATION_WITH_VIP_SUCCESS_MSG};
+		given(deviceHygieneVerification.validateDHSignatureAndChain(any(),any(),any())).willReturn(outcome);
+
 
 		// When
 		Action result = node.process(getContext(sharedState, preferredLocales, emptyList()));
@@ -61,9 +77,12 @@ public class VIPDRDataCollectorTest {
 	}
 	
 	@Test
-    public void testProcessWithCallbacksInCaseOfWeb() {
-		VIPDRDataCollector node = new VIPDRDataCollector();
-        JsonValue sharedState = json(object(1));
+    public void testProcessWithCallbacksInCaseOfWeb() throws NodeProcessException {
+		
+		String[] outcome = {VIPDR.DEVICE_HYGIENE_VERIFICATION_SUCCESS_MSG,VIPDR.DEVICE_HYGIENE_VERIFICATION_WITH_VIP_SUCCESS_MSG};
+		given(deviceHygieneVerification.validateDHSignatureAndChain(any(),any(),any())).willReturn(outcome);
+		
+		JsonValue sharedState = json(object(1));
         
 		List<Callback> cbList = new ArrayList<>();
 
@@ -89,7 +108,7 @@ public class VIPDRDataCollectorTest {
        Action result = node.process(getContext(sharedState, new PreferredLocales(),cbList));
         
         //THEN
-        assertThat(result.outcome).isEqualTo("outcome");
+        assertThat(result.outcome).isEqualTo("true");
         assertThat(result.callbacks.isEmpty());
         assertThat(sharedState).isObject().contains(entry("RootDetected", "false"));
 

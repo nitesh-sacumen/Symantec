@@ -8,26 +8,36 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.security.auth.callback.Callback;
 import org.forgerock.json.JsonValue;
+import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
+import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
 import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants.VIPDR;
+import com.symantec.tree.nodes.VIPSetConfiguration.Config;
+import com.symantec.tree.request.util.DeviceHygieneVerification;
 
-@Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class, configClass = VIPDRDataCollector.Config.class)
-public class VIPDRDataCollector extends SingleOutcomeNode {
+@Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class, configClass = VIPDRDataCollector.Config.class)
+public class VIPDRDataCollector extends AbstractDecisionNode {
 	private final Debug debug = Debug.getInstance("VIP");
+	private DeviceHygieneVerification deviceHygieneVerification;
+	private final Config config;
+
 
 	public interface Config {
 	}
 
 	@Inject
-	public VIPDRDataCollector() {
+	public VIPDRDataCollector(@Assisted Config config, DeviceHygieneVerification deviceHygieneVerification) {
+		this.config = config;
+		this.deviceHygieneVerification = deviceHygieneVerification;
 	}
 
 	private Action collectOTP(TreeContext context) {
@@ -44,7 +54,7 @@ public class VIPDRDataCollector extends SingleOutcomeNode {
 	}
 
 	@Override
-	public Action process(TreeContext context) {
+	public Action process(TreeContext context) throws NodeProcessException {
 		debug.message("Collecting DR Data..........");
 		JsonValue sharedState = context.sharedState;
 		if(!context.getCallbacks(HiddenValueCallback.class).isEmpty()) {
@@ -55,10 +65,15 @@ public class VIPDRDataCollector extends SingleOutcomeNode {
 			debug.message("encoded dr data payload is "+payload);
 			debug.message("encoded dr data header is "+header);
 			debug.message("encoded dr data signature is "+signature);
-
-
 			
-			byte[] DecodedDRData = Base64.decodeBase64(payload);
+			String[] result = deviceHygieneVerification.validateDHSignatureAndChain(header, payload, signature);
+			
+			if(!result[0].equals(VIPDR.DEVICE_HYGIENE_VERIFICATION_SUCCESS_MSG) && !result[1].equals(VIPDR.DEVICE_HYGIENE_VERIFICATION_WITH_VIP_SUCCESS_MSG)) {
+				return goTo(false).build();
+
+			}
+
+            byte[] DecodedDRData = Base64.decodeBase64(payload);
 			
 			debug.message("Decoded DR Data is "+DecodedDRData);
 			
@@ -74,7 +89,7 @@ public class VIPDRDataCollector extends SingleOutcomeNode {
 				e.printStackTrace();
 			}
 
-			return goToNext().replaceSharedState(sharedState).build();
+			return goTo(true).replaceSharedState(sharedState).build();
 
 		}else {
 			return collectOTP(context);

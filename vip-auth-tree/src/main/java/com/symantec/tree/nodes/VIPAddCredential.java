@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import static com.symantec.tree.config.Constants.*;
 
 import com.google.common.collect.ImmutableList;
+import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.request.util.AddCredential;
 import com.symantec.tree.request.util.VIPGetUser;
 
@@ -16,8 +17,6 @@ import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.*;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.i18n.PreferredLocales;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * 
  * @author Sacumen (www.sacumen.com) <br> <br>
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
 @Node.Metadata(outcomeProvider = VIPAddCredential.SymantecOutcomeProvider.class, configClass = VIPAddCredential.Config.class)
 public class VIPAddCredential implements Node {
 
-	static Logger logger = LoggerFactory.getLogger(VIPAddCredential.class);
+	private final Debug debug = Debug.getInstance("VIP");
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPAddCredential";
 
 	private AddCredential addCred;
@@ -66,18 +65,18 @@ public class VIPAddCredential implements Node {
 			return goTo(Symantec.FALSE).build();
 		}
 		String statusCode = addCred.addCredential(userName, credValue,STANDARD_OTP,key_store,key_store_pass);
-		logger.debug("isCredAdded: "+statusCode);
+		debug.message("isCredAdded: "+statusCode);
 		if(statusCode.equalsIgnoreCase(SUCCESS_CODE)) {
-			logger.info("Crdentials is added successfully");
+			debug.message("Crdentials is added successfully");
 			return goTo(Symantec.TRUE).build();
 		}
 		else if(statusCode.equalsIgnoreCase(INVALID_CREDENIALS)||statusCode.equalsIgnoreCase(SCHEMA_INVALID)){
-			logger.info("Entered Credential ID is Invalid");
+			debug.message("Entered Credential ID is Invalid");
 			context.sharedState.put(CREDENTIAL_ID_ERROR, "Entered Credential ID is Invalid,Please enter valid Credential ID or choose other option.");
 			return goTo(Symantec.FALSE).build();
 		}
 		else {
-			logger.info("There is some error with entered Credential ID");
+			debug.message("There is some error with entered Credential ID");
 			context.sharedState.put(DISPLAY_ERROR, "Your Credential ID is disabled, Please contact to administrator");
 			return goTo(Symantec.ERROR).build();
 		}

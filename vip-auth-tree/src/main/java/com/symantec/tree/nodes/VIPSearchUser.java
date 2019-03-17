@@ -34,20 +34,7 @@ public class VIPSearchUser implements Node {
 	 * Configuration for the node.
 	 */
 	 public interface Config {
-		@Attribute(order = 100, requiredValue = true)
-		String Key_Store_Path();
 
-        @Attribute(order = 200, requiredValue = true)
-		String Key_Store_Password();
-		
-		@Attribute(order = 300, requiredValue = true)
-		String Authentication_Service_URL();
-		
-		@Attribute(order = 400, requiredValue = true)
-		String Query_Service_URL();
-		
-		@Attribute(order = 500, requiredValue = true)
-		String Management_Service_URL();
 	}
 	 
 	private VIPGetUser vipSearchUser;
@@ -70,17 +57,16 @@ public class VIPSearchUser implements Node {
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
 		String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
-		context.sharedState.put(KEY_STORE_PATH,config.Key_Store_Path());
-		context.sharedState.put(KEY_STORE_PASS,config.Key_Store_Password());
-		context.sharedState.put(AUTHENTICATION_SERVICE_URL,config.Authentication_Service_URL());
-		context.sharedState.put(QUERY_SERVICE_URL,config.Query_Service_URL());
-		context.sharedState.put(MANAGEMENT_SERVICE_URL,config.Management_Service_URL());
-		String statusCode = vipSearchUser.viewUserInfo(userName,config.Key_Store_Path(),config.Key_Store_Password(),context);
+		
+		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
+		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
+		
+		String statusCode = vipSearchUser.viewUserInfo(userName,key_store,key_store_pass);
         System.out.println("status code in VIP Search User"+statusCode);
 		String mobNum;
 
 			if (statusCode.equalsIgnoreCase(SUCCESS_CODE)) {
-				mobNum = vipSearchUser.getMobInfo(userName,config.Key_Store_Path(),config.Key_Store_Password());
+				mobNum = vipSearchUser.getMobInfo(userName,key_store,key_store_pass);
 				System.out.println("Phone Number in VIP Search User" + mobNum);
 
 				if (mobNum != null && mobNum.equalsIgnoreCase(NO_CRED_REGISTERED)) {

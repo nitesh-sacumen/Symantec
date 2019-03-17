@@ -55,12 +55,9 @@ public class VIPSearchUserTest {
 
 	@Test
 	public void nodeProcessWithTrueOutcome() throws NodeProcessException, IOException {
-		given(vipSearchUser.viewUserInfo(any(), any(), any(),any())).willReturn("0000");
+		given(vipSearchUser.viewUserInfo(any(), any(),any())).willReturn("0000");
 	    TreeContext context = getTreeContext(new HashMap<>());
-	    
-		given(config.Key_Store_Path()).willReturn("newFile.txt");
-        given(config.Key_Store_Password()).willReturn("vip@123");
-                
+	                    
 		context.sharedState.put(SharedStateConstants.USERNAME, "vip");
 
 		//WHEN
@@ -74,12 +71,9 @@ public class VIPSearchUserTest {
 	
 	@Test
 	public void nodeProcessWithFalseOutcome() throws NodeProcessException, IOException {
-		given(vipSearchUser.viewUserInfo(any(), any(), any(), any())).willReturn("6003");
+		given(vipSearchUser.viewUserInfo(any(), any(), any())).willReturn("6003");
 	    TreeContext context = getTreeContext(new HashMap<>());
-	    
-		given(config.Key_Store_Path()).willReturn("newFile.txt");
-        given(config.Key_Store_Password()).willReturn("vip@123");
-                
+	                    
 		context.sharedState.put(SharedStateConstants.USERNAME, "vip");
 
 		//WHEN

@@ -1,6 +1,6 @@
 package com.symantec.tree.nodes;
 
-import static com.symantec.tree.config.Constants.IA_SERVICE_URL;
+import static com.symantec.tree.config.Constants.DISPLAY_ERROR;
 import static com.symantec.tree.config.Constants.KEY_STORE_PASS;
 import static com.symantec.tree.config.Constants.KEY_STORE_PATH;
 
@@ -55,11 +55,7 @@ public class VIPIADenyRisk implements Node{
 		/**
 		 * failed.
 		 */
-		FALSE,
-		/**
-		 * Error.
-		 */
-		ERROR
+		FALSE
 
 	}
 
@@ -76,8 +72,7 @@ public class VIPIADenyRisk implements Node{
 			ResourceBundle bundle = locales.getBundleInPreferredLocale(VIPIADenyRisk.BUNDLE,
 					SymantecOutcomeProvider.class.getClassLoader());
 			return ImmutableList.of(new Outcome(Symantec.TRUE.name(), bundle.getString("trueOutcome")),
-					new Outcome(Symantec.FALSE.name(), bundle.getString("falseOutcome")),
-					new Outcome(Symantec.ERROR.name(), bundle.getString("errorOutcome")));
+					new Outcome(Symantec.FALSE.name(), bundle.getString("falseOutcome")));
 		}
 	}
 	
@@ -91,7 +86,7 @@ public class VIPIADenyRisk implements Node{
 
        String deviceFriendlyName=VIPIA.DEVICE_FRIENDLY_NAME;
   
-		String status = denyRisk.denyRisk(sharedState.get(IA_SERVICE_URL).asString(),
+		String status = denyRisk.denyRisk(
 				sharedState.get(SharedStateConstants.USERNAME).asString(),
 				sharedState.get(VIPIA.EVENT_ID).asString(), 
 				sharedState.get(VIPIA.AUTH_DATA).asString(),
@@ -102,7 +97,7 @@ public class VIPIADenyRisk implements Node{
 		if(status.equals(VIPIA.REGISTERED)) {
 			return goTo(Symantec.TRUE).replaceSharedState(sharedState).build();
 		}
-		else {
+		else{
 			return goTo(Symantec.FALSE).build();
 		}
 	}

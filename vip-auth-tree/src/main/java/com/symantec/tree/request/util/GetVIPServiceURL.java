@@ -29,5 +29,7 @@ public class GetVIPServiceURL {
 		serviceUrls.put("ManagementServiceURL",context.sharedState.get(MANAGEMENT_SERVICE_URL).asString());
 		serviceUrls.put("AuthenticationServiceURL",context.sharedState.get(AUTHENTICATION_SERVICE_URL).asString());
 		serviceUrls.put("QueryServiceURL", context.sharedState.get(QUERY_SERVICE_URL).asString());
+		serviceUrls.put("SDKServiceURL", context.sharedState.get(SDK_SERVICE_URL).asString());
+
 	}
 }

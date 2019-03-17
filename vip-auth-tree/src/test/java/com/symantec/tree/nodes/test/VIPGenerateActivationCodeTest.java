@@ -54,7 +54,7 @@ public class VIPGenerateActivationCodeTest {
 		TreeContext context = getTreeContext(new HashMap<>());
 		context.sharedState.put(KEY_STORE_PATH,"C://Users//keystore.ks");
 		context.sharedState.put(KEY_STORE_PASS,"WORK12345");
-		when(generateActivationCode.generateCode(any(),any(),any())).thenReturn("0000,vip@123");
+		when(generateActivationCode.generateCode(any(),any())).thenReturn("0000,vip@123");
 	
 
 		// WHEN
@@ -72,7 +72,7 @@ public class VIPGenerateActivationCodeTest {
 		TreeContext context = getTreeContext(new HashMap<>());
 		context.sharedState.put(KEY_STORE_PATH,"C://Users//keystore.ks");
 		context.sharedState.put(KEY_STORE_PASS,"WORK12345");
-		when(generateActivationCode.generateCode(any(),any(),any())).thenReturn("0780,vip@123");
+		when(generateActivationCode.generateCode(any(),any())).thenReturn("0780,vip@123");
 	
 
 		// WHEN

@@ -86,10 +86,7 @@ public class VIPAuthTreeNodePlugin extends AbstractNodeAmPlugin {
 						VIPVerifyCodeAddCredential.class,
 						VIPConfirmCredential.class,
 						VIPGenerateActivationCode.class,
-						VIPSDKAddCredential.class,
 						VIPSDKEnterCredentialId.class,
-						VIPSDKOTPCheck.class,
-						VIPSDKEnterOTP.class,
 						VIPDisplayError.class,
 						VIPDRDataCollector.class,
 						VIPAIDataCollector.class,
@@ -102,7 +99,8 @@ public class VIPAuthTreeNodePlugin extends AbstractNodeAmPlugin {
 						VIPIARiskScoreDecision.class,
 						VIPDRDataOSDecisionNode.class,
 						VIPIAConfirmRisk.class,
-						VIPIADenyRisk.class
+						VIPIADenyRisk.class,
+						VIPSetConfiguration.class
 
 
 						));

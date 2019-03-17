@@ -43,7 +43,7 @@ public class VIPIADenyRiskTest {
 	public void testProcessWithTrueOutcome() throws NodeProcessException {
 		TreeContext context = getTreeContext(new HashMap<>());
 
-		given(denyRisk.denyRisk(any(), any(), any(), any(), any(),any(),any())).willReturn("0000");
+		given(denyRisk.denyRisk(any(), any(), any(), any(),any(),any())).willReturn("0000");
 
 		// WHEN
 		Action action = node.process(context);
@@ -57,7 +57,7 @@ public class VIPIADenyRiskTest {
 	public void testProcessWithFalseOutcome() throws NodeProcessException {
 		TreeContext context = getTreeContext(new HashMap<>());
 
-		given(denyRisk.denyRisk(any(), any(), any(), any(), any(),any(),any())).willReturn("6009");
+		given(denyRisk.denyRisk(any(), any(), any(), any(),any(),any())).willReturn("6009");
 
 		// WHEN
 		Action action = node.process(context);

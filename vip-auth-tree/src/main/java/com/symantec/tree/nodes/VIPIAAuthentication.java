@@ -107,8 +107,7 @@ public class VIPIAAuthentication implements Node {
 		String userAgent = VIPIA.TEST_AGENT;
 
 		debug.message("Auth data in AI Authntication is "+context.sharedState.get(VIPIA.AUTH_DATA).asString());
-		HashMap<String, String> evaluateRiskResponseAttribute = evaluateRisk.evaluateRisk(
-				sharedState.get(IA_SERVICE_URL).asString(), sharedState.get(SharedStateConstants.USERNAME).asString(),
+		HashMap<String, String> evaluateRiskResponseAttribute = evaluateRisk.evaluateRisk(sharedState.get(SharedStateConstants.USERNAME).asString(),
 				ip, context.sharedState.get(VIPIA.AUTH_DATA).asString(), userAgent,
 				sharedState.get(KEY_STORE_PATH).asString(), sharedState.get(KEY_STORE_PASS).asString());
 
@@ -122,8 +121,12 @@ public class VIPIAAuthentication implements Node {
 			transientState.put(VIPIA.SCORE,evaluateRiskResponseAttribute.get(VIPIA.SCORE));
 			return goTo(Symantec.TRUE).replaceTransientState(transientState).build();
 		}
-		else {
+		else if(status.equals(VIPIA.NOT_REGISTERED)){
 			return goTo(Symantec.FALSE).build();
+		}
+		else {
+			sharedState.put(DISPLAY_ERROR,"Getting some error while executing Evaluate Risk request, Please contact to Administrator");
+			return goTo(Symantec.ERROR).build();
 		}
 	}
 

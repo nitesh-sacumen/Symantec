@@ -1,6 +1,5 @@
 package com.symantec.tree.nodes;
-
-import static com.symantec.tree.config.Constants.IA_SERVICE_URL;
+import static com.symantec.tree.config.Constants.DISPLAY_ERROR;
 import static com.symantec.tree.config.Constants.KEY_STORE_PASS;
 import static com.symantec.tree.config.Constants.KEY_STORE_PATH;
 
@@ -54,11 +53,7 @@ public class VIPIAConfirmRisk implements Node{
 		/**
 		 * failed.
 		 */
-		FALSE,
-		/**
-		 * Error.
-		 */
-		ERROR
+		FALSE
 
 	}
 
@@ -75,8 +70,7 @@ public class VIPIAConfirmRisk implements Node{
 			ResourceBundle bundle = locales.getBundleInPreferredLocale(VIPIAConfirmRisk.BUNDLE,
 					SymantecOutcomeProvider.class.getClassLoader());
 			return ImmutableList.of(new Outcome(Symantec.TRUE.name(), bundle.getString("trueOutcome")),
-					new Outcome(Symantec.FALSE.name(), bundle.getString("falseOutcome")),
-					new Outcome(Symantec.ERROR.name(), bundle.getString("errorOutcome")));
+					new Outcome(Symantec.FALSE.name(), bundle.getString("falseOutcome")));
 		}
 	}
 	
@@ -87,7 +81,7 @@ public class VIPIAConfirmRisk implements Node{
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
 	   JsonValue sharedState = context.sharedState;  
-       String status = confirmRisk.confirmRisk(sharedState.get(IA_SERVICE_URL).asString(),
+       String status = confirmRisk.confirmRisk(
 				sharedState.get(SharedStateConstants.USERNAME).asString(),
 				sharedState.get(VIPIA.EVENT_ID).asString(), 
 				sharedState.get(KEY_STORE_PATH).asString(),sharedState.get(KEY_STORE_PASS).asString());

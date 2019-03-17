@@ -24,9 +24,9 @@ import com.sun.identity.shared.debug.Debug;
 public class DenyRisk {
 	private final Debug debug = Debug.getInstance("VIP");
 		
-	public String denyRisk(String url,String userName,String eventID, String auth_data, String deviceFriendlyName,String key_store,String key_store_pass) throws NodeProcessException {
+	public String denyRisk(String userName,String eventID, String auth_data, String deviceFriendlyName,String key_store,String key_store_pass) throws NodeProcessException {
 		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
-		HttpPost post = new HttpPost(url);
+		HttpPost post = new HttpPost(getURL());
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getPayload(userName,eventID,auth_data,deviceFriendlyName);
 		debug.message("Deny Risk Request Payload: " + payLoad);
@@ -67,5 +67,14 @@ public class DenyRisk {
 		       + "</vip:DenyRiskRequest>" + "</soapenv:Body>"
 		       + "</soapenv:Envelope>";
 
+	}
+	
+	/**
+	 * 
+	 * @return AuthenticationServiceURL 
+	 * @throws NodeProcessException 
+	 */
+	private String getURL() throws NodeProcessException {
+		return GetVIPServiceURL.getInstance().serviceUrls.get("AuthenticationServiceURL");
 	}
 }

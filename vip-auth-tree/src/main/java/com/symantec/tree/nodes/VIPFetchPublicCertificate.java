@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.assistedinject.Assisted;
+import com.symantec.tree.config.Constants.VIPDR;
 
 @Node.Metadata(outcomeProvider  = AbstractDecisionNode.OutcomeProvider.class,
 configClass      = VIPFetchPublicCertificate.Config.class)
@@ -68,6 +69,8 @@ public class VIPFetchPublicCertificate extends AbstractDecisionNode{
 	                    .map(name -> secrets.getActiveSecret(CUSTOM_SIGNING, name))
 	                    .orElseGet(() -> secrets.getActiveSecret(DEFAULT_SIGNING));
 	            java.security.Key key = configuredKey.getOrThrow().export(KeyFormatRaw.INSTANCE);
+		        context.sharedState.put(VIPDR.VIP_DR_CERT_KEY, key);
+
 	            // TODO Do something with the key
 	        } catch (InterruptedException e) {
 	            Thread.currentThread().interrupt();
@@ -75,6 +78,6 @@ public class VIPFetchPublicCertificate extends AbstractDecisionNode{
 	        } catch (NoSuchSecretException e) {
 	            throw new NodeProcessException("Badly configured system - no key for " + config.secretName(), e);
 	        }
-	        return goTo(false).build();
+	        return goTo(true).build();
 	    }
 }

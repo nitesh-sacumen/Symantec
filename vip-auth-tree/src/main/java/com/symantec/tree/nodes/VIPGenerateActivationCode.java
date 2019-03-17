@@ -27,15 +27,6 @@ public class VIPGenerateActivationCode extends AbstractDecisionNode {
 	 * Configuration for the node.
 	 */
 	public interface Config {
-		@Attribute(order = 100, requiredValue = true)
-		String Key_Store_Path();
-
-
-		@Attribute(order = 200, requiredValue = true)
-		String Key_Store_Password();
-		
-		@Attribute(order = 300, requiredValue = true)
-		String SDK_Service_URL();
 	}
 
 	/**
@@ -54,7 +45,10 @@ public class VIPGenerateActivationCode extends AbstractDecisionNode {
 	@Override
 	 public Action process(TreeContext context) throws NodeProcessException {
     	debug.message("Collecting activtion code...");
-    	String Stat = generateActivationCode.generateCode(config.Key_Store_Path(),config.Key_Store_Password(),config.SDK_Service_URL());
+    	String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
+		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
+
+    	String Stat = generateActivationCode.generateCode(key_store,key_store_pass);
 		String[] array = Stat.split(",");
 		for (String s : array)
 			debug.message("Values:" + s);

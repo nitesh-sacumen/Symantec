@@ -27,9 +27,9 @@ public class EvaluateRisk {
 	
 	HashMap<String,String> evaluateRiskResponseAttribute;
 	
-	public HashMap<String,String> evaluateRisk(String url,String userName,String IP, String auth_data,String userAgent, String key_store,String key_store_pass) throws NodeProcessException {
+	public HashMap<String,String> evaluateRisk(String userName,String IP, String auth_data,String userAgent, String key_store,String key_store_pass) throws NodeProcessException {
 		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
-		HttpPost post = new HttpPost(url);
+		HttpPost post = new HttpPost(getURL());
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getPayload(userName,IP,auth_data,userAgent);
 		debug.message("Evaluate Request Payload: " + payLoad);
@@ -79,5 +79,14 @@ public class EvaluateRisk {
 		       + "</vip:IAAuthData>"+ "</vip:EvaluateRiskRequest>" + "</soapenv:Body>"
 		       + "</soapenv:Envelope>";
 
+	}
+	
+	/**
+	 * 
+	 * @return AuthenticationServiceURL 
+	 * @throws NodeProcessException 
+	 */
+	private String getURL() throws NodeProcessException {
+		return GetVIPServiceURL.getInstance().serviceUrls.get("AuthenticationServiceURL");
 	}
 }

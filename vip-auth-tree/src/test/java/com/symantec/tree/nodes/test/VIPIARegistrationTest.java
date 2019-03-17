@@ -104,7 +104,7 @@ public class VIPIARegistrationTest {
 		cbList.add(enterEventId);
 		cbList.add(enterAuthData);
 
-		given(denyRisk.denyRisk(any(), any(), any(), any(), any(), any(), any())).willReturn("0000");
+		given(denyRisk.denyRisk(any(), any(), any(), any(), any(), any())).willReturn("0000");
 
 		// WHEN
 		Action action = node.process(getContext(sharedState, preferredLocales, cbList));
@@ -131,7 +131,7 @@ public class VIPIARegistrationTest {
 		cbList.add(enterEventId);
 		cbList.add(enterAuthData);
 
-		given(denyRisk.denyRisk(any(), any(), any(), any(), any(), any(), any())).willReturn("6009");
+		given(denyRisk.denyRisk(any(), any(), any(), any(), any(), any())).willReturn("6009");
 
 		// WHEN
 		Action action = node.process(getContext(sharedState, preferredLocales, cbList));
@@ -155,7 +155,7 @@ public class VIPIARegistrationTest {
 
 		cbList.add(webAuthData);
 
-		given(denyRisk.denyRisk(any(), any(), any(), any(), any(), any(), any())).willReturn("0000");
+		given(denyRisk.denyRisk(any(), any(), any(), any(), any(), any())).willReturn("0000");
 
 		// WHEN
 		Action action = node.process(getContext(sharedState, preferredLocales, cbList));
@@ -179,7 +179,7 @@ public class VIPIARegistrationTest {
 
 		cbList.add(webAuthData);
 
-		given(denyRisk.denyRisk(any(), any(), any(), any(), any(), any(), any())).willReturn("6009");
+		given(denyRisk.denyRisk(any(), any(), any(), any(), any(), any())).willReturn("6009");
 
 		// WHEN
 		Action action = node.process(getContext(sharedState, preferredLocales, cbList));

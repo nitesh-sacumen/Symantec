@@ -45,9 +45,8 @@ public class VIPGetUser {
 	 * @return status code of response.
 	 * @throws NodeProcessException
 	 */
-	public String viewUserInfo(String userId, String KEY_STORE_PATH, String KEY_STORE_PASS, TreeContext context)
+	public String viewUserInfo(String userId, String KEY_STORE_PATH, String KEY_STORE_PASS)
 			throws NodeProcessException {
-		GetVIPServiceURL.getInstance().setServiceURL(context);
 		HttpPost httpPost = new HttpPost(getURL());
 		httpPost.addHeader("Accept-Encoding", "gzip,deflate");
 		httpPost.addHeader("Content-Type", "text/xml;charset=utf-8");

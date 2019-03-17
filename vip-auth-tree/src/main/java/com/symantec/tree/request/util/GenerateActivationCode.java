@@ -34,9 +34,9 @@ public class GenerateActivationCode {
 	 * @return activation code with status
 	 * @throws NodeProcessException
 	 */
-	public String generateCode(String key_store,String key_store_pass,String url) throws NodeProcessException {
+	public String generateCode(String key_store,String key_store_pass) throws NodeProcessException {
 		String activationCode = "";
-		HttpPost post = new HttpPost(url);
+		HttpPost post = new HttpPost(getURL());
 		String status = null;
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = createPayload();
@@ -84,6 +84,10 @@ public class GenerateActivationCode {
 		str.append("</soapenv:Envelope>");
 		return str.toString();
 
+	}
+	
+	private String getURL() throws NodeProcessException {
+		return GetVIPServiceURL.getInstance().serviceUrls.get("SDKServiceURL");
 	}
 
 }

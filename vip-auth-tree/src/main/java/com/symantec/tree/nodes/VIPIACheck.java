@@ -38,14 +38,6 @@ public class VIPIACheck implements Node {
 	 * Configuration for the node.
 	 */
 	public interface Config {
-		@Attribute(order = 100, requiredValue = true)
-		String Key_Store_Path();
-
-		@Attribute(order = 200, requiredValue = true)
-		String Key_Store_Password();
-
-		@Attribute(order = 300, requiredValue = true)
-		String Service_URL();
 	}
 
 	/**
@@ -102,10 +94,9 @@ public class VIPIACheck implements Node {
 		debug.message("Evaluating IA Request....");
 		JsonValue sharedState = context.sharedState;
 		JsonValue transientState = context.sharedState;
-
-		sharedState.put(KEY_STORE_PATH, config.Key_Store_Path());
-		sharedState.put(KEY_STORE_PASS, config.Key_Store_Password());
-		sharedState.put(IA_SERVICE_URL, config.Service_URL());
+		
+		String key_store = sharedState.get(KEY_STORE_PATH).asString();
+		String key_store_pass = sharedState.get(KEY_STORE_PASS).asString();
 
 		InetAddress localhost=null;
 		try {
@@ -119,9 +110,9 @@ public class VIPIACheck implements Node {
 		
 		debug.message("auth data in ia check is "+authData);
 
-		HashMap<String, String> evaluateRiskResponseAttribute = evaluateRisk.evaluateRisk(config.Service_URL(),
+		HashMap<String, String> evaluateRiskResponseAttribute = evaluateRisk.evaluateRisk(
 				sharedState.get(SharedStateConstants.USERNAME).asString(), ip, authData, userAgent,
-				config.Key_Store_Path(), config.Key_Store_Password());
+				key_store,key_store_pass);
 
 		String status = evaluateRiskResponseAttribute.get("status");
 		debug.message("status is in ia check: " + status);

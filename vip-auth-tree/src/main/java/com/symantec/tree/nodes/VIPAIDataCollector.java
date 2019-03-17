@@ -19,7 +19,17 @@ import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
 import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants.VIPIA;
 
-
+/**
+ * 
+ * @author Sacumen(www.sacumen.com)
+ * 
+ * It collects Auth Data using HiddenValueCallBack and ScriptTextOutputCallback.
+ * 
+ * In case of mobile Auth data taken using HiddenValueCallback and In case of web Auth data taken using ScriptTextOutputCallback.
+ * 
+ * Single outcome node, collects data and fetch data to "VIP Evaluate Risk" node.
+ *
+ */
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class, configClass = VIPAIDataCollector.Config.class)
 public class VIPAIDataCollector extends SingleOutcomeNode {
 	private final Debug debug = Debug.getInstance("VIP");
@@ -43,6 +53,13 @@ public class VIPAIDataCollector extends SingleOutcomeNode {
 		this.config = config;
 	}
 
+	/**
+	 * 
+	 * @param context
+	 * @return Action
+	 * 
+	 * Collecting Auth Data.
+	 */
 	private Action collectData(TreeContext context) {
 		debug.message("Collecting IA Data.......");
 		
@@ -64,6 +81,9 @@ public class VIPAIDataCollector extends SingleOutcomeNode {
 		return send(ImmutableList.copyOf(cbList)).build();
 	}
 
+	/**
+	 * Getting data from the callbacks and fetch this to next node.
+	 */
 	@Override
 	public Action process(TreeContext context) {
 		debug.message("collecting AI DATA..........");
@@ -90,7 +110,7 @@ public class VIPAIDataCollector extends SingleOutcomeNode {
 			sharedState.put(VIPIA.DEVICE_FINGERPRINT, webAuthData);
 			sharedState.put(VIPIA.AUTH_DATA,webAuthData);
 		}
-	
+			
 		return goToNext().build();
 
 	}
@@ -100,6 +120,11 @@ public class VIPAIDataCollector extends SingleOutcomeNode {
 
 	}
 	
+	/**
+	 * 
+	 * @param scriptURL JS Script reference.
+	 * @return Getting Script to collect auth data.
+	 */
 	private String getAuthDataScript(String scriptURL) {
 		return "var loadJS = function(url, implementationCode, location){\r\n" + 
     			"    var scriptTag = document.createElement('script');\r\n" + 

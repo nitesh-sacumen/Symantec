@@ -47,7 +47,7 @@ public class VIPIAAuthenticationTest {
         map.put("DeviceTag","VIP@123");
         map.put("score","100");
 
-		given(evaluateRisk.evaluateRisk(any(),any(),any(),any(),any(),any(),any())).willReturn(map);
+		given(evaluateRisk.evaluateRisk(any(),any(),any(),any(),any(),any())).willReturn(map);
 				
 		// WHEN
 		Action action = node.process(context);
@@ -68,7 +68,7 @@ public class VIPIAAuthenticationTest {
         map.put("DeviceTag","VIP@123");
         map.put("score","100");
 
-		given(evaluateRisk.evaluateRisk(any(),any(),any(),any(),any(),any(),any())).willReturn(map);
+		given(evaluateRisk.evaluateRisk(any(),any(),any(),any(),any(),any())).willReturn(map);
 				
 		// WHEN
 		Action action = node.process(context);
