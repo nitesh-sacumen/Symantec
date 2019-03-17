@@ -227,7 +227,7 @@ This node execute Deny Risk request to register new device. There are no configu
 
 * VIP IA Risk Score Decision Node
 ```js
-This node makes decision based on score fetch by evaluate risk api. There are no configurable attributes to it.
+This node makes decision based on score fetch by evaluate risk api.
 
 Attributes to be configured are:
 * low_threshold : Low range of score. By default it is 20.
@@ -235,6 +235,23 @@ Attributes to be configured are:
 ```
 
 ![p_6](https://user-images.githubusercontent.com/20396535/54488293-2734b180-48c6-11e9-84b2-34e5b8c78732.PNG)
+
+* VIP SDK Enter CredentialID
+```js
+This node gives you a screen where you need to enter credential id generated on vip app. There are no configurable attributes to it.
+```
+
+* Set Session Properties
+```js
+This node sets session properties, which needs to white list in Session Property Whitelist Service under Global_Services.
+
+Attributes to be configured are:
+* Properties : Add key value pair as key-LIMITED_ACCESS value-Rooted_Device(As your convenince)
+```
+
+![p_15](https://user-images.githubusercontent.com/20396535/54489198-e9d52180-48cf-11e9-8cd9-65b32fd0e339.PNG)
+
+![p_16](https://user-images.githubusercontent.com/20396535/54489202-ee013f00-48cf-11e9-8f05-8d1f1eb5cb6e.png)
 
 
 
@@ -269,7 +286,7 @@ this section depicts configuration of VIP Auth Tree
     * VIP OTPAuth Creds
     * VIP Authenticate Push Credentials
     * VIP Push Auth User
-    * VIP Search User
+    * VIP Set Configuration
 ```
 
 * Now access the protected site by OpenAM
@@ -279,115 +296,92 @@ this section depicts configuration of VIP Auth Tree
 
 # VIP SDK Flow
 
-## Nodes For SDK Flow
-
-* VIP SDK Add Credential
+* Configure Vip-Sdk-Registeration Tree as shown below:
 ```js
-This node will add credentials as credential id associtaed with user in VIP Database. There are no configurable attributes to it.
+ Nodes To be Configured:
+    * VIP Set Configuration : Need to mention all the VIP Service URLs
 ```
+![p_7](https://user-images.githubusercontent.com/20396535/54488586-6dd7db00-48c9-11e9-9186-e310bc6de2a6.PNG)
 
-* VIP SDK Check Symantec OTP
+
+
+* Configure Vip-Sdk-VerifyOTP Tree as shown below:
 ```js
-This node will verify OTP with username.
-Attributes to be configured are:
- * Keystore Path: Path for keystore file.
- * Keystore Password: Password of keystore file.
- * Authentication Service URL: VIP Authentication Service URL
+ Nodes To be Configured:
+    * VIP Set Configuration : Need to mention all the VIP Service URLs
 ```
+![p_8](https://user-images.githubusercontent.com/20396535/54488616-d1fa9f00-48c9-11e9-8e30-ff1bde338fb3.PNG)
 
-* VIP Activation Code
+
+
+* Configure VIP_DR Tree as shown below:
 ```js
-This node will get activation code from VIP Service.
-Attributes to be configured are:
- * Keystore Path: Path for keystore file.
- * Keystore Password: Password of keystore file.
- * SDK Service URL: VIP SDK Service URL
+ Nodes To be Configured:
+    * VIP Set Configuration : Need to mention all the VIP Service URLs
+    * VIP DR Data Eval : Need to choose field from drop down to evaluate device hygenie.
+    * Set Session Properties : Add key value pair as key-LIMITED_ACCESS value-Rooted_Device
 ```
+![p_9](https://user-images.githubusercontent.com/20396535/54488650-6bc24c00-48ca-11e9-8e75-e05f4b750291.PNG)
 
-* VIP SDK Enter CredentialID
+
+
+* Configure VIP_IA Tree as shown below: 
 ```js
-This node gives you a screen where you need to enter credential id generated on vip app. There are no configurable attributes to it.
+ Nodes To be Configured:
+    * VIP Set Configuration : Need to mention all the VIP Service URLs
+    * VIP IA Data Collector Node : Enter Script url to get auth data and select true/false to enable/disable login button respectively.
+        * Set Session Properties : Add key value pair as key-LIMITED_ACCESS value-Risk_Score
 ```
+![p_10](https://user-images.githubusercontent.com/20396535/54488770-e93a8c00-48cb-11e9-9366-41b70ad265a7.PNG)
 
-* VIP SDK Enter SecurityCode/OTP
+
+
+* Configure VIP_DR_TXN Tree as shown below:
 ```js
-This node gives you a screen where you need to enter OTP. There are no configurable attributes to it.
+ Nodes To be Configured:
+    * VIP Set Configuration : Need to mention all the VIP Service URLs
+    * VIP DR Data Eval : Need to choose field from drop down to evaluate device hygenie.
+    * Set Session Properties : Add key value pair as key-LIMITED_ACCESS_TXN value-Rooted_Device
 ```
-![sdk_1](https://user-images.githubusercontent.com/20396535/49300307-df8d4400-f4e7-11e8-8a6f-b93881ab74cc.PNG)
+![p_9](https://user-images.githubusercontent.com/20396535/54488650-6bc24c00-48ca-11e9-8e75-e05f4b750291.PNG)
 
 
-## Follow the below steps for VIP SDK Flow using VIP-Auth-tree.
 
-### VIP Get Activation Code
-
-![activation_code](https://user-images.githubusercontent.com/20396535/49300990-94743080-f4e9-11e8-8d48-c3863ff4762a.PNG)
-
+* Configure VIP_IA_TXN Tree as shown below: 
 ```js
-* User uses postman to post to the link of OpenAM and submits username and password in the header
-* URL : http://localhost:8080/AM-eval-6.0.0.4/json/realms/root/authenticate?authIndexType=service&authIndexValue=VIP_SDK_GEN_CODE
-* Method: POST
-* Headers: 
-    Accept-API-Version:  resource=2.0, protocol=1.0
-    X-OpenAM-Username:  user1
-    X-OpenAM-Password:  password123$ 
+ Nodes To be Configured:
+    * VIP Set Configuration : Need to mention all the VIP Service URLs
+    * VIP IA Data Collector Node : Enter Script url to get auth data and select true/false to enable/disable login button respectively.
+    * Set Session Properties : Add key value pair as key-LIMITED_ACCESS_TXN value-Risk_Score
 ```
-
-* IF authentication is successful, It gives response like this:
-
-![gen_code](https://user-images.githubusercontent.com/20396535/49301177-051b4d00-f4ea-11e8-9f1d-e37f0ed00a67.PNG)
+![p_10](https://user-images.githubusercontent.com/20396535/54488770-e93a8c00-48cb-11e9-9366-41b70ad265a7.PNG)
 
 
-### VIP SDK Add Credential
 
-![sdk_add_cred](https://user-images.githubusercontent.com/20396535/49301339-63e0c680-f4ea-11e8-8629-e879f2e21972.PNG)
-
+* Configure VIP_WITHOUT_DR Tree as shown below: 
 ```js
-* User uses postman to post to the link of OpenAM and submits username and password in the header
-* URL : http://localhost:8080/AM-eval-6.0.0.4/json/realms/root/authenticate?authIndexType=service&authIndexValue=VIP_SDK_Add_Cred
-* Method: POST
-* Headers: 
-    Accept-API-Version:  resource=2.0, protocol=1.0
-    X-OpenAM-Username:  user1
-    X-OpenAM-Password:  password123$ 
+ Nodes To be Configured:
+    * VIP Set Configuration : Need to mention all the VIP Service URLs
+    * Set Session Properties : Add key value pair as key-LIMITED_ACCESS_TXN value-Rooted_Device
 ```
+![p_11](https://user-images.githubusercontent.com/20396535/54488834-65cd6a80-48cc-11e9-9638-2e34d6c75b63.PNG)
 
-* IF authentication is successful,  It gives response prompting for CredentialID
 
-![sdk_2](https://user-images.githubusercontent.com/20396535/49301512-ca65e480-f4ea-11e8-9529-bf3d9f113a80.PNG)
 
-* add the obtained CredentialID to the response body and send it to the same url using this as the request.
 
-![sdk_3](https://user-images.githubusercontent.com/20396535/49301629-13b63400-f4eb-11e8-8477-dcdc168f252d.PNG)
+* Configure VIP Transaction With DR Policy Set as shown below:
+![p_12](https://user-images.githubusercontent.com/20396535/54488914-366b2d80-48cd-11e9-9775-825b76f88308.PNG)
 
-* IF authentication is successful, It gives response like this:
 
-![gen_code](https://user-images.githubusercontent.com/20396535/49301177-051b4d00-f4ea-11e8-9f1d-e37f0ed00a67.PNG)
+* Configure VIP Transaction With IA Policy Set as shown below:
+![p_13](https://user-images.githubusercontent.com/20396535/54488924-3cf9a500-48cd-11e9-92e8-15bb0f61479a.PNG)
 
-### VIP SDK Verify OTP
 
-![sdk_4](https://user-images.githubusercontent.com/20396535/49301823-80313300-f4eb-11e8-8c47-28e6e572bce2.PNG)
+* Configure VIP Transaction Without DR Policy Set as shown below:
+![p_14](https://user-images.githubusercontent.com/20396535/54488926-4420b300-48cd-11e9-8ebb-7b1465de99ac.PNG)
 
-```js
-* User uses postman to post to the link of OpenAM and submits username and password in the header
-* URL : http://localhost:8080/AM-eval-6.0.0.4/json/realms/root/authenticate?authIndexType=service&authIndexValue=VIP_SDK_Verify_OTP
-* Method: POST
-* Headers: 
-    Accept-API-Version:  resource=2.0, protocol=1.0
-    X-OpenAM-Username:  user1
-    X-OpenAM-Password:  password123$ 
-```
 
-* IF authentication is successful,  It gives response prompting for Enter SecurityCode/OTP
 
-![sdk_5](https://user-images.githubusercontent.com/20396535/49301999-e6b65100-f4eb-11e8-88ea-69f6941623bd.PNG)
-
-* add the obtained OTP to the response body and send it to the same url using this as the request.
-
-![sdk_6](https://user-images.githubusercontent.com/20396535/49302109-27ae6580-f4ec-11e8-879a-8a632a66495f.PNG)
-
-* IF authentication is successful, It gives response like this:
-
-![gen_code](https://user-images.githubusercontent.com/20396535/49301177-051b4d00-f4ea-11e8-9f1d-e37f0ed00a67.PNG)
 
 
 
