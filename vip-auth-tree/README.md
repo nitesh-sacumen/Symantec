@@ -161,7 +161,86 @@ Attributes to be configured are:
  * Management Service URL: VIP Management Service URL
 ```
 
+* VIP Set Configuration
+```js
+This node search user in VIP and get user info, if user exits.
+Attributes to be configured are:
+ * Keystore Path: Path for keystore file.
+ * Keystore Password: Password of keystore file.
+ * Authentication Service URL: VIP Authentication Service URL
+ * Query Service URL: VIP Query Service URL
+ * Management Service URL: VIP Management Service URL
+ * SDK Service URL : Service url to get Activation Code
+```
+
 ![url_conf](https://user-images.githubusercontent.com/20396535/48860971-68212b80-ede8-11e8-9953-646b9625bb70.PNG)
+
+* VIP DR Data Collector
+```js
+This node collects DR data(payload, signature, header) in encoded form. There are no configurable attributes to it.
+```
+
+* VIP DR Data Eval
+```js
+This node takes decesion according to json which are coming from from DR Data Collector node. If attribute value in json true then it goes to another node for further verification and if it is false then it goes to success node. 
+
+Attributes to be configured are:
+* DR Data Fields : You need to choose field from DR Data JSON, Which you want to evaluate.
+```
+![p_4](https://user-images.githubusercontent.com/20396535/54487945-edfa4280-48c1-11e9-941b-6faf14cd6bc5.PNG)
+
+* VIP DR OS Decesion Node
+```js
+This node just verify forDR Data coming from android device or ios device. There are no configurable attributes to it.
+```
+
+* VIP IA Authentication
+```js
+This node execute Evalate Risk request after Deny Risk. There are no configurable attributes to it.
+```
+
+* VIP IA Confirm Risk
+```js
+This node execute Confirm Risk request. There are no configurable attributes to it.
+```
+
+* VIP IA Data Collector Node
+```js
+This node collects Auth Data using HiddenValueCallBack and ScriptTextOutputCallback.
+
+Attributes to be configured are:
+* Script : Script URL which will collect Auth Data.
+* Is Page Node : If it false then user will not able to see login button on web page, it will be clicked by script and if it is true then login button will appear on web page and user need to click it to navigate next page.
+```
+
+![p_5](https://user-images.githubusercontent.com/20396535/54488211-37985c80-48c5-11e9-9e29-40071c1387b1.PNG)
+
+* VIP IA Deny Risk
+```js
+This node execute Deny Risk request. There are no configurable attributes to it.
+```
+
+* VIP IA Evaluate Risk
+```js
+This node execute Evaluate Risk request. There are no configurable attributes to it.
+```
+
+* VIP IA Registration
+```js
+This node execute Deny Risk request to register new device. There are no configurable attributes to it.
+```
+
+* VIP IA Risk Score Decision Node
+```js
+This node makes decision based on score fetch by evaluate risk api. There are no configurable attributes to it.
+
+Attributes to be configured are:
+* low_threshold : Low range of score. By default it is 20.
+* high_threshold : High range of score. By default it is 80.
+```
+
+![p_6](https://user-images.githubusercontent.com/20396535/54488293-2734b180-48c6-11e9-84b2-34e5b8c78732.PNG)
+
 
 
 ## Set Logging Level
