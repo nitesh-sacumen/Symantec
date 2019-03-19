@@ -17,6 +17,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
 
+/**
+ * 
+ * @author Sacumen (www.sacumen.com)
+ * 
+ * Node with iOS/Android outcome which decides DR Data is coming from android device or iOS Device.
+ * 
+ *
+ */
 @Node.Metadata(outcomeProvider = VIPDRDataOSDecisionNode.SymantecOutcomeProvider.class, configClass =
 VIPDRDataOSDecisionNode.Config.class)
 public class VIPDRDataOSDecisionNode implements Node{

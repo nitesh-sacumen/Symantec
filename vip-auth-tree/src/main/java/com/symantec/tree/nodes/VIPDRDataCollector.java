@@ -12,7 +12,6 @@ import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,9 +20,20 @@ import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
 import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants.VIPDR;
-import com.symantec.tree.nodes.VIPSetConfiguration.Config;
 import com.symantec.tree.request.util.DeviceHygieneVerification;
 
+/**
+ * 
+ * @author Sacumen (www.sacumen.com)
+ * @category Node
+ * 
+ * Collecting DR Data in a form of encoded payload, encoded header and encoded signature. This node execute device hygiene 
+ * verification and decode paylaod.
+ * 
+ * Each JSON parameter is extracted from encoded payload and added to the shared state for further evaluation.
+ *
+ * Node with true/false outcome. true outcome is connected to "VIP DR Data Eval" and false outcome will be connected to "Failure"
+ */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class, configClass = VIPDRDataCollector.Config.class)
 public class VIPDRDataCollector extends AbstractDecisionNode {
 	private final Debug debug = Debug.getInstance("VIP");
@@ -40,7 +50,15 @@ public class VIPDRDataCollector extends AbstractDecisionNode {
 		this.deviceHygieneVerification = deviceHygieneVerification;
 	}
 
-	private Action collectOTP(TreeContext context) {
+	
+	/**
+	 * 
+	 * @param context TreeContext
+	 * @return Action
+	 * 
+	 * Collecting encoded value of payload, header and signature.
+	 */
+	private Action collectData(TreeContext context) {
 		List<Callback> cbList = new ArrayList<>();
 		
 		HiddenValueCallback ncbp = new HiddenValueCallback(VIPDR.VIP_DR_DATA_PAYLOAD);
@@ -53,19 +71,29 @@ public class VIPDRDataCollector extends AbstractDecisionNode {
 		return send(ImmutableList.copyOf(cbList)).build();
 	}
 
+	/**
+	 * Main logic of the node.
+	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
 		debug.message("Collecting DR Data..........");
 		JsonValue sharedState = context.sharedState;
 		if(!context.getCallbacks(HiddenValueCallback.class).isEmpty()) {
+
+            // Collecting encoded value of payload
 			String payload = context.getCallbacks(HiddenValueCallback.class).get(0).getValue();
+			
+            // Collecting encoded value of header
 			String header = context.getCallbacks(HiddenValueCallback.class).get(1).getValue();
+			
+            // Collecting encoded value of signature
 			String signature = context.getCallbacks(HiddenValueCallback.class).get(2).getValue();
 			
 			debug.message("encoded dr data payload is "+payload);
 			debug.message("encoded dr data header is "+header);
 			debug.message("encoded dr data signature is "+signature);
 			
+			//Verifying Device Hygiene
 			String[] result = deviceHygieneVerification.validateDHSignatureAndChain(header, payload, signature);
 			
 			if(!result[0].equals(VIPDR.DEVICE_HYGIENE_VERIFICATION_SUCCESS_MSG) && !result[1].equals(VIPDR.DEVICE_HYGIENE_VERIFICATION_WITH_VIP_SUCCESS_MSG)) {
@@ -77,6 +105,7 @@ public class VIPDRDataCollector extends AbstractDecisionNode {
 			
 			debug.message("Decoded DR Data is "+DecodedDRData);
 			
+			//Extracting all the json key and value from encoded payload and adding to the shared state.
 			String str1 = new String(DecodedDRData);
 			ObjectMapper mapper = new ObjectMapper();
 			try {
@@ -92,7 +121,7 @@ public class VIPDRDataCollector extends AbstractDecisionNode {
 			return goTo(true).replaceSharedState(sharedState).build();
 
 		}else {
-			return collectOTP(context);
+			return collectData(context);
 		}
 	}
 }

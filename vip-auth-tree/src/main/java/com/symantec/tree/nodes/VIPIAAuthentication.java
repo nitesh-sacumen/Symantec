@@ -20,10 +20,17 @@ import javax.inject.Inject;
 
 /**
  * 
- * @author Sacumen (www.sacumen.com) <br>
- *         <br>
+ * @author Sacumen (www.sacumen.com) <br> <br>
  * @category Node
+ * 
+ * Execute Evaluate Risk API to authenticate device through Auth Data.
+ * 
+ * Node with TRUE/FALSE/ERROR outcome. True outcome means user has authenticated successfully with "0000" status code.
+ * False outcome means user has not authenticated with "6009" status code.
+ * Error outcome means user has not authenticated but the status code is other than "6009".
  *
+ * True outcome is connected to "VIP Risk Score Decision Node" and false outcome is connected to "Failure" and Error
+ * outcome is connected to "DISPLAY ERROR" nodes.
  */
 @Node.Metadata(outcomeProvider = VIPIAAuthentication.SymantecOutcomeProvider.class, configClass = VIPIAAuthentication.Config.class)
 public class VIPIAAuthentication implements Node {
@@ -96,27 +103,32 @@ public class VIPIAAuthentication implements Node {
 		JsonValue sharedState = context.sharedState;
 
 		debug.message("Authentication IA Data.....");
+		
+		//Getting IP Address
 		InetAddress localhost = null;
-
 		try {
 			localhost = InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
 			new NodeProcessException(e.getLocalizedMessage());
 		}
 		String ip = localhost.getHostAddress().trim();
+		
+		// Getting test agent
 		String userAgent = VIPIA.TEST_AGENT;
 
-		debug.message("Auth data in AI Authntication is "+context.sharedState.get(VIPIA.AUTH_DATA).asString());
+		debug.message("Auth data in AI Authentication is "+context.sharedState.get(VIPIA.AUTH_DATA).asString());
+		
+		// Executing Evaluate Risk call 
 		HashMap<String, String> evaluateRiskResponseAttribute = evaluateRisk.evaluateRisk(sharedState.get(SharedStateConstants.USERNAME).asString(),
 				ip, context.sharedState.get(VIPIA.AUTH_DATA).asString(), userAgent,
 				sharedState.get(KEY_STORE_PATH).asString(), sharedState.get(KEY_STORE_PASS).asString());
 
+        // Getting status and score from the request
 		debug.message("status in IA authntication is " + evaluateRiskResponseAttribute.get("status"));
 		debug.message("score in IA authntication is " + evaluateRiskResponseAttribute.get("score"));
-
-
 		String status = evaluateRiskResponseAttribute.get("status");
 		
+		//Making decision
 		if (status.equals(VIPIA.REGISTERED)) {
 			transientState.put(VIPIA.SCORE,evaluateRiskResponseAttribute.get(VIPIA.SCORE));
 			return goTo(Symantec.TRUE).replaceTransientState(transientState).build();

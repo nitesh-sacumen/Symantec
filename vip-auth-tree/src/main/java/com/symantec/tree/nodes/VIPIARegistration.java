@@ -29,6 +29,18 @@ import com.symantec.tree.config.Constants.VIPIA;
 import com.symantec.tree.request.util.DenyRisk;
 import static com.symantec.tree.config.Constants.*;
 
+/**
+ * 
+ * @author Sacumen (www.sacumen.com)
+ * 
+ * Executes Deny Risk request.
+ * 
+ * This node having TRUE/FALSE outcome.True outcome means user has denied risk successfully with "0000" status code.
+ * False outcome means request has failed with other then "0000" status code.
+ * 
+ * True outcome is connected to "VIP IA Collect Auth Data" and false outcome is connected to "Failure". 
+ *
+ */
 @Node.Metadata(outcomeProvider = VIPIARegistration.SymantecOutcomeProvider.class, configClass = VIPIARegistration.Config.class)
 public class VIPIARegistration implements Node {
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPIARegistration";
@@ -85,12 +97,16 @@ public class VIPIARegistration implements Node {
 	 * 
 	 * @param context
 	 * @return sending call backs.
+	 * 
+	 * Returning Event Id and Device Tag to user to set and get mobile data In case of mobile device.
 	 */
 	private Action collectAuthData(TreeContext context) {
 
+		//Getting event id and device tag
 		String eventId = context.sharedState.get(VIPIA.EVENT_ID).asString();
 		String deviceTag = context.sharedState.get(VIPIA.DEVICE_TAG).asString();
 
+		//Sending eventId and deviceTag to the user.
 		List<Callback> cbList = new ArrayList<>();
 		HiddenValueCallback enterEventId = new HiddenValueCallback(VIPIA.EVENT_ID);
 		HiddenValueCallback enterAuthData = new HiddenValueCallback(VIPIA.AUTH_DATA);
@@ -109,14 +125,21 @@ public class VIPIARegistration implements Node {
 	 * Main logic of the node
 	 * 
 	 * @throws NodeProcessException
+	 * 
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
+		
+		//Getting auth data through mobile.
 		String mobileAuthData = context.sharedState.get(VIPIA.MOBILE_AUTH_DATA).asString();
 
 		if (mobileAuthData != null) {
+			
+			//Execute Deny Risk for mobile
 			return processForMobile(context);
 		} else {
+			
+			//Execute Deny Risk for Web
 			return processForWeb(context);
 		}
 
@@ -127,14 +150,20 @@ public class VIPIARegistration implements Node {
 
 		JsonValue sharedState = context.sharedState;
 
+		//Getting Auth Data in case of Web
 		Optional<String> result = context.getCallback(HiddenValueCallback.class).map(HiddenValueCallback::getValue)
 				.filter(scriptOutput -> !Strings.isNullOrEmpty(scriptOutput));
 
 		if (result.isPresent()) {
+			
+			// Adding auth data to shared state
 			debug.message("auth data in IA Registration is " + result.get());
 			sharedState.put(VIPIA.DEVICE_FINGERPRINT, result.get());
 
+			//Getting device friendly name
 			String deviceFriendlyName = VIPIA.DEVICE_FRIENDLY_NAME;
+			
+			//Executing Deny Risk request
 			String status = denyRisk.denyRisk(sharedState.get(SharedStateConstants.USERNAME).asString(),
 					sharedState.get(VIPIA.EVENT_ID).asString(), sharedState.get(VIPIA.DEVICE_FINGERPRINT).asString(),
 					deviceFriendlyName, sharedState.get(KEY_STORE_PATH).asString(),
@@ -142,6 +171,7 @@ public class VIPIARegistration implements Node {
 
 			debug.message("status in vip ia registration is " + status);
 
+			// Making decision based on Deny Risk request response
 			if (status.equals(VIPIA.REGISTERED)) {
 				return goTo(Symantec.TRUE).replaceSharedState(sharedState).build();
 			} else {
@@ -149,19 +179,22 @@ public class VIPIARegistration implements Node {
 			}
 
 		} else {
-
+            
+			// Getting script to set Auth data
 			String setAuthData = String.format(setAuthDataScriptString(sharedState.get(VIPIA.DEVICE_TAG).asString(),
 					sharedState.get(VIPIA.SCRIPT_URL).asString()));
 
 			debug.message("setAuthData script is " + setAuthData);
 
+			//Script output call back to execute script on forgerock platform
 			ScriptTextOutputCallback setAuthDataScriptOutputCallback = new ScriptTextOutputCallback(setAuthData);
 
+			//Hidden value call back to get Auth Data
 			HiddenValueCallback hiddenValueCallback = new HiddenValueCallback(VIPIA.DEVICE_FINGERPRINT);
 
+			//Sending callbacks
 			ImmutableList<Callback> callbacks = ImmutableList.of(hiddenValueCallback, setAuthDataScriptOutputCallback);
-
-			return send(callbacks).build();
+            return send(callbacks).build();
 		}
 	}
 
@@ -171,20 +204,25 @@ public class VIPIARegistration implements Node {
 		JsonValue sharedState = context.sharedState;
 
 		if (!context.getCallbacks(HiddenValueCallback.class).isEmpty()) {
+			
+			//Getting Auth Data and event Id in case of Mobile
 			String eventID = context.getCallbacks(HiddenValueCallback.class).get(0).getValue();
 			String authData = context.getCallbacks(HiddenValueCallback.class).get(1).getValue();
 
 			debug.message("event id is " + eventID);
 			debug.message("auth data is " + authData);
 
+			//Getting device friendly name
 			String deviceFriendlyName = VIPIA.DEVICE_FRIENDLY_NAME;
 
+			//Executing deny Risk request
 			String status = denyRisk.denyRisk(sharedState.get(SharedStateConstants.USERNAME).asString(), eventID,
 					authData, deviceFriendlyName, sharedState.get(KEY_STORE_PATH).asString(),
 					sharedState.get(KEY_STORE_PASS).asString());
 
 			debug.message("status in vip ia registration is " + status);
 
+			//Making decision based on Deny Risk request response.
 			if (status.equals(VIPIA.REGISTERED)) {
 				return goTo(Symantec.TRUE).build();
 			} 
@@ -192,6 +230,8 @@ public class VIPIARegistration implements Node {
 				return goTo(Symantec.FALSE).build();
 			} 
 		} else {
+			
+			//Sending callback to the user to get event Id and Auth data.
 			return collectAuthData(context);
 		}
 

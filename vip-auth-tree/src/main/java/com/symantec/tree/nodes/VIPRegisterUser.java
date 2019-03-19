@@ -3,6 +3,7 @@ package com.symantec.tree.nodes;
 import static com.symantec.tree.config.Constants.*;
 
 import com.google.inject.assistedinject.Assisted;
+import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.request.util.VIPCreateUser;
 import javax.inject.Inject;
 import org.forgerock.openam.auth.node.api.*;
@@ -20,7 +21,7 @@ import org.slf4j.LoggerFactory;
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class, configClass = VIPRegisterUser.Config.class)
 public class VIPRegisterUser extends AbstractDecisionNode {
 
-	public static final Logger logger = LoggerFactory.getLogger(VIPRegisterUser.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	private VIPCreateUser vIPCreateUser;
 	private final Config config;
@@ -55,13 +56,13 @@ public class VIPRegisterUser extends AbstractDecisionNode {
 		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
 		boolean isVIPProfileRegistered;
 
-		System.out.println("credRegistrationStatus:" + credRegistrationStatus);
+		debug.message("credRegistrationStatus:" + credRegistrationStatus);
 
 		if (credRegistrationStatus != null && credRegistrationStatus.equalsIgnoreCase("true")) {
-			System.out.println("User already registered and hence not making user registration call");
+			debug.message("User already registered and hence not making user registration call");
 			return goTo(true).build();
 		} else {
-			System.out.println("User not registered and hence making user registration call");
+			debug.message("User not registered and hence making user registration call");
 			isVIPProfileRegistered = vIPCreateUser.createVIPUser(userName,key_store,key_store_pass);
 			return goTo(isVIPProfileRegistered).build();
 		}

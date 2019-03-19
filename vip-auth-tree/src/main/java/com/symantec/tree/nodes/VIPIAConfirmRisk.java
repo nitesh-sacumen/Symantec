@@ -1,5 +1,4 @@
 package com.symantec.tree.nodes;
-import static com.symantec.tree.config.Constants.DISPLAY_ERROR;
 import static com.symantec.tree.config.Constants.KEY_STORE_PASS;
 import static com.symantec.tree.config.Constants.KEY_STORE_PATH;
 
@@ -22,6 +21,18 @@ import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants.VIPIA;
 import com.symantec.tree.request.util.ConfirmRisk;
 
+/**
+ * 
+ * @author Sacumen (www.sacumen.com)
+ * 
+ * Executes Confirm Risk request.
+ * 
+ * This node having TRUE/FALSE outcome.True outcome means user has confirmed risk successfully with "0000" status code.
+ * False outcome means request has failed with other then "0000" status code.
+ * 
+ * True outcome is connected to "Success" and false outcome is connected to "Failure". 
+ *
+ */
 @Node.Metadata(outcomeProvider = VIPIAConfirmRisk.SymantecOutcomeProvider.class, configClass = VIPIAConfirmRisk.Config.class)
 public class VIPIAConfirmRisk implements Node{
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPIAConfirmRisk";
@@ -81,6 +92,8 @@ public class VIPIAConfirmRisk implements Node{
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
 	   JsonValue sharedState = context.sharedState;  
+	   
+	   //Executing Confirm Risk request
        String status = confirmRisk.confirmRisk(
 				sharedState.get(SharedStateConstants.USERNAME).asString(),
 				sharedState.get(VIPIA.EVENT_ID).asString(), 
@@ -88,6 +101,7 @@ public class VIPIAConfirmRisk implements Node{
 
 		debug.message("status in vip ia registration is "+status);
 		
+		//Making decision according to Confirm Risk request response.
 		if(status.equals(VIPIA.REGISTERED)) {
 			return goTo(Symantec.TRUE).replaceSharedState(sharedState).build();
 		}

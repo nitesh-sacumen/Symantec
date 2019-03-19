@@ -6,16 +6,14 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import com.google.inject.assistedinject.Assisted;
+import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.request.util.VIPGetUser;
 import javax.inject.Inject;
 import com.google.common.collect.ImmutableList;
 import org.forgerock.json.JsonValue;
-import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.*;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.i18n.PreferredLocales;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -27,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 @Node.Metadata(outcomeProvider = VIPSearchUser.SymantecOutcomeProvider.class, configClass = VIPSearchUser.Config.class)
 public class VIPSearchUser implements Node {
-	static Logger logger = LoggerFactory.getLogger(VIPSearchUser.class);
+	private final Debug debug = Debug.getInstance("VIP");
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPSearchUser";
 
 	/**
@@ -62,22 +60,22 @@ public class VIPSearchUser implements Node {
 		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
 		
 		String statusCode = vipSearchUser.viewUserInfo(userName,key_store,key_store_pass);
-        System.out.println("status code in VIP Search User"+statusCode);
+        debug.message("status code in VIP Search User"+statusCode);
 		String mobNum;
 
 			if (statusCode.equalsIgnoreCase(SUCCESS_CODE)) {
 				mobNum = vipSearchUser.getMobInfo(userName,key_store,key_store_pass);
-				System.out.println("Phone Number in VIP Search User" + mobNum);
+				debug.message("Phone Number in VIP Search User" + mobNum);
 
 				if (mobNum != null && mobNum.equalsIgnoreCase(NO_CRED_REGISTERED)) {
-					System.out.println("No Credential Registered in VIP Search User");
+					debug.message("No Credential Registered in VIP Search User");
 					context.transientState.put(NO_CREDENTIALS_REGISTERED, true);
 					return goTo(Symantec.FALSE).build();
 				} else if (mobNum != null && mobNum.equalsIgnoreCase(VIP_CRED_REGISTERED)) {
-					System.out.println("VIP Credential Registered in VIP Search User");
+					debug.message("VIP Credential Registered in VIP Search User");
 					return goTo(Symantec.TRUE).build();
 				} else {
-					System.out.println("Fall back options in VIP Search User");
+					debug.message("Fall back options in VIP Search User");
 
 					context.sharedState.put(MOB_NUM, mobNum);
 					return goTo(Symantec.TRUE).build();
