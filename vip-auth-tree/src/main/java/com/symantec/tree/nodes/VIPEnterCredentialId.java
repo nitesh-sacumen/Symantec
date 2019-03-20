@@ -9,17 +9,16 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.TextOutputCallback;
 import org.forgerock.util.Strings;
 import com.google.common.collect.ImmutableList;
+import com.sun.identity.shared.debug.Debug;
+
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
 import org.forgerock.openam.auth.node.api.TreeContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import static com.symantec.tree.config.Constants.*;
 
 /**
@@ -34,7 +33,7 @@ import static com.symantec.tree.config.Constants.*;
 public class VIPEnterCredentialId extends SingleOutcomeNode {
 
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPEnterCredentialId";
-	private final Logger logger = LoggerFactory.getLogger(VIPEnterCredentialId.class);
+	private final Debug debug = Debug.getInstance("VIP");
 	/**
 	 * Configuration for the node.
 	 */
@@ -68,16 +67,16 @@ public class VIPEnterCredentialId extends SingleOutcomeNode {
 	 */
 	@Override
 	public Action process(TreeContext context) {
-		logger.info("Collect CredID started");
+		debug.message("Collect CredID started");
 		JsonValue sharedState = context.sharedState;
 
 		context.sharedState.remove(CREDENTIAL_ID_ERROR);
 		return context.getCallback(NameCallback.class).map(NameCallback::getName).map(String::new)
 				.filter(password -> !Strings.isNullOrEmpty(password)).map(password -> {
-					logger.debug("Credential ID has been collected and placed into the Shared State");
+					debug.message("Credential ID has been collected and placed into the Shared State");
 					return goToNext().replaceSharedState(sharedState.copy().put(CRED_ID, password)).build();
 				}).orElseGet(() -> {
-					logger.debug("Enter Credential ID");
+					debug.message("Enter Credential ID");
 					return collectOTP(context);
 				});
 	}

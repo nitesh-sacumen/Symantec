@@ -22,11 +22,28 @@ import org.xml.sax.SAXException;
 
 import com.sun.identity.shared.debug.Debug;
 
+/**
+ * 
+ * @author Sacumen (www.sacumen.com)
+ * 
+ * Executing Evaluate Risk request
+ *
+ */
 public class EvaluateRisk {
 	private final Debug debug = Debug.getInstance("VIP");
 	
 	HashMap<String,String> evaluateRiskResponseAttribute;
 	
+	/**
+	 * @param userName UserID
+	 * @param IP IP For Evaluate Risk request
+	 * @param auth_data Auth Data, Evaluate Risk For
+	 * @param userAgent User Agent
+	 * @param key_store keystore.ks file location
+	 * @param key_store_pass keystore.ks file password
+	 * @return Hash Map which contains status of Evaluate Risk request, Event ID, Device Tag and finally Score to make decision.
+	 * @throws NodeProcessException
+	 */
 	public HashMap<String,String> evaluateRisk(String userName,String IP, String auth_data,String userAgent, String key_store,String key_store_pass) throws NodeProcessException {
 		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
 		HttpPost post = new HttpPost(getURL());
@@ -61,13 +78,21 @@ public class EvaluateRisk {
 			evaluateRiskResponseAttribute.put("score",riskScore);
 			
 		} catch (IOException | ParserConfigurationException | SAXException e) {
+			debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 
 		return evaluateRiskResponseAttribute;
 	}
 	
-	
+	/**
+	 * 
+	 * @param userName UserID
+	 * @param IP IP Address
+	 * @param auth_data Auth Data
+	 * @param userAgent User Agent
+	 * @return Payload of Evaluate Risk request
+	 */
 	private String getPayload(String userName,String IP, String auth_data, String userAgent) {
 		debug.message("getting payload for Evaluate Risk");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "

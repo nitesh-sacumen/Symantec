@@ -20,6 +20,14 @@ import org.forgerock.openam.auth.node.api.TreeContext;
 import com.google.inject.assistedinject.Assisted;
 import com.symantec.tree.request.util.GetVIPServiceURL;
 
+/**
+ * 
+ * @author Sacumen (www.sacumen.com)
+ * 
+ * Setting and adding all the VIP Service URLs to the shared state.
+ * 
+ *
+ */
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class, configClass = VIPSetConfiguration.Config.class)
 public class VIPSetConfiguration extends SingleOutcomeNode {
 	
@@ -68,9 +76,7 @@ public class VIPSetConfiguration extends SingleOutcomeNode {
 			
 			GetVIPServiceURL.getInstance().setServiceURL(context);
 
-
-			
-			return goToNext().build();
+            return goToNext().build();
 		}
 
 }

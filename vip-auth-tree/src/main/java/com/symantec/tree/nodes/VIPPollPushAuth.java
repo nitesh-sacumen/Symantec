@@ -7,6 +7,8 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 import org.forgerock.util.Strings;
 import com.google.common.collect.ImmutableList;
+import com.sun.identity.shared.debug.Debug;
+
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
@@ -14,9 +16,6 @@ import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.OutcomeProvider;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.util.i18n.PreferredLocales;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static com.symantec.tree.config.Constants.*;
 
 /**
@@ -33,7 +32,7 @@ import static com.symantec.tree.config.Constants.*;
 @Node.Metadata(outcomeProvider = VIPPollPushAuth.SymantecOutcomeProvider.class, configClass = VIPPollPushAuth.Config.class)
 public class VIPPollPushAuth implements Node {
 
-	static final Logger logger = LoggerFactory.getLogger(VIPPollPushAuth.class);
+	private final Debug debug = Debug.getInstance("VIP");
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPPollPushAuth";
 
 	private AuthPollPush pollPush;
@@ -67,14 +66,16 @@ public class VIPPollPushAuth implements Node {
 	 * @return next action.
 	 */
 	private Action verifyAuth(TreeContext context) {
-		logger.info("Entered into verifyAuth method");
+		debug.message("Entered into verifyAuth method");
 		JsonValue newSharedState = context.sharedState.copy();
 		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
 		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
 		try {
-
+            
+			//Executing PollPushStatusRequest
 			String result = pollPush.authPollPush(context.sharedState.get(TXN_ID).asString(),key_store,key_store_pass);
 
+			//Making decision based on PollPushStatusRequest response
 			if (result != null) {
 
 				if (!Strings.isNullOrEmpty(result)) {
@@ -98,7 +99,7 @@ public class VIPPollPushAuth implements Node {
 			}
 
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			debug.error(e.getMessage());
 		}
 
 		return goTo(Symantec.FALSE).replaceSharedState(newSharedState).build();

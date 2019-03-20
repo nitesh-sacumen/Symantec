@@ -1,15 +1,13 @@
 package com.symantec.tree.nodes;
 
 import com.google.inject.assistedinject.Assisted;
+import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants;
 import com.symantec.tree.config.Constants.VIPAuthStatusCode;
 import com.symantec.tree.request.util.AuthenticateCredential;
 import com.symantec.tree.request.util.DeleteCredential;
-
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +22,7 @@ import static com.symantec.tree.config.Constants.*;
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class, configClass = VIPAuthCredential.Config.class)
 public class VIPAuthCredential extends AbstractDecisionNode {
-	static Logger logger = LoggerFactory.getLogger(VIPAuthCredential.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
     private AuthenticateCredential authPushCred;
 	private final Map<String, String> vipPushCodeMap = new HashMap<>();
@@ -59,13 +57,13 @@ public class VIPAuthCredential extends AbstractDecisionNode {
 	@Inject
 	public VIPAuthCredential(@Assisted Config config,AuthenticateCredential authPushCred) {
 
-        logger.debug("Display Message Text:", config.displayMsgText());
+        debug.message("Display Message Text:", config.displayMsgText());
 		vipPushCodeMap.put(Constants.PUSH_DISPLAY_MESSAGE_TEXT, config.displayMsgText());
 
-		logger.debug("Display Message Title", config.displayMsgTitle());
+		debug.message("Display Message Title", config.displayMsgTitle());
 		vipPushCodeMap.put(Constants.PUSH_DISPLAY_MESSAGE_TITLE, config.displayMsgTitle());
 
-		logger.debug("Display Message Profile", config.displayMsgProfile());
+		debug.message("Display Message Profile", config.displayMsgProfile());
 		vipPushCodeMap.put(Constants.PUSH_DISPLAY_MESSAGE_PROFILE, config.displayMsgProfile());
 
 		this.authPushCred = authPushCred;
@@ -81,22 +79,30 @@ public class VIPAuthCredential extends AbstractDecisionNode {
         String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
         String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
 		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
-		logger.info("Calling VIP Auth credential");
+		
+		debug.message("Calling VIP Auth credential");
+		
+		// Executing AuthenticateCredentialsRequest 
 		String Stat = authPushCred.authCredential(credId, vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_TEXT),
 				vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_TITLE),
 				vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_PROFILE),
 				key_store,key_store_pass);
+		
+		// Getting AuthenticateCredentialsRequest response
 		String[] trastat = Stat.split(",");
 		for (String s : trastat)
-			logger.debug("Values:" + s);
+			debug.message("Values:" + s);
 		String status = trastat[0];
 		String transactionId = trastat[1];
-		logger.debug("Status of SymantecAuthCred  .. " + status);
-		logger.debug("TransactionID of SymantecAuthCred  .. " + transactionId);
+		
+		debug.message("Status of AuthenticateCredentialsRequest  .. " + status);
+		debug.message("TransactionID of AuthenticateCredentialsRequest  .. " + transactionId);
 
 		context.sharedState.put(TXN_ID, transactionId);
+		
+		//Making decision based on AuthenticateCredentialsRequest response
 		if (status.equalsIgnoreCase(VIPAuthStatusCode.SUCCESS_CODE)) {
-			logger.debug("Mobile Push is sent successfully:" + status);
+			debug.message("Mobile Push is sent successfully:" + status);
 			return goTo(true).build();
 		} else {
 			context.sharedState.put(OTP_ERROR,"Not able to send push, Please enter Security Code");
@@ -106,16 +112,19 @@ public class VIPAuthCredential extends AbstractDecisionNode {
 
 	}
 
-	/**
-	 * @param userName
-	 * @param credId
+	/** 
+	 * @param userName UserID
+	 * @param credId Credential ID
 	 * @throws NodeProcessException 
      */
 	private void deleteCredential(String userName, String credId, TreeContext context) throws NodeProcessException {
-		logger.info("Deleting credentials");
+		debug.message("Deleting credentials");
+		
 		DeleteCredential delCred = new DeleteCredential();
 		String key_store = context.sharedState.get("key_store_path").asString();
 		String key_store_pass = context.sharedState.get("key_store_pass").asString();
+		
+		//Executing RemoveCredentialRequest
 		delCred.deleteCredential(userName, credId, Constants.STANDARD_OTP,key_store,key_store_pass);
 	}
 }

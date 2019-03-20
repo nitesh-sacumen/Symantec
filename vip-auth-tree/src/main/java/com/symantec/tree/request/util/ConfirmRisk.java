@@ -21,9 +21,24 @@ import org.xml.sax.SAXException;
 
 import com.sun.identity.shared.debug.Debug;
 
+/**
+ * 
+ * @author Sacumen (www.sacumen.com)
+ * Executing Confirm Risk request
+ *
+ */
 public class ConfirmRisk {
 	private final Debug debug = Debug.getInstance("VIP");
 		
+	/**
+	 * 
+	 * @param userName UserId
+	 * @param eventID  Event Id evaluated from Evaluate Risk API.
+	 * @param key_store keystore.ks file location
+	 * @param key_store_pass keystore.ks file password
+	 * @return status of Confirm Risk request response
+	 * @throws NodeProcessException
+	 */
 	public String confirmRisk(String userName,String eventID,String key_store,String key_store_pass) throws NodeProcessException {
 		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
 		HttpPost post = new HttpPost(getURL());
@@ -42,18 +57,23 @@ public class ConfirmRisk {
 			InputSource src = new InputSource();
 			src.setCharacterStream(new StringReader(body));
 			Document doc = builder.parse(src);
-			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
 			status = doc.getElementsByTagName("status").item(0).getTextContent();
-			
-			debug.message("Confirm Risk request response code is "+status);
-			
+					
 		} catch (IOException | ParserConfigurationException | SAXException e) {
+			debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 
+		debug.message("Confirm Risk request response code is "+status);
 		return status;
 	}
 	
+	/**
+	 * 
+	 * @param userName UserId
+	 * @param eventID Event Id evaluated from Evaluate Risk API.
+	 * @return Confirm Risk request payload
+	 */
 	private String getPayload(String userName,String eventID) {
 		debug.message("getting payload for Confirm Risk");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "

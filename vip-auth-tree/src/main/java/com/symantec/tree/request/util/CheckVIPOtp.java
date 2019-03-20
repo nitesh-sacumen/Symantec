@@ -15,11 +15,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.identity.shared.debug.Debug;
 
 /**
  * 
@@ -29,7 +29,7 @@ import org.xml.sax.SAXException;
  */
 public class CheckVIPOtp {
 
-	static Logger logger = LoggerFactory.getLogger(CheckVIPOtp.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	/**
 	 * 
@@ -45,7 +45,7 @@ public class CheckVIPOtp {
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getViewUserPayload(userName, otpValue);
 		String status;
-		logger.debug("Request Payload: " + payLoad);
+		debug.message("Request Payload: " + payLoad);
 		try {
 			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
 			post.setEntity(new StringEntity(payLoad));
@@ -56,10 +56,9 @@ public class CheckVIPOtp {
 			InputSource src = new InputSource();
 			src.setCharacterStream(new StringReader(body));
 			Document doc = builder.parse(src);
-			status = doc.getElementsByTagName("status").item(0).getTextContent();
-			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
-		
+			status = doc.getElementsByTagName("status").item(0).getTextContent();		
 		} catch (IOException | ParserConfigurationException | SAXException e) {
+			debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 		return status;
@@ -72,8 +71,8 @@ public class CheckVIPOtp {
 	 * @param otpValue
 	 * @return CheckOtpRequest payload
 	 */
-	private static String getViewUserPayload(String userName, String otpValue) {
-		logger.info("getting CheckOtpRequest payload");
+	private String getViewUserPayload(String userName, String otpValue) {
+		debug.message("getting CheckOtpRequest payload");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "   <soapenv:Header/>"
 				+ "   <soapenv:Body>" + "      <vip:CheckOtpRequest>" + "<vip:requestId>" + new Random().nextInt(10)

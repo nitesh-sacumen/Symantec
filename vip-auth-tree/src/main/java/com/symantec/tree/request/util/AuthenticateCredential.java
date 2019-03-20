@@ -13,11 +13,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.identity.shared.debug.Debug;
 
 /**
  * 
@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
  *
  */
 public class AuthenticateCredential {
-	static Logger logger = LoggerFactory.getLogger(AuthenticateCredential.class);
+	private final Debug debug = Debug.getInstance("VIP");
 	
 	/**
 	 * 
@@ -47,7 +47,7 @@ public class AuthenticateCredential {
 		String status = null;
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getViewUserPayload(credID, displayMsgText, displayMsgTitle, displayMsgProfile);
-		logger.debug("Request Payload: " + payLoad);
+		debug.message("AuthenticateCredentialsRequest Payload: " + payLoad);
 		try {
 			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
 			post.setEntity(new StringEntity(payLoad));
@@ -65,13 +65,14 @@ public class AuthenticateCredential {
 			}
 			else
 				transactionID = " ";
-			logger.debug("Status is:\t" + statusMessage);
+			debug.message("Status is:\t" + statusMessage);
 		
 		} catch (IOException | ParserConfigurationException | SAXException e) {
+		    debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 		String transtat=status+","+transactionID;
-		logger.debug( "Status and TransactionId \t"+transtat);
+		debug.message( "Status and TransactionId \t"+transtat);
 		return transtat;
 	}
 
@@ -83,9 +84,9 @@ public class AuthenticateCredential {
 	 * @param displayMsgProfile
 	 * @return AuthenticateCredentialsRequest payload
 	 */
-	private static String getViewUserPayload(String credId, String displayMsgText, String displayMsgTitle,
+	private String getViewUserPayload(String credId, String displayMsgText, String displayMsgTitle,
 											  String displayMsgProfile) {
-		logger.info("getting payload for AuthenticateCredentialsRequest");
+		debug.message("getting payload for AuthenticateCredentialsRequest");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
 				"xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" +
 				"   <soapenv:Header/>" +

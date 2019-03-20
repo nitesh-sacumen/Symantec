@@ -11,10 +11,8 @@ import org.forgerock.openam.auth.node.api.OutcomeProvider;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.i18n.PreferredLocales;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.ImmutableList;
+import com.sun.identity.shared.debug.Debug;
 
 import static org.forgerock.openam.auth.node.api.Action.send;
 
@@ -37,7 +35,7 @@ import static com.symantec.tree.config.Constants.CONFIRM_CRED_CHOICE;
 public class VIPConfirmCredential implements Node {
 
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPConfirmCredential";
-	private final Logger logger = LoggerFactory.getLogger(VIPConfirmCredential.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	/**
 	 * Configuration for the node.
@@ -62,29 +60,34 @@ public class VIPConfirmCredential implements Node {
 		JsonValue sharedState = context.sharedState;
 		String inputChoice = "";
 
+		// Getting choice from user if he wants to add more credential or not.
 		List<ConfirmationCallback> confirmationCallbacks = context.getCallbacks(ConfirmationCallback.class);
-
-		for (ConfirmationCallback cc : confirmationCallbacks) {
-			logger.debug("Option type is:\t" + cc.getOptionType());
-			logger.debug("Selected option is:\t" + cc.getSelectedIndex());
+        for (ConfirmationCallback cc : confirmationCallbacks) {
+			debug.message("Option type is:\t" + cc.getOptionType());
+			debug.message("Selected option is:\t" + cc.getSelectedIndex());
+			
 			inputChoice = SymantecConfirmCredOutcomeChoice.getChoiceByCode(cc.getSelectedIndex());
 			sharedState.put(CONFIRM_CRED_CHOICE, inputChoice);
 		}
-		logger.debug("Choice value:" + inputChoice);
+		debug.message("Choice value:" + inputChoice);
+		
+		// MAking decision based on User's choice.
 		switch (inputChoice) {
 		case "YES":
 			return goTo(SymantecConfirmCredOutcome.YES).replaceSharedState(sharedState).build();
 		case "NO":
 			return goTo(SymantecConfirmCredOutcome.NO).replaceSharedState(sharedState).build();
 		}
+		
+		// Collecting choice from user
 		return displayCreds(context);
 
 	}
 
 	/**
 	 * 
-	 * @param context
-	 * @return lsit of callbacks
+	 * @param context TreeContext
+	 * @return list of callbacks
 	 */
 	private Action displayCreds(TreeContext context) {
 		List<Callback> cbList = new ArrayList<>(2);

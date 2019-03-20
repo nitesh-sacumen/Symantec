@@ -1,14 +1,11 @@
 package com.symantec.tree.nodes;
 
 import javax.inject.Inject;
-import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.TreeContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
 

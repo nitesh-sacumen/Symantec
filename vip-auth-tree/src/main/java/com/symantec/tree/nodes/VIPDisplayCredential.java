@@ -6,6 +6,7 @@ import static org.forgerock.openam.auth.node.api.Action.send;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
+import com.sun.identity.shared.debug.Debug;
 import com.sun.identity.sm.RequiredValueValidator;
 import java.util.*;
 import javax.inject.Inject;
@@ -20,8 +21,6 @@ import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.OutcomeProvider;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.util.i18n.PreferredLocales;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -37,7 +36,7 @@ public class VIPDisplayCredential implements Node {
 
 	private final Config config;
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPDisplayCredential";
-	private final Logger logger = LoggerFactory.getLogger(VIPDisplayCredential.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	/**
 	 * Configuration for the node.
@@ -68,6 +67,7 @@ public class VIPDisplayCredential implements Node {
 
 		JsonValue sharedState = context.sharedState;
 
+		// Getting choice from users to select which type of credential he wants to register. VIP/VOICE/SMS
 		return context.getCallback(ChoiceCallback.class).map(c -> c.getSelectedIndexes()[0]).map(Integer::new)
 				.filter(choice -> -1 < choice && choice < 3).map(choice -> {
 					sharedState.put(CRED_CHOICE, config.referrerCredList().get(choice));
@@ -85,7 +85,7 @@ public class VIPDisplayCredential implements Node {
 					}
 
 				}).orElseGet(() -> {
-					logger.debug("collecting choice");
+					debug.message("collecting choice");
 					return displayCredentials(context);
 				});
 	}
@@ -96,17 +96,26 @@ public class VIPDisplayCredential implements Node {
 	 * @return Action for display credentials options.
 	 */
 	private Action displayCredentials(TreeContext context) {
+		
+		//Collecting choice
 		List<Callback> cbList = new ArrayList<>(2);
 		Collection<String> values = config.referrerCredList().values();
 		String[] targetArray = values.toArray(new String[0]);
+		
+		//Getting output error if it exists
 		String outputError = context.sharedState.get(CREDENTIAL_ID_ERROR).asString();
-		logger.debug("text block error" + outputError);
+		debug.message("text block error" + outputError);
+		
+		// collecting choice
 		if (outputError == null) {
             ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE,
 					getClass().getClassLoader());
 			ChoiceCallback ccb = new ChoiceCallback(bundle.getString("callback.creds"), targetArray, 0, false);
 			cbList.add(ccb);
-		} else {
+		} 
+		
+		//Displaying output error to the user and collecting choice
+		else {
 			TextOutputCallback tcb = new TextOutputCallback(0, outputError);
 			ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE,
 					getClass().getClassLoader());

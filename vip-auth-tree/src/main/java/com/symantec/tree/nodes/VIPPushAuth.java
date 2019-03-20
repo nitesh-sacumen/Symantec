@@ -3,6 +3,7 @@
 import static com.symantec.tree.config.Constants.*;
 
 import com.google.inject.assistedinject.Assisted;
+import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants;
 import com.symantec.tree.request.util.AuthenticateUser;
 import java.util.HashMap;
@@ -10,8 +11,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -24,7 +23,7 @@ import org.slf4j.LoggerFactory;
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class, configClass = VIPPushAuth.Config.class)
 public class VIPPushAuth extends AbstractDecisionNode {
 
-	static final Logger logger = LoggerFactory.getLogger(VIPPushAuth.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	private AuthenticateUser pushAuthUser;
 	private final Map<String, String> vipPushCodeMap = new HashMap<>();
@@ -61,13 +60,13 @@ public class VIPPushAuth extends AbstractDecisionNode {
 	public VIPPushAuth(@Assisted Config config,AuthenticateUser pushAuthUser) {
 
 		this.config = config;
-		logger.debug("Display Message Text:", config.displayMsgText());
+		debug.message("Display Message Text:", config.displayMsgText());
 		vipPushCodeMap.put(Constants.PUSH_DISPLAY_MESSAGE_TEXT, config.displayMsgText());
 
-		logger.debug("Display Message Title", config.displayMsgTitle());
+		debug.message("Display Message Title", config.displayMsgTitle());
 		vipPushCodeMap.put(Constants.PUSH_DISPLAY_MESSAGE_TITLE, config.displayMsgTitle());
 
-		logger.debug("Display Message Profile", config.displayMsgProfile());
+		debug.message("Display Message Profile", config.displayMsgProfile());
 		vipPushCodeMap.put(Constants.PUSH_DISPLAY_MESSAGE_PROFILE, config.displayMsgProfile());
 
 		this.pushAuthUser = pushAuthUser;
@@ -86,7 +85,7 @@ public class VIPPushAuth extends AbstractDecisionNode {
 				vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_TITLE),
 				vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_PROFILE),
 				key_store,key_store_pass);
-		logger.debug("TransactionId is " + transactionId);
+		debug.message("TransactionId is " + transactionId);
 		if (transactionId != null && !transactionId.isEmpty()) {
 			context.sharedState.put(TXN_ID, transactionId);
 			return goTo(true).build();

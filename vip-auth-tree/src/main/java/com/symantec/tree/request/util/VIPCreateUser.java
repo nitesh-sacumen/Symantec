@@ -7,11 +7,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.identity.shared.debug.Debug;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import javax.xml.parsers.ParserConfigurationException;
  */
 public class VIPCreateUser {
 
-	static Logger logger = LoggerFactory.getLogger(VIPCreateUser.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	/**
 	 * 
@@ -39,7 +39,7 @@ public class VIPCreateUser {
 	 * @return CreateUserRequest payload
 	 */
 	private String createUserPayload(String userId) {
-		logger.info("getting CreateUserRequest payload");
+		debug.message("getting CreateUserRequest payload");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
 				"xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" +
 				"   <soapenv:Header/>" +
@@ -75,7 +75,7 @@ public class VIPCreateUser {
 			reqEntity.setContentEncoding("charset=utf-8");
 			reqEntity.setChunked(true);
 
-			logger.debug("req content length:\t" + reqEntity.getContentLength());
+			debug.message("req content length:\t" + reqEntity.getContentLength());
 			httpPost.setEntity(reqEntity);
 			String statusMessage;
 			try {
@@ -87,10 +87,10 @@ public class VIPCreateUser {
 			InputSource src = new InputSource();
 			src.setCharacterStream(new StringReader(body));
 			Document doc = builder.parse(src);
-			String status = doc.getElementsByTagName("status").item(0).getTextContent();
 			statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
 			}
 			catch (IOException | ParserConfigurationException | SAXException e) {
+				debug.error("Not able to process Request");
 				throw new NodeProcessException(e);
 			}
 			if ("Success".equals(statusMessage)) {

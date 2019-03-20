@@ -12,6 +12,8 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.TextOutputCallback;
 import org.forgerock.util.Strings;
 import com.google.common.collect.ImmutableList;
+import com.sun.identity.shared.debug.Debug;
+
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
@@ -20,8 +22,6 @@ import org.forgerock.openam.auth.node.api.OutcomeProvider;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.i18n.PreferredLocales;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.symantec.tree.request.util.SMSVoiceRegister;
 import static com.symantec.tree.config.Constants.*;
 
@@ -38,7 +38,7 @@ import static com.symantec.tree.config.Constants.*;
 public class VIPEnterPhoneNumber implements Node {
 
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPEnterPhoneNumber";
-	private final Logger logger = LoggerFactory.getLogger(VIPEnterPhoneNumber.class);
+	private final Debug debug = Debug.getInstance("VIP");
 	private SMSVoiceRegister svRegister;
 
 	/**
@@ -60,16 +60,16 @@ public class VIPEnterPhoneNumber implements Node {
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
-		logger.info("Collect PhoneNumber started");
+		debug.message("Collect PhoneNumber started");
 		JsonValue sharedState = context.sharedState;
 		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
 		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
 		return context.getCallback(NameCallback.class).map(NameCallback::getName).map(String::new)
 				.filter(name -> !Strings.isNullOrEmpty(name)).map(name -> {
-					logger.info("CredID has been collected and placed  into the Shared State");
+					debug.message("CredID has been collected and placed  into the Shared State");
 					String credType = context.sharedState.get(CRED_CHOICE).asString();
 					if (credType.equalsIgnoreCase(SMS)) {
-						logger.info("calling sms register method");
+						debug.message("calling sms register method");
 						String status = null;
 						try {
 							status = svRegister.smsRegister(name, key_store, key_store_pass);
@@ -81,7 +81,7 @@ public class VIPEnterPhoneNumber implements Node {
 
 					} else if (credType.equalsIgnoreCase(VOICE)) {
 						String status = null;
-						logger.info("calling voice register method");
+						debug.message("calling voice register method");
 						try {
 							status = svRegister.voiceRegister(name, key_store, key_store_pass);
 							sharedState.put(MOB_NUM, name);
@@ -96,7 +96,7 @@ public class VIPEnterPhoneNumber implements Node {
 					}
 				
 			     }).orElseGet(() -> {
-					logger.info("Enter Credential ID");
+					debug.message("Enter Credential ID");
 					return collectOTP(context);
 				});
 	}

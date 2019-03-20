@@ -13,8 +13,8 @@ import org.apache.http.ssl.SSLContexts;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.utils.AMKeyProvider;
 import org.forgerock.security.keystore.KeyStoreBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.sun.identity.shared.debug.Debug;
 
 /**
  * 
@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpClientUtil {
 
-	static Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
+	private final Debug debug = Debug.getInstance("VIP");
 	private static HttpClientUtil httpClientUtil = null;
 	
 	private HttpClientUtil() {}
@@ -48,7 +48,7 @@ public class HttpClientUtil {
 	 */
 	
 	public HttpClient getHttpClientForgerock(String keyStoreFile,String keyStorePass) throws NodeProcessException, FileNotFoundException {
-		logger.info("getting http client");
+		debug.message("getting http client");
 		HttpClient httpClient = null;
 
 		AMKeyProvider AM = new AMKeyProvider(false,keyStoreFile, keyStorePass,"JKS", null);

@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javax.inject.Inject;
 import com.google.common.collect.ImmutableList;
+import com.sun.identity.shared.debug.Debug;
+
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.*;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.i18n.PreferredLocales;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public class VIPOTPCheck implements Node {
 
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPOTPCheck";
-	private final Logger logger = LoggerFactory.getLogger(VIPOTPCheck.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	private CheckVIPOtp checkOtp;
 
@@ -58,7 +58,11 @@ public class VIPOTPCheck implements Node {
 		String otpValue = context.sharedState.get(SECURE_CODE).asString();
 		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
 		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
+		
+		debug.message("executing CheckOtpRequest");
 		String statusCode = checkOtp.checkOtp(userName, otpValue, key_store, key_store_pass);
+		
+		//Making decision based on CheckOtpRequest response
 		return sendOutput(statusCode, context);
 	}
 
@@ -109,10 +113,13 @@ public class VIPOTPCheck implements Node {
 	private Action sendOutput(String statusCode, TreeContext context) {
 		if (statusCode.equalsIgnoreCase(SUCCESS_CODE)) {
 			return goTo(Symantec.TRUE).build();
-		} else if(statusCode.equalsIgnoreCase(INVALID_CREDENIALS) || statusCode.equalsIgnoreCase(AUTHENTICATION_FAILED)) {
+		}
+		
+		else if(statusCode.equalsIgnoreCase(INVALID_CREDENIALS) || statusCode.equalsIgnoreCase(AUTHENTICATION_FAILED)) {
 				context.sharedState.put(OTP_ERROR, "Entered otp Code is Invalid,Please enter valid OTP");
 				return goTo(Symantec.FALSE).build();
 		}
+		
 		else {
 			context.sharedState.put(DISPLAY_ERROR, "Your Credentials is disabled, Please contact your administrator.");
 			return goTo(Symantec.ERROR).build();

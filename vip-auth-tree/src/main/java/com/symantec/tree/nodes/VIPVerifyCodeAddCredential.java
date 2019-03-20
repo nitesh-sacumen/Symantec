@@ -7,12 +7,12 @@ import java.util.ResourceBundle;
 import com.symantec.tree.request.util.AddCredential;
 import javax.inject.Inject;
 import com.google.common.collect.ImmutableList;
+import com.sun.identity.shared.debug.Debug;
+
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.*;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.i18n.PreferredLocales;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 @Node.Metadata(outcomeProvider = VIPVerifyCodeAddCredential.SymantecOutcomeProvider.class, configClass = VIPVerifyCodeAddCredential.Config.class)
 public class VIPVerifyCodeAddCredential implements Node {
 
-	static Logger logger = LoggerFactory.getLogger(VIPVerifyCodeAddCredential.class);
+	private final Debug debug = Debug.getInstance("VIP");
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPVerifyCodeAddCredential";
 
 	private AddCredential addCred;
@@ -61,7 +61,7 @@ public class VIPVerifyCodeAddCredential implements Node {
 		String otpReceived = context.sharedState.get(SECURE_CODE).asString();
 		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
 		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
-		logger.debug("Secure code" + otpReceived);
+		debug.message("Secure code" + otpReceived);
 		String credIdType;
 		if (context.sharedState.get(CRED_CHOICE).asString().equalsIgnoreCase(SMS)) {
 			credIdType = SMS_OTP;

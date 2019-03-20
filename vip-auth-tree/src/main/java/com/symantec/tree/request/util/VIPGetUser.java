@@ -8,13 +8,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.TreeContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.identity.shared.debug.Debug;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +36,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class VIPGetUser {
 
-	static Logger logger = LoggerFactory.getLogger(VIPGetUser.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	/**
 	 * 
@@ -61,11 +62,11 @@ public class VIPGetUser {
 		reqEntity.setContentEncoding("charset=utf-8");
 		reqEntity.setChunked(true);
 
-		logger.debug("req content length:\t" + reqEntity.getContentLength());
+		debug.message("req content length:\t" + reqEntity.getContentLength());
 		httpPost.setEntity(reqEntity);
 		String status;
 
-		logger.info("executing GetUserInfoRequest");
+		debug.message("executing GetUserInfoRequest");
 		try {
 			HttpClient httpClient = HttpClientUtil.getInstance().getHttpClientForgerock(KEY_STORE_PATH, KEY_STORE_PASS);
 			HttpResponse response = httpClient.execute(httpPost);
@@ -75,9 +76,9 @@ public class VIPGetUser {
 			InputSource src = new InputSource();
 			src.setCharacterStream(new StringReader(body));
 			Document doc = builder.parse(src);
-			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
 			status = doc.getElementsByTagName("status").item(0).getTextContent();
 		} catch (IOException | ParserConfigurationException | SAXException e) {
+			debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 		return status;
@@ -89,7 +90,7 @@ public class VIPGetUser {
 	 * @return GetUserInfoRequest Payload
 	 */
 	private String getViewUserPayload(String userId) {
-		logger.info("getting GetUserInfoRequest payload");
+		debug.message("getting GetUserInfoRequest payload");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "<soapenv:Header/>"
 				+ "<soapenv:Body>" + "<vip:GetUserInfoRequest>" + "<vip:requestId>" + Math.round(Math.random() * 100000)
@@ -125,7 +126,7 @@ public class VIPGetUser {
 		reqEntity.setContentEncoding("charset=utf-8");
 		reqEntity.setChunked(true);
 
-		logger.debug("req content length:\t" + reqEntity.getContentLength());
+		debug.message("req content length:\t" + reqEntity.getContentLength());
 		httpPost.setEntity(reqEntity);
 
 		try {
@@ -163,7 +164,7 @@ public class VIPGetUser {
 				}
 			} else {
 				String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
-				logger.debug("Status is:\t" + statusMessage);
+				debug.message("Status is:\t" + statusMessage);
 				if (statusMessage != null && statusMessage.equalsIgnoreCase("Success")) {
 					return "NO_CRED_REGISTERED";
 				}
@@ -198,10 +199,10 @@ public class VIPGetUser {
 		reqEntity.setContentEncoding("charset=utf-8");
 		reqEntity.setChunked(true);
 
-		logger.debug("req content length:\t" + reqEntity.getContentLength());
+		debug.message("req content length:\t" + reqEntity.getContentLength());
 		httpPost.setEntity(reqEntity);
 		
-		logger.info("executing GetUserInfoRequest");
+		debug.message("executing GetUserInfoRequest");
 		try {
 			HttpClient httpClient = HttpClientUtil.getInstance().getHttpClientForgerock(KEY_STORE_PATH, KEY_STORE_PASS);
 			HttpResponse response = httpClient.execute(httpPost);

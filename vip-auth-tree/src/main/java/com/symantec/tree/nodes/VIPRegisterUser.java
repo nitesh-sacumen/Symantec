@@ -7,8 +7,6 @@ import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.request.util.VIPCreateUser;
 import javax.inject.Inject;
 import org.forgerock.openam.auth.node.api.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 

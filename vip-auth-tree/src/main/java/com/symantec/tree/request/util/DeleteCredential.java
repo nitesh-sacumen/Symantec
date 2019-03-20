@@ -14,11 +14,12 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.identity.shared.debug.Debug;
+
 import static com.symantec.tree.config.Constants.*;
 
 
@@ -30,7 +31,7 @@ import static com.symantec.tree.config.Constants.*;
  *
  */
 public class DeleteCredential {
-	static Logger logger = LoggerFactory.getLogger(DeleteCredential.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	/**
 	 * 
@@ -43,7 +44,7 @@ public class DeleteCredential {
 		HttpPost post = new HttpPost(getURL());
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getRemoveCredPayload(userName, credId, credType);
-		logger.debug("Request Payload: " + payLoad);
+		debug.message("Request Payload: " + payLoad);
 		String status;
 		try {
 			HttpClient httpClient = HttpClientUtil.getInstance().getHttpClientForgerock(key_store,key_store_pass);
@@ -59,10 +60,11 @@ public class DeleteCredential {
 			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
 
 		} catch (IOException | ParserConfigurationException | SAXException e) {
+			debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 		if (SUCCESS_CODE.equals(status)) {
-			logger.debug("Credential " + credType + " removed successfully for " + userName);
+			debug.message("Credential " + credType + " removed successfully for " + userName);
 		}
 	}
 
@@ -73,7 +75,7 @@ public class DeleteCredential {
 	 * @param credType
 	 * @return RemoveCredentialRequest payload
 	 */
-	private static String getRemoveCredPayload(String userId, String credId, String credType) {
+	private String getRemoveCredPayload(String userId, String credId, String credType) {
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "   <soapenv:Header/>"
 				+ "   <soapenv:Body>" + "      <vip:RemoveCredentialRequest>" + "<vip:requestId>"

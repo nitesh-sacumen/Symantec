@@ -19,9 +19,6 @@ import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
 import org.forgerock.openam.auth.node.api.TreeContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static com.symantec.tree.config.Constants.CRED_ID;
 import static com.symantec.tree.config.Constants.ACTIVATION_CODE;
 

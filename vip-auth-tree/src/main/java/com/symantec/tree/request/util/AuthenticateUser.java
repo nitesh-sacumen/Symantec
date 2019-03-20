@@ -13,12 +13,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants.VIPAuthStatusCode;
 
 /**
@@ -29,7 +28,7 @@ import com.symantec.tree.config.Constants.VIPAuthStatusCode;
  */
 public class AuthenticateUser {
 
-	static Logger logger = LoggerFactory.getLogger(AuthenticateUser.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	/**
 	 * 
@@ -49,7 +48,7 @@ public class AuthenticateUser {
 
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getViewUserPayload(userName, displayMsgText, displayMsgTitle, displayMsgProfile);
-		logger.debug("Request Payload: " + payLoad);
+		debug.message("AuthenticateUserWithPushRequest Payload: " + payLoad);
 		try {
 			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
 			post.setEntity(new StringEntity(payLoad));
@@ -61,11 +60,11 @@ public class AuthenticateUser {
 			src.setCharacterStream(new StringReader(body));
 			Document doc = builder.parse(src);
 			String status = doc.getElementsByTagName("status").item(0).getTextContent();
-			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
 			if (VIPAuthStatusCode.SUCCESS_CODE.equals(status)) {
 				transactionID = doc.getElementsByTagName("transactionId").item(0).getTextContent();
 			}
 		} catch (IOException | ParserConfigurationException | SAXException e) {
+			debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 		return transactionID;
@@ -79,9 +78,9 @@ public class AuthenticateUser {
 	 * @param displayMsgProfile
 	 * @return AuthenticateUserWithPushRequest payload
 	 */
-	private static String getViewUserPayload(String userId, String displayMsgText, String displayMsgTitle,
+	private String getViewUserPayload(String userId, String displayMsgText, String displayMsgTitle,
 											 String displayMsgProfile) {
-		logger.info("getting payload for AuthenticateUserWithPushRequest");
+		debug.message("getting payload for AuthenticateUserWithPushRequest");
 
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
 				"xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" +

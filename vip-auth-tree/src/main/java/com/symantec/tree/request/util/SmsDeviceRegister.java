@@ -14,11 +14,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.identity.shared.debug.Debug;
 
 /**
  * 
@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
  */
 public class SmsDeviceRegister {
 
-	static Logger logger = LoggerFactory.getLogger(SmsDeviceRegister.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	/**
 	 * 
@@ -42,7 +42,7 @@ public class SmsDeviceRegister {
 
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getViewUserPayload(userName, credValue);
-		logger.debug("Request Payload: " + payLoad);
+		debug.message("Request Payload: " + payLoad);
 		String statusMessage;
 		try {
 			HttpClient httpClient = HttpClientUtil.getInstance().getHttpClientForgerock(key_store,key_store_pass);
@@ -57,6 +57,7 @@ public class SmsDeviceRegister {
 			Document doc = builder.parse(src);
 			statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
 		} catch (IOException | ParserConfigurationException | SAXException e) {
+			debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 		if ("success".equalsIgnoreCase(statusMessage)) {
@@ -72,8 +73,8 @@ public class SmsDeviceRegister {
 	 * @param credValue
 	 * @return SendOtpRequest payoad
 	 */
-	private static String getViewUserPayload(String userName, String credValue) {
-		logger.info("getting SendOtpRequest payload");
+	private String getViewUserPayload(String userName, String credValue) {
+		debug.message("getting SendOtpRequest payload");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "<soapenv:Header/>"
 				+ "<soapenv:Body>" + "<vip:SendOtpRequest>" + "<vip:requestId>" + new Random().nextInt(10) + 11111

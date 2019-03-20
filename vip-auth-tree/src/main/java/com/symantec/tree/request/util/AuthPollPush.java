@@ -15,11 +15,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.identity.shared.debug.Debug;
 
 /**
  * 
@@ -29,7 +29,7 @@ import org.xml.sax.SAXException;
  */
 public class AuthPollPush {
 
-	static final Logger logger = LoggerFactory.getLogger(AuthPollPush.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	/**
 	 * 
@@ -43,7 +43,7 @@ public class AuthPollPush {
 		HttpPost post = new HttpPost(getURL());
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getViewUserPayload(authId);
-		logger.debug("Request Payload in authPollPush: " + payLoad);
+		debug.message("Request Payload in authPollPush: " + payLoad);
 		try {
 			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
 			post.setEntity(new StringEntity(payLoad));
@@ -55,10 +55,10 @@ public class AuthPollPush {
 			src.setCharacterStream(new StringReader(body));
 			Document doc = builder.parse(src);
 			String status = doc.getElementsByTagName("status").item(1).getTextContent();
-			String statusMessage = doc.getElementsByTagName("statusMessage").item(1).getTextContent();
 			return status;
 
 		} catch (IOException | ParserConfigurationException | SAXException e) {
+			debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 	}
@@ -68,8 +68,8 @@ public class AuthPollPush {
 	 * @param authId
 	 * @return PollPushStatusRequest payload
 	 */
-	private static String getViewUserPayload(String authId) {
-		logger.info("getting payload for PollPushStatusRequest");
+	private String getViewUserPayload(String authId) {
+		debug.message("getting payload for PollPushStatusRequest");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
 				"xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" +
 				"<soapenv:Header/>" +

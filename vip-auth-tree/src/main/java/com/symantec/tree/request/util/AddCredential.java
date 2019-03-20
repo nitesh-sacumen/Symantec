@@ -13,11 +13,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.identity.shared.debug.Debug;
 
 /**
  * 
@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
  *
  */
 public class AddCredential {
-	public static final Logger logger = LoggerFactory.getLogger(AddCredential.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	/**
 	 * 
@@ -42,7 +42,7 @@ public class AddCredential {
 		HttpPost post = new HttpPost(getURL());
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getViewUserPayload(userName, credValue, credIdType);
-		logger.debug("Request Payload: " + payLoad);
+		debug.message("AddCredentialRequest Payload: " + payLoad);
 		String status;
 		try {
 			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
@@ -54,7 +54,6 @@ public class AddCredential {
 			InputSource src = new InputSource();
 			src.setCharacterStream(new StringReader(body));
 			Document doc = builder.parse(src);
-			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
 			status = doc.getElementsByTagName("status").item(0).getTextContent();
 		} catch (IOException | ParserConfigurationException | SAXException e) {
 			throw new NodeProcessException(e);
@@ -71,8 +70,8 @@ public class AddCredential {
 	 * @param credIdType
 	 * @return AddCredentialRequest payload
 	 */
-	private static String getViewUserPayload(String userName, String credValue, String credIdType) {
-		logger.info("getting payload for AddCredentialRequest");
+	private String getViewUserPayload(String userName, String credValue, String credIdType) {
+		debug.message("getting payload for AddCredentialRequest");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "<soapenv:Header/>"
 				+ "<soapenv:Body>" + "<vip:AddCredentialRequest>" + "<vip:requestId>" + new Random().nextInt(10) + 11111
@@ -99,7 +98,7 @@ public class AddCredential {
 
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getViewUserPayload(userName, credValue, credIdType, otpreceived);
-		logger.debug("Request Payload: " + payLoad);
+		debug.message("AddCredentialRequest Payload: " + payLoad);
 		String status;
 		try {
 			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
@@ -111,9 +110,9 @@ public class AddCredential {
 			InputSource src = new InputSource();
 			src.setCharacterStream(new StringReader(body));
 			Document doc = builder.parse(src);
-			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
 			status = doc.getElementsByTagName("status").item(0).getTextContent();
 		} catch (IOException | ParserConfigurationException | SAXException e) {
+		    debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 		return status;
@@ -127,9 +126,9 @@ public class AddCredential {
 	 * @param otpReceived
 	 * @return AddCredentialRequest payload
 	 */
-	private static String getViewUserPayload(String userName, String credValue, String credIdType, String otpReceived) {
+	private String getViewUserPayload(String userName, String credValue, String credIdType, String otpReceived) {
 
-		logger.info("getting payload for AddCredentialRequest with otp");
+		debug.message("getting payload for AddCredentialRequest with otp");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "<soapenv:Header/>"
 				+ "<soapenv:Body>" + "<vip:AddCredentialRequest>" + "<vip:requestId>" + new Random().nextInt(10) + 11111

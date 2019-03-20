@@ -12,13 +12,13 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.TextOutputCallback;
 import org.forgerock.util.Strings;
 import com.google.common.collect.ImmutableList;
+import com.sun.identity.shared.debug.Debug;
+
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
 import org.forgerock.openam.auth.node.api.TreeContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import static com.symantec.tree.config.Constants.*;
 
 
@@ -34,7 +34,7 @@ import static com.symantec.tree.config.Constants.*;
 public class VIPEnterOTP extends SingleOutcomeNode {
 
     private static final String BUNDLE = "com/symantec/tree/nodes/VIPEnterOTP";
-    private final Logger logger = LoggerFactory.getLogger(VIPEnterOTP.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
     /**
      * Configuration for the node.
@@ -53,7 +53,7 @@ public class VIPEnterOTP extends SingleOutcomeNode {
 	 */
     @Override
     public Action process(TreeContext context) {
-    	logger.info("Collect SecurityCode started");
+    	debug.message("Collect SecurityCode started");
     	context.sharedState.remove(PHONE_NUMBER_ERROR);
         JsonValue sharedState = context.sharedState;
         return context.getCallback(PasswordCallback.class)
@@ -61,7 +61,6 @@ public class VIPEnterOTP extends SingleOutcomeNode {
                 .map(String::new)
                 .filter(password -> !Strings.isNullOrEmpty(password))
                 .map(password -> {
-                	logger.info("SecureCode has been collected and placed into the Shared State");
                     return goToNext()
                         .replaceSharedState(sharedState.put(SECURE_CODE, password)).build();
                 })

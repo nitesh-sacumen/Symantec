@@ -9,8 +9,7 @@ import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.sun.identity.shared.debug.Debug;
 
 /**
  * 
@@ -22,7 +21,7 @@ import org.slf4j.LoggerFactory;
 @Node.Metadata(outcomeProvider  = SingleOutcomeNode.OutcomeProvider.class,
                configClass      = VIPDisplayError.Config.class)
 public class VIPDisplayError extends SingleOutcomeNode{
-	 private final Logger logger = LoggerFactory.getLogger(VIPDisplayError.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	    
 	    /**
@@ -49,14 +48,14 @@ public class VIPDisplayError extends SingleOutcomeNode{
 	     */
 	    @Override
 	    public Action process(TreeContext context) {
-	    	logger.info("Inside VIP DISPLAY ERROR Page");
+	    	debug.message("Inside VIP DISPLAY ERROR Page");
 	    	return context.getCallback(TextOutputCallback.class).map(TextOutputCallback::getMessage)
 	                .map(String::new)
 	                .filter(name -> !Strings.isNullOrEmpty(name))
 	                .map(name -> {
 	                	return goToNext().build();
 	                }).orElseGet(() -> {
-						logger.debug("Displaying Error");
+						debug.message("Displaying Error");
 						return displayError(context);
 					});
 	                	

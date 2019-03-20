@@ -15,11 +15,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.identity.shared.debug.Debug;
 
 /**
  * 
@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
  */
 public class VoiceDeviceRegister {
 
-	static Logger logger = LoggerFactory.getLogger(VoiceDeviceRegister.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	/**
 	 * 
@@ -44,7 +44,7 @@ public class VoiceDeviceRegister {
 
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getViewUserPayload(userName, credValue);
-		logger.debug("Request Payload: " + payLoad);
+		debug.message("Request Payload: " + payLoad);
 		try {
 			HttpClient httpClient = HttpClientUtil.getInstance().getHttpClientForgerock(key_store,key_store_pass);
 			post.setEntity(new StringEntity(payLoad));
@@ -62,6 +62,7 @@ public class VoiceDeviceRegister {
 			}
 
 		}catch (IOException | ParserConfigurationException | SAXException e) {
+			debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 		return false;
@@ -73,8 +74,8 @@ public class VoiceDeviceRegister {
 	 * @param credValue
 	 * @return SendOtpRequest payload
 	 */
-	private static String getViewUserPayload(String userName, String credValue) {
-		logger.info("getting SendOtpRequest ");
+	private String getViewUserPayload(String userName, String credValue) {
+		debug.message("getting SendOtpRequest ");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
 				"xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" +
 				"<soapenv:Header/>" +

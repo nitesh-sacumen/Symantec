@@ -15,11 +15,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.identity.shared.debug.Debug;
 
 /**
  * 
@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
  * Executing RegisterRequest for SMS and Voice
  */
 public class SMSVoiceRegister {
-	static Logger logger = LoggerFactory.getLogger(SMSVoiceRegister.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	/**
 	 * 
@@ -41,7 +41,7 @@ public class SMSVoiceRegister {
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getSmsPayload(credValue);
 		String status;
-		logger.debug("Request Payload: " + payLoad);
+		debug.message("Request Payload: " + payLoad);
 
 		try {
 			HttpClient httpClient = HttpClientUtil.getInstance().getHttpClientForgerock(key_store,key_store_pass);
@@ -53,10 +53,9 @@ public class SMSVoiceRegister {
 			InputSource src = new InputSource();
 			src.setCharacterStream(new StringReader(body));
 			Document doc = builder.parse(src);
-			status = doc.getElementsByTagName("status").item(0).getTextContent();
-			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
-			
+			status = doc.getElementsByTagName("status").item(0).getTextContent();			
 		} catch (IOException | ParserConfigurationException | SAXException e) {
+			debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 		
@@ -76,7 +75,7 @@ public class SMSVoiceRegister {
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getVoicePayload(credValue);
 		String status;
-		logger.debug("Request Payload: " + payLoad);
+		debug.message("Request Payload: " + payLoad);
 		try {
 			HttpClient httpClient = HttpClientUtil.getInstance().getHttpClientForgerock(key_store,key_store_pass);
 			post.setEntity(new StringEntity(payLoad));
@@ -103,8 +102,8 @@ public class SMSVoiceRegister {
 	 * @param credValue
 	 * @return RegisterRequest payload
 	 */
-	private static String getSmsPayload(String credValue) {
-		logger.info("getting RegisterRequest payload for SMS");
+	private String getSmsPayload(String credValue) {
+		debug.message("getting RegisterRequest payload for SMS");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
 				"xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" +
 				"<soapenv:Header/>" +
@@ -126,8 +125,8 @@ public class SMSVoiceRegister {
 	 * @param credValue
 	 * @return RegisterRequest payload for voice
 	 */
-	private static String getVoicePayload(String credValue) {
-		logger.info("getting RegisterRequest payload for voice");
+	private String getVoicePayload(String credValue) {
+		debug.message("getting RegisterRequest payload for voice");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
 				"xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" +
 				"<soapenv:Header/>" +

@@ -14,11 +14,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.identity.shared.debug.Debug;
 
 /**
  * 
@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
  *
  */
 public class GenerateActivationCode {
-	private final static Logger logger = LoggerFactory.getLogger(GenerateActivationCode.class);
+	private final Debug debug = Debug.getInstance("VIP");
 
 	/**
 	 * 
@@ -40,7 +40,7 @@ public class GenerateActivationCode {
 		String status = null;
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = createPayload();
-		logger.debug("Request Payload: " + payLoad);
+		debug.message("Request Payload: " + payLoad);
 		try {
 			HttpClient httpClient = HttpClientUtil.getInstance().getHttpClientForgerock(key_store,key_store_pass);
 			post.setEntity(new StringEntity(payLoad));
@@ -52,16 +52,16 @@ public class GenerateActivationCode {
 			src.setCharacterStream(new StringReader(body));
 			Document doc = builder.parse(src);
 			status = doc.getElementsByTagName("ReasonCode").item(0).getTextContent();
-			String statusMessage = doc.getElementsByTagName("StatusMessage").item(0).getTextContent();
 			if (doc.getElementsByTagName("ActivationCode").item(0) != null) {
 				activationCode = doc.getElementsByTagName("ActivationCode").item(0).getTextContent();
 			} else
 				activationCode = " ";
 		} catch (IOException | ParserConfigurationException | SAXException e) {
+			debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 		String code = status + "," + activationCode;
-		logger.debug("Status and TransactionId \t" + code);
+		debug.message("Status and TransactionId \t" + code);
 		return code;
 	}
 
@@ -69,8 +69,8 @@ public class GenerateActivationCode {
 	 * 
 	 * @return GetActivationCode payload
 	 */
-	public static String createPayload() {
-		logger.info("gtting GetActivationCode payload");
+	public String createPayload() {
+		debug.message("gtting GetActivationCode payload");
 		StringBuilder str = new StringBuilder();
 		str.append(
 				"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:vip=\"http://www.verisign.com/2006/08/vipservice\">");

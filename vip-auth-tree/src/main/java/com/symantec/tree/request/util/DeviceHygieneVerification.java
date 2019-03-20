@@ -20,6 +20,13 @@ import java.security.*;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+/**
+ * 
+ * @author Sacumen (www.sacumen.com)
+ * 
+ * It verifies Device hygiene against trusted VIP CA Certificate.
+ *
+ */
 public class DeviceHygieneVerification {
 	
 	private final Debug debug = Debug.getInstance("VIP");
@@ -58,6 +65,7 @@ public class DeviceHygieneVerification {
 	}
 
 
+	// Validating Device Hygiene 
 	public String[] validateDHSignatureAndChain(String header, String payload, String signature)
 			throws NodeProcessException{
 		String[] result = new String[2];

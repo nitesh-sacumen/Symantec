@@ -21,9 +21,27 @@ import org.xml.sax.SAXException;
 
 import com.sun.identity.shared.debug.Debug;
 
+/**
+ * 
+ * @author Sacumen (www.sacumen.com)
+ * 
+ * Executing Deny Risk request
+ *
+ */
 public class DenyRisk {
 	private final Debug debug = Debug.getInstance("VIP");
-		
+	
+	/**
+	 * 
+	 * @param userName UserId
+	 * @param eventID Event Id evaluated from Evaluate Risk API.
+	 * @param auth_data Auth data Deny Risk For
+	 * @param deviceFriendlyName Device Friendly Name
+	 * @param key_store keystore.ks file location 
+	 * @param key_store_pass keystore.ks file password
+	 * @return status of Deny Risk request response
+	 * @throws NodeProcessException
+	 */
 	public String denyRisk(String userName,String eventID, String auth_data, String deviceFriendlyName,String key_store,String key_store_pass) throws NodeProcessException {
 		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
 		HttpPost post = new HttpPost(getURL());
@@ -42,18 +60,26 @@ public class DenyRisk {
 			InputSource src = new InputSource();
 			src.setCharacterStream(new StringReader(body));
 			Document doc = builder.parse(src);
-			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
 			status = doc.getElementsByTagName("status").item(0).getTextContent();
 			
 			debug.message("Deny Risk request response code is "+status);
 			
 		} catch (IOException | ParserConfigurationException | SAXException e) {
+			debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 
 		return status;
 	}
 	
+	/**
+	 * 
+	 * @param userName UserID
+	 * @param eventID Event ID
+	 * @param auth_data Auth Data
+	 * @param deviceFriendlyName Device Friendly Name
+	 * @return Payload of Deny Risk request
+	 */
 	private String getPayload(String userName,String eventID, String auth_data, String deviceFriendlyName) {
 		debug.message("getting payload for DenyRisk Risk");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
