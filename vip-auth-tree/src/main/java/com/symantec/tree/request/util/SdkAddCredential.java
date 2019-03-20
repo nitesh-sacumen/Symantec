@@ -32,6 +32,7 @@ public class SdkAddCredential {
 	static Logger logger = LoggerFactory.getLogger(SdkAddCredential.class);
 
 	public Boolean addCredential(String userName, String credValue, String credType,String key_store,String key_store_pass) throws NodeProcessException {
+		//TODO Duplicate Code
 		HttpPost post = new HttpPost(getURL());
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getViewUserPayload(userName, credValue,credType);
@@ -66,6 +67,7 @@ public class SdkAddCredential {
 	 * @return AddCredentialRequest payload
 	 */
 	private static String getViewUserPayload(String userName, String credValue, String credIdType) {
+		//TODO Duplicate Code
 		logger.info("getting payload for AddCredentialRequest");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "<soapenv:Header/>"
@@ -80,10 +82,9 @@ public class SdkAddCredential {
 	/**
 	 * 
 	 * @return ManagementServiceURL
-	 * @throws NodeProcessException 
 	 */
-	private String getURL() throws NodeProcessException {
-		return GetVIPServiceURL.getInstance().serviceUrls.get("ManagementServiceURL");
+	private String getURL() {
+		return GetVIPServiceURL.serviceUrls.get("ManagementServiceURL");
 	}
 
 

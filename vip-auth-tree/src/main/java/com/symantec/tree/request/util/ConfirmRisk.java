@@ -32,6 +32,7 @@ public class ConfirmRisk {
 		debug.message("Confirm Risk Request Payload: " + payLoad);
 		String status;
 		try {
+			//TODO Duplicate Code
 			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
 			post.setEntity(new StringEntity(payLoad));
 			HttpResponse response = httpClient.execute(post);
@@ -68,10 +69,9 @@ public class ConfirmRisk {
 	
 	/**
 	 * 
-	 * @return AuthenticationServiceURL 
-	 * @throws NodeProcessException 
+	 * @return AuthenticationServiceURL
 	 */
-	private String getURL() throws NodeProcessException {
-		return GetVIPServiceURL.getInstance().serviceUrls.get("AuthenticationServiceURL");
+	private String getURL() {
+		return GetVIPServiceURL.serviceUrls.get("AuthenticationServiceURL");
 	}
 }

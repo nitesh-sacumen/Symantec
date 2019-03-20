@@ -42,6 +42,7 @@ public class SDKCheckVIPOtp {
 
 		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
 		HttpPost post = new HttpPost(url);
+		//TODO Duplicate code
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getViewUserPayload(userName, otpValue);
 		String status;
@@ -73,6 +74,7 @@ public class SDKCheckVIPOtp {
 	 * @return CheckOtpRequest payload
 	 */
 	private static String getViewUserPayload(String userName, String otpValue) {
+		//TODO Duplicate code
 		logger.info("getting CheckOtpRequest payload");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "   <soapenv:Header/>"

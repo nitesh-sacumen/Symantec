@@ -35,13 +35,14 @@ public class GenerateActivationCode {
 	 * @throws NodeProcessException
 	 */
 	public String generateCode(String key_store,String key_store_pass) throws NodeProcessException {
-		String activationCode = "";
+		String activationCode;
 		HttpPost post = new HttpPost(getURL());
-		String status = null;
+		String status;
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = createPayload();
 		logger.debug("Request Payload: " + payLoad);
 		try {
+			//TODO Duplicate Code
 			HttpClient httpClient = HttpClientUtil.getInstance().getHttpClientForgerock(key_store,key_store_pass);
 			post.setEntity(new StringEntity(payLoad));
 			HttpResponse response = httpClient.execute(post);
@@ -52,6 +53,7 @@ public class GenerateActivationCode {
 			src.setCharacterStream(new StringReader(body));
 			Document doc = builder.parse(src);
 			status = doc.getElementsByTagName("ReasonCode").item(0).getTextContent();
+			//TODO Never used
 			String statusMessage = doc.getElementsByTagName("StatusMessage").item(0).getTextContent();
 			if (doc.getElementsByTagName("ActivationCode").item(0) != null) {
 				activationCode = doc.getElementsByTagName("ActivationCode").item(0).getTextContent();
@@ -69,25 +71,23 @@ public class GenerateActivationCode {
 	 * 
 	 * @return GetActivationCode payload
 	 */
-	public static String createPayload() {
+	private static String createPayload() {
 		logger.info("gtting GetActivationCode payload");
-		StringBuilder str = new StringBuilder();
-		str.append(
-				"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:vip=\"http://www.verisign.com/2006/08/vipservice\">");
-		str.append("   <soapenv:Header/>");
-		str.append("   <soapenv:Body>");
-		str.append(
-				"      <vip:GetActivationCode Version=\"1.0\" Id=" + "\"" + Math.round(Math.random() * 100000) + "\">");
-		str.append("        <vip:ACProfile>" + "MOBILEPHONE" + "</vip:ACProfile>");
-		str.append("      </vip:GetActivationCode>");
-		str.append("   </soapenv:Body>");
-		str.append("</soapenv:Envelope>");
-		return str.toString();
+		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:vip=\"http://www" +
+				".verisign.com/2006/08/vipservice\">" +
+				"   <soapenv:Header/>" +
+				"   <soapenv:Body>" +
+				"      <vip:GetActivationCode Version=\"1.0\" Id=" + "\"" + Math.round(Math.random() * 100000) +
+				"\">" +
+				"        <vip:ACProfile>" + "MOBILEPHONE" + "</vip:ACProfile>" +
+				"      </vip:GetActivationCode>" +
+				"   </soapenv:Body>" +
+				"</soapenv:Envelope>";
 
 	}
 	
-	private String getURL() throws NodeProcessException {
-		return GetVIPServiceURL.getInstance().serviceUrls.get("SDKServiceURL");
+	private String getURL() {
+		return GetVIPServiceURL.serviceUrls.get("SDKServiceURL");
 	}
 
 }

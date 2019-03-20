@@ -55,6 +55,8 @@ public class VIPAddCredential implements Node {
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
+
+		//TODO Duplicate code
 		String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
 		String credValue = context.sharedState.get(CRED_ID).asString();
 		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();

@@ -54,6 +54,7 @@ public class VIPOTPCheck implements Node {
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
 
+		//TODO Duplicate code
 		String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
 		String otpValue = context.sharedState.get(SECURE_CODE).asString();
 		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
@@ -107,6 +108,7 @@ public class VIPOTPCheck implements Node {
 	 * @return Action Object.
 	 */
 	private Action sendOutput(String statusCode, TreeContext context) {
+		//TODO Duplicate code
 		if (statusCode.equalsIgnoreCase(SUCCESS_CODE)) {
 			return goTo(Symantec.TRUE).build();
 		} else if(statusCode.equalsIgnoreCase(INVALID_CREDENIALS) || statusCode.equalsIgnoreCase(AUTHENTICATION_FAILED)) {

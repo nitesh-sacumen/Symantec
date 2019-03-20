@@ -150,8 +150,8 @@ public class VIPIARegistration implements Node {
 
 		} else {
 
-			String setAuthData = String.format(setAuthDataScriptString(sharedState.get(VIPIA.DEVICE_TAG).asString(),
-					sharedState.get(VIPIA.SCRIPT_URL).asString()));
+			String setAuthData = setAuthDataScriptString(sharedState.get(VIPIA.DEVICE_TAG).asString(),
+														 sharedState.get(VIPIA.SCRIPT_URL).asString());
 
 			debug.message("setAuthData script is " + setAuthData);
 

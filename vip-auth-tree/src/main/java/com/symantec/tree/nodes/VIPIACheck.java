@@ -30,7 +30,6 @@ import static com.symantec.tree.config.Constants.*;
 public class VIPIACheck implements Node {
 
 	private EvaluateRisk evaluateRisk;
-	private final Config config;
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPIACheck";
 	private final Debug debug = Debug.getInstance("VIP");
 
@@ -44,8 +43,7 @@ public class VIPIACheck implements Node {
 	 * 
 	 */
 	@Inject
-	public VIPIACheck(@Assisted Config config, EvaluateRisk evaluateRisk) {
-		this.config = config;
+	public VIPIACheck(EvaluateRisk evaluateRisk) {
 		this.evaluateRisk = evaluateRisk;
 	}
 
@@ -98,6 +96,8 @@ public class VIPIACheck implements Node {
 		String key_store = sharedState.get(KEY_STORE_PATH).asString();
 		String key_store_pass = sharedState.get(KEY_STORE_PASS).asString();
 
+		//TODO Duplicate code
+		//TODO this gets the local address of where AM is located. This does not get the IP of the client
 		InetAddress localhost=null;
 		try {
 			localhost = InetAddress.getLocalHost();

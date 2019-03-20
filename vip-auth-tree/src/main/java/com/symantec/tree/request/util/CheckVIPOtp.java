@@ -43,6 +43,7 @@ public class CheckVIPOtp {
 		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
 		HttpPost post = new HttpPost(getURL());
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
+		//TODO Duplicate Code
 		String payLoad = getViewUserPayload(userName, otpValue);
 		String status;
 		logger.debug("Request Payload: " + payLoad);
@@ -57,6 +58,7 @@ public class CheckVIPOtp {
 			src.setCharacterStream(new StringReader(body));
 			Document doc = builder.parse(src);
 			status = doc.getElementsByTagName("status").item(0).getTextContent();
+			//TODO status message never used
 			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
 		
 		} catch (IOException | ParserConfigurationException | SAXException e) {
@@ -73,6 +75,7 @@ public class CheckVIPOtp {
 	 * @return CheckOtpRequest payload
 	 */
 	private static String getViewUserPayload(String userName, String otpValue) {
+		//TODO Duplicate Code
 		logger.info("getting CheckOtpRequest payload");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "   <soapenv:Header/>"
@@ -89,7 +92,7 @@ public class CheckVIPOtp {
 	 * @throws NodeProcessException 
 	 */
 	private String getURL() throws NodeProcessException {
-		return GetVIPServiceURL.getInstance().serviceUrls.get("AuthenticationServiceURL");
+		return GetVIPServiceURL.serviceUrls.get("AuthenticationServiceURL");
 	}
 
 }

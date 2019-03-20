@@ -49,7 +49,7 @@ public class HttpClientUtil {
 	
 	public HttpClient getHttpClientForgerock(String keyStoreFile,String keyStorePass) throws NodeProcessException, FileNotFoundException {
 		logger.info("getting http client");
-		HttpClient httpClient = null;
+		HttpClient httpClient;
 
 		AMKeyProvider AM = new AMKeyProvider(false,keyStoreFile, keyStorePass,"JKS", null);
 	

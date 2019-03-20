@@ -46,6 +46,7 @@ public class DeleteCredential {
 		logger.debug("Request Payload: " + payLoad);
 		String status;
 		try {
+			//TODO Duplicate Code
 			HttpClient httpClient = HttpClientUtil.getInstance().getHttpClientForgerock(key_store,key_store_pass);
 			post.setEntity(new StringEntity(payLoad));
 			HttpResponse response = httpClient.execute(post);
@@ -90,7 +91,7 @@ public class DeleteCredential {
 	 * @throws NodeProcessException 
 	 */
 	private String getURL() throws NodeProcessException {
-		return GetVIPServiceURL.getInstance().serviceUrls.get("ManagementServiceURL");
+		return GetVIPServiceURL.serviceUrls.get("ManagementServiceURL");
 	}
 
 }

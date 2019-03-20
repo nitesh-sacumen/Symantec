@@ -1,22 +1,21 @@
 package com.symantec.tree.nodes;
-import java.util.List;
-import java.util.ResourceBundle;
-
-import javax.inject.Inject;
-
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.Action;
+import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.openam.auth.node.api.Node;
-import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.OutcomeProvider;
 import org.forgerock.openam.auth.node.api.TreeContext;
-import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.i18n.PreferredLocales;
+
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants.VIPIA;
+
+import java.util.List;
+import java.util.ResourceBundle;
+import javax.inject.Inject;
 
 
 @Node.Metadata(outcomeProvider = VIPIARiskScoreDecision.SymantecOutcomeProvider.class, configClass = VIPIARiskScoreDecision.Config.class)
@@ -89,11 +88,10 @@ public class VIPIARiskScoreDecision implements Node{
 	
 	/**
 	 * Main logic of the node.
-	 * 
-	 * @throws NodeProcessException
+	 *
 	 */
 	@Override
-	public Action process(TreeContext context) throws NodeProcessException {
+	public Action process(TreeContext context) {
 		debug.message("Making Decision based on score......");
 		String score = context.transientState.get(VIPIA.SCORE).asString();
 		int RiskScore = Integer.parseInt(score);

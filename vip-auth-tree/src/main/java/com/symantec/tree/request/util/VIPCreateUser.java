@@ -61,7 +61,9 @@ public class VIPCreateUser {
 	 */
 	public boolean createVIPUser(String userId,String key_store,String key_store_pass) throws NodeProcessException {
 		    boolean isUserExisted = false;
-			HttpPost httpPost = new HttpPost(getURL());
+		//TODO Duplicate code
+
+		HttpPost httpPost = new HttpPost(getURL());
 			httpPost.addHeader("Accept-Encoding", "gzip,deflate");
 			httpPost.addHeader("Content-Type", "text/xml;charset=utf-8");
 			httpPost.addHeader("SOAPAction", ""); /* \"\" */
@@ -103,9 +105,8 @@ public class VIPCreateUser {
 	/**
 	 * 
 	 * @return ManagementServiceURL
-	 * @throws NodeProcessException 
 	 */
-	private String getURL() throws NodeProcessException {
-		return GetVIPServiceURL.getInstance().serviceUrls.get("ManagementServiceURL");
+	private String getURL() {
+		return GetVIPServiceURL.serviceUrls.get("ManagementServiceURL");
 	}
 }

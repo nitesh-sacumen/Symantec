@@ -1,10 +1,13 @@
 package com.symantec.tree.request.util;
 
-import java.util.Hashtable;
+import static com.symantec.tree.config.Constants.AUTHENTICATION_SERVICE_URL;
+import static com.symantec.tree.config.Constants.MANAGEMENT_SERVICE_URL;
+import static com.symantec.tree.config.Constants.QUERY_SERVICE_URL;
+import static com.symantec.tree.config.Constants.SDK_SERVICE_URL;
 
-import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.TreeContext;
-import static com.symantec.tree.config.Constants.*;
+
+import java.util.Hashtable;
 /**
  * 
  * @author Sacumen (www.sacumen.com) <br> <br>
@@ -18,7 +21,7 @@ public class GetVIPServiceURL {
 	private GetVIPServiceURL(){
 	}
 	
-	public static GetVIPServiceURL getInstance() throws NodeProcessException{
+	public static GetVIPServiceURL getInstance() {
 		if(getVIPServiceUrl==null) {
 			getVIPServiceUrl = new GetVIPServiceURL();
 		}

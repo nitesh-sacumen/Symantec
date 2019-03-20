@@ -20,8 +20,7 @@ import com.sun.identity.shared.debug.Debug;
 @Node.Metadata(outcomeProvider = VIPDRDataOSDecisionNode.SymantecOutcomeProvider.class, configClass =
 VIPDRDataOSDecisionNode.Config.class)
 public class VIPDRDataOSDecisionNode implements Node{
-	
-	private final Config config;
+
 	private final Debug debug = Debug.getInstance("VIP");
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPDRDataOSDecisionNode";
 
@@ -31,8 +30,7 @@ public class VIPDRDataOSDecisionNode implements Node{
 	}
 	
 	@Inject
-	public VIPDRDataOSDecisionNode(@Assisted Config config) {
-		this.config = config;
+	public VIPDRDataOSDecisionNode() {
 	}
 	
 	/**

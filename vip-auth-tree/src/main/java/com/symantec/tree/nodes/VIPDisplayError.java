@@ -51,11 +51,9 @@ public class VIPDisplayError extends SingleOutcomeNode{
 	    public Action process(TreeContext context) {
 	    	logger.info("Inside VIP DISPLAY ERROR Page");
 	    	return context.getCallback(TextOutputCallback.class).map(TextOutputCallback::getMessage)
-	                .map(String::new)
-	                .filter(name -> !Strings.isNullOrEmpty(name))
-	                .map(name -> {
-	                	return goToNext().build();
-	                }).orElseGet(() -> {
+						  .map(String::new)
+						  .filter(name -> !Strings.isNullOrEmpty(name))
+						  .map(name -> goToNext().build()).orElseGet(() -> {
 						logger.debug("Displaying Error");
 						return displayError(context);
 					});

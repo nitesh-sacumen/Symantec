@@ -1,19 +1,15 @@
 package com.symantec.tree.nodes;
 
 import static org.forgerock.openam.auth.node.api.Action.send;
+
 import org.apache.commons.codec.binary.Base64;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.inject.Inject;
-import javax.security.auth.callback.Callback;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
-import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
 import org.forgerock.openam.auth.node.api.TreeContext;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
@@ -21,14 +17,18 @@ import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
 import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants.VIPDR;
-import com.symantec.tree.nodes.VIPSetConfiguration.Config;
 import com.symantec.tree.request.util.DeviceHygieneVerification;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
+import javax.security.auth.callback.Callback;
 
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class, configClass = VIPDRDataCollector.Config.class)
 public class VIPDRDataCollector extends AbstractDecisionNode {
 	private final Debug debug = Debug.getInstance("VIP");
 	private DeviceHygieneVerification deviceHygieneVerification;
-	private final Config config;
 
 
 	public interface Config {
@@ -36,7 +36,6 @@ public class VIPDRDataCollector extends AbstractDecisionNode {
 
 	@Inject
 	public VIPDRDataCollector(@Assisted Config config, DeviceHygieneVerification deviceHygieneVerification) {
-		this.config = config;
 		this.deviceHygieneVerification = deviceHygieneVerification;
 	}
 

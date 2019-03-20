@@ -43,6 +43,7 @@ public class AddCredential {
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getViewUserPayload(userName, credValue, credIdType);
 		logger.debug("Request Payload: " + payLoad);
+		//TODO Duplicate code
 		String status;
 		try {
 			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
@@ -94,6 +95,7 @@ public class AddCredential {
 	 */
 	public String addCredential(String userName, String credValue, String credIdType, String otpreceived,String key_store,String key_store_pass)
 			throws NodeProcessException {
+		//TODO Duplicate Code
 		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
 		HttpPost post = new HttpPost(getURL());
 
@@ -147,7 +149,7 @@ public class AddCredential {
 	 * @throws NodeProcessException 
 	 */
 	private String getURL() throws NodeProcessException {
-		return GetVIPServiceURL.getInstance().serviceUrls.get("ManagementServiceURL");
+		return GetVIPServiceURL.serviceUrls.get("ManagementServiceURL");
 	}
 
 }

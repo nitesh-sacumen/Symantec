@@ -47,6 +47,8 @@ public class VIPGetUser {
 	 */
 	public String viewUserInfo(String userId, String KEY_STORE_PATH, String KEY_STORE_PASS)
 			throws NodeProcessException {
+		//TODO Duplicate code
+
 		HttpPost httpPost = new HttpPost(getURL());
 		httpPost.addHeader("Accept-Encoding", "gzip,deflate");
 		httpPost.addHeader("Content-Type", "text/xml;charset=utf-8");
@@ -111,6 +113,8 @@ public class VIPGetUser {
 	public String getMobInfo(String userId, String KEY_STORE_PATH, String KEY_STORE_PASS)
 			throws NullPointerException, NodeProcessException {
 		String phoneNumber = null;
+		//TODO Duplicate code
+
 		HttpPost httpPost = new HttpPost(getURL());
 		httpPost.addHeader("Accept-Encoding", "gzip,deflate");
 		httpPost.addHeader("Content-Type", "text/xml;charset=utf-8");
@@ -227,7 +231,7 @@ public class VIPGetUser {
 		return credentialBindingDetail;
 	}
 	
-	private String getURL() throws NodeProcessException {
-		return GetVIPServiceURL.getInstance().serviceUrls.get("QueryServiceURL");
+	private String getURL() {
+		return GetVIPServiceURL.serviceUrls.get("QueryServiceURL");
 	}
 }

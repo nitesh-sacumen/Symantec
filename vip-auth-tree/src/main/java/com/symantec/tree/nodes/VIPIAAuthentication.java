@@ -29,7 +29,6 @@ import javax.inject.Inject;
 public class VIPIAAuthentication implements Node {
 
 	private EvaluateRisk evaluateRisk;
-	private final Config config;
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPIAAuthentication";
 	private final Debug debug = Debug.getInstance("VIP");
 
@@ -43,8 +42,7 @@ public class VIPIAAuthentication implements Node {
 	 * 
 	 */
 	@Inject
-	public VIPIAAuthentication(@Assisted Config config, EvaluateRisk evaluateRisk) {
-		this.config = config;
+	public VIPIAAuthentication(EvaluateRisk evaluateRisk) {
 		this.evaluateRisk = evaluateRisk;
 	}
 
@@ -98,6 +96,10 @@ public class VIPIAAuthentication implements Node {
 		debug.message("Authentication IA Data.....");
 		InetAddress localhost = null;
 
+		//TODO Duplicate code
+
+		//TODO This is the IP Address the AM is running on, not the IP Address that the client is connecting from
+		// use context.request.clientIP to get this address
 		try {
 			localhost = InetAddress.getLocalHost();
 		} catch (UnknownHostException e) {
@@ -106,13 +108,13 @@ public class VIPIAAuthentication implements Node {
 		String ip = localhost.getHostAddress().trim();
 		String userAgent = VIPIA.TEST_AGENT;
 
-		debug.message("Auth data in AI Authntication is "+context.sharedState.get(VIPIA.AUTH_DATA).asString());
+		debug.message("Auth data in AI Authentication is " + context.sharedState.get(VIPIA.AUTH_DATA).asString());
 		HashMap<String, String> evaluateRiskResponseAttribute = evaluateRisk.evaluateRisk(sharedState.get(SharedStateConstants.USERNAME).asString(),
 				ip, context.sharedState.get(VIPIA.AUTH_DATA).asString(), userAgent,
 				sharedState.get(KEY_STORE_PATH).asString(), sharedState.get(KEY_STORE_PASS).asString());
 
-		debug.message("status in IA authntication is " + evaluateRiskResponseAttribute.get("status"));
-		debug.message("score in IA authntication is " + evaluateRiskResponseAttribute.get("score"));
+		debug.message("status in IA authentication is " + evaluateRiskResponseAttribute.get("status"));
+		debug.message("score in IA authentication is " + evaluateRiskResponseAttribute.get("score"));
 
 
 		String status = evaluateRiskResponseAttribute.get("status");
