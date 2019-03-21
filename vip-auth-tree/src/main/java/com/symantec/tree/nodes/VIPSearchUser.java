@@ -1,7 +1,16 @@
 package com.symantec.tree.nodes;
 
-import static com.symantec.tree.config.Constants.*;
+import static com.symantec.tree.config.Constants.DISPLAY_ERROR;
+import static com.symantec.tree.config.Constants.KEY_STORE_PASS;
+import static com.symantec.tree.config.Constants.KEY_STORE_PATH;
+import static com.symantec.tree.config.Constants.MOB_NUM;
+import static com.symantec.tree.config.Constants.NO_CREDENTIALS_REGISTERED;
+import static com.symantec.tree.config.Constants.NO_CRED_REGISTERED;
+import static com.symantec.tree.config.Constants.SUCCESS_CODE;
+import static com.symantec.tree.config.Constants.USER_DOES_NOT_EXIST;
+import static com.symantec.tree.config.Constants.VIP_CRED_REGISTERED;
 
+<<<<<<< HEAD
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -12,8 +21,24 @@ import javax.inject.Inject;
 import com.google.common.collect.ImmutableList;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.*;
+=======
+import org.forgerock.json.JsonValue;
+import org.forgerock.openam.auth.node.api.Action;
+>>>>>>> remotes/origin/no_sdk_frank_changes
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
+import org.forgerock.openam.auth.node.api.Node;
+import org.forgerock.openam.auth.node.api.NodeProcessException;
+import org.forgerock.openam.auth.node.api.OutcomeProvider;
+import org.forgerock.openam.auth.node.api.SharedStateConstants;
+import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.util.i18n.PreferredLocales;
+
+import com.google.common.collect.ImmutableList;
+import com.symantec.tree.request.util.VIPGetUser;
+
+import java.util.List;
+import java.util.ResourceBundle;
+import javax.inject.Inject;
 
 /**
  * 
@@ -36,15 +61,13 @@ public class VIPSearchUser implements Node {
 	}
 	 
 	private VIPGetUser vipSearchUser;
-	private final Config config;
 
 	/**
 	 * Create the node.
 	 *
 	 */
 	@Inject
-	public VIPSearchUser(@Assisted Config config,VIPGetUser vipSearchUser) {
-		this.config = config;
+	public VIPSearchUser(VIPGetUser vipSearchUser) {
 		this.vipSearchUser = vipSearchUser;
 	}
 
@@ -54,6 +77,7 @@ public class VIPSearchUser implements Node {
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
+		//TODO This duplicated code should be pulled out in a helper method that all nodes use
 		String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
 		
 		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();

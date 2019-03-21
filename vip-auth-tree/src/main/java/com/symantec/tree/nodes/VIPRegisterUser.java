@@ -1,12 +1,29 @@
 package com.symantec.tree.nodes;
 
-import static com.symantec.tree.config.Constants.*;
+import static com.symantec.tree.config.Constants.KEY_STORE_PASS;
+import static com.symantec.tree.config.Constants.KEY_STORE_PATH;
+import static com.symantec.tree.config.Constants.NO_CREDENTIALS_REGISTERED;
 
+<<<<<<< HEAD
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.request.util.VIPCreateUser;
 import javax.inject.Inject;
 import org.forgerock.openam.auth.node.api.*;
+=======
+import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
+import org.forgerock.openam.auth.node.api.Action;
+import org.forgerock.openam.auth.node.api.Node;
+import org.forgerock.openam.auth.node.api.NodeProcessException;
+import org.forgerock.openam.auth.node.api.SharedStateConstants;
+import org.forgerock.openam.auth.node.api.TreeContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+>>>>>>> remotes/origin/no_sdk_frank_changes
+
+import com.symantec.tree.request.util.VIPCreateUser;
+
+import javax.inject.Inject;
 
 /**
  * 
@@ -22,7 +39,6 @@ public class VIPRegisterUser extends AbstractDecisionNode {
 	private final Debug debug = Debug.getInstance("VIP");
 
 	private VIPCreateUser vIPCreateUser;
-	private final Config config;
 
 
 	/**
@@ -37,8 +53,7 @@ public class VIPRegisterUser extends AbstractDecisionNode {
 	 *
 	 */
 	@Inject
-	public VIPRegisterUser(@Assisted Config config,VIPCreateUser vIPCreateUser) {
-		this.config = config;
+	public VIPRegisterUser(VIPCreateUser vIPCreateUser) {
 		this.vIPCreateUser = vIPCreateUser;
 	}
 

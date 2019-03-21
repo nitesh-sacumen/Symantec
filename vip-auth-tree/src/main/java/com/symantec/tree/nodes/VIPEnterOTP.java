@@ -64,9 +64,7 @@ public class VIPEnterOTP extends SingleOutcomeNode {
                     return goToNext()
                         .replaceSharedState(sharedState.put(SECURE_CODE, password)).build();
                 })
-                .orElseGet(() -> {
-                    return displayCredentials(context);
-                });
+                .orElseGet(() -> displayCredentials(context));
     }
     
     /**

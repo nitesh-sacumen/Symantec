@@ -179,10 +179,16 @@ public class VIPIARegistration implements Node {
 			}
 
 		} else {
+<<<<<<< HEAD
             
 			// Getting script to set Auth data
 			String setAuthData = String.format(setAuthDataScriptString(sharedState.get(VIPIA.DEVICE_TAG).asString(),
 					sharedState.get(VIPIA.SCRIPT_URL).asString()));
+=======
+
+			String setAuthData = setAuthDataScriptString(sharedState.get(VIPIA.DEVICE_TAG).asString(),
+														 sharedState.get(VIPIA.SCRIPT_URL).asString());
+>>>>>>> remotes/origin/no_sdk_frank_changes
 
 			debug.message("setAuthData script is " + setAuthData);
 

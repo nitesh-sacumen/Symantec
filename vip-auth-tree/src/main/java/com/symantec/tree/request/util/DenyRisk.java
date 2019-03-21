@@ -43,6 +43,7 @@ public class DenyRisk {
 	 * @throws NodeProcessException
 	 */
 	public String denyRisk(String userName,String eventID, String auth_data, String deviceFriendlyName,String key_store,String key_store_pass) throws NodeProcessException {
+		//TODO Duplicate Code
 		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
 		HttpPost post = new HttpPost(getURL());
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
@@ -101,6 +102,6 @@ public class DenyRisk {
 	 * @throws NodeProcessException 
 	 */
 	private String getURL() throws NodeProcessException {
-		return GetVIPServiceURL.getInstance().serviceUrls.get("AuthenticationServiceURL");
+		return GetVIPServiceURL.serviceUrls.get("AuthenticationServiceURL");
 	}
 }

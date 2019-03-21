@@ -36,6 +36,8 @@ public class SMSVoiceRegister {
 	 * @throws NodeProcessException 
 	 */
 	public String smsRegister(String credValue,String key_store,String key_store_pass) throws NodeProcessException {
+		//TODO Duplicate code
+
 		HttpPost post = new HttpPost(getURL());
 
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
@@ -70,6 +72,8 @@ public class SMSVoiceRegister {
 	 * @throws NodeProcessException 
 	 */
 	public String voiceRegister(String credValue,String key_store,String key_store_pass) throws NodeProcessException {
+		//TODO Duplicate code
+
 		HttpPost post = new HttpPost(getURL());
 
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
@@ -146,10 +150,9 @@ public class SMSVoiceRegister {
 	/**
 	 * 
 	 * @return ManagementServiceURL
-	 * @throws NodeProcessException 
 	 */
-	private String getURL() throws NodeProcessException {
-		return GetVIPServiceURL.getInstance().serviceUrls.get("ManagementServiceURL");
+	private String getURL() {
+		return GetVIPServiceURL.serviceUrls.get("ManagementServiceURL");
 	}
 	
 }

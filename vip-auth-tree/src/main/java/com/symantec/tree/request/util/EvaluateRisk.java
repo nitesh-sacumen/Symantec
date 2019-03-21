@@ -31,7 +31,11 @@ import com.sun.identity.shared.debug.Debug;
  */
 public class EvaluateRisk {
 	private final Debug debug = Debug.getInstance("VIP");
+
+	//TODO This variable does not need to be global
+	private HashMap<String,String> evaluateRiskResponseAttribute;
 	
+<<<<<<< HEAD
 	HashMap<String,String> evaluateRiskResponseAttribute;
 	
 	/**
@@ -45,6 +49,11 @@ public class EvaluateRisk {
 	 * @throws NodeProcessException
 	 */
 	public HashMap<String,String> evaluateRisk(String userName,String IP, String auth_data,String userAgent, String key_store,String key_store_pass) throws NodeProcessException {
+=======
+	public HashMap<String,String> evaluateRisk(String userName,String IP, String auth_data,String userAgent,
+												String key_store,String key_store_pass) throws NodeProcessException {
+		//TODO Duplicate code
+>>>>>>> remotes/origin/no_sdk_frank_changes
 		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
 		HttpPost post = new HttpPost(getURL());
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
@@ -65,6 +74,7 @@ public class EvaluateRisk {
 			evaluateRiskResponseAttribute = new HashMap<>();
 			String eventId = doc.getElementsByTagName("EventId").item(0).getTextContent();
 			String deviceTag = doc.getElementsByTagName("KeyValuePairs").item(2).getChildNodes().item(1).getTextContent();
+			//TODO Status message never used
 			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
 			status = doc.getElementsByTagName("status").item(0).getTextContent();
 			String riskScore = doc.getElementsByTagName("RiskScore").item(0).getTextContent();
@@ -108,10 +118,9 @@ public class EvaluateRisk {
 	
 	/**
 	 * 
-	 * @return AuthenticationServiceURL 
-	 * @throws NodeProcessException 
+	 * @return AuthenticationServiceURL
 	 */
-	private String getURL() throws NodeProcessException {
-		return GetVIPServiceURL.getInstance().serviceUrls.get("AuthenticationServiceURL");
+	private String getURL() {
+		return GetVIPServiceURL.serviceUrls.get("AuthenticationServiceURL");
 	}
 }

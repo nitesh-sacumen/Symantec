@@ -15,11 +15,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import com.sun.identity.shared.debug.Debug;
 
 /**
  * 
@@ -27,9 +27,9 @@ import com.sun.identity.shared.debug.Debug;
  * @Description: Checking OTP with CheckOtpRequest.
  *
  */
-public class CheckVIPOtp {
+public class SDKCheckVIPOtp {
 
-	private final Debug debug = Debug.getInstance("VIP");
+	static Logger logger = LoggerFactory.getLogger(SDKCheckVIPOtp.class);
 
 	/**
 	 * 
@@ -38,15 +38,15 @@ public class CheckVIPOtp {
 	 * @return status code of response
 	 * @throws NodeProcessException
 	 */
-	public String checkOtp(String userName, String otpValue,String key_store,String key_store_pass) throws NodeProcessException {
+	public String checkOtp(String userName, String otpValue,String key_store,String key_store_pass,String url) throws NodeProcessException {
 
 		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
-		HttpPost post = new HttpPost(getURL());
+		HttpPost post = new HttpPost(url);
+		//TODO Duplicate code
 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
-		//TODO Duplicate Code
 		String payLoad = getViewUserPayload(userName, otpValue);
 		String status;
-		debug.message("Request Payload: " + payLoad);
+		logger.debug("Request Payload: " + payLoad);
 		try {
 			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
 			post.setEntity(new StringEntity(payLoad));
@@ -57,16 +57,10 @@ public class CheckVIPOtp {
 			InputSource src = new InputSource();
 			src.setCharacterStream(new StringReader(body));
 			Document doc = builder.parse(src);
-<<<<<<< HEAD
-			status = doc.getElementsByTagName("status").item(0).getTextContent();		
-=======
 			status = doc.getElementsByTagName("status").item(0).getTextContent();
-			//TODO status message never used
 			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
 		
->>>>>>> remotes/origin/no_sdk_frank_changes
 		} catch (IOException | ParserConfigurationException | SAXException e) {
-			debug.error("Not able to process Request");
 			throw new NodeProcessException(e);
 		}
 		return status;
@@ -79,14 +73,9 @@ public class CheckVIPOtp {
 	 * @param otpValue
 	 * @return CheckOtpRequest payload
 	 */
-<<<<<<< HEAD
-	private String getViewUserPayload(String userName, String otpValue) {
-		debug.message("getting CheckOtpRequest payload");
-=======
 	private static String getViewUserPayload(String userName, String otpValue) {
-		//TODO Duplicate Code
+		//TODO Duplicate code
 		logger.info("getting CheckOtpRequest payload");
->>>>>>> remotes/origin/no_sdk_frank_changes
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "   <soapenv:Header/>"
 				+ "   <soapenv:Body>" + "      <vip:CheckOtpRequest>" + "<vip:requestId>" + new Random().nextInt(10)
@@ -94,15 +83,6 @@ public class CheckVIPOtp {
 				+ "         <vip:otpAuthData>" + "            <vip:otp>" + otpValue + "</vip:otp>           "
 				+ "         </vip:otpAuthData>        " + "      </vip:CheckOtpRequest>" + "   </soapenv:Body>"
 				+ "</soapenv:Envelope>";
-	}
-
-	/**
-	 * 
-	 * @return AuthenticationServiceURL
-	 * @throws NodeProcessException 
-	 */
-	private String getURL() throws NodeProcessException {
-		return GetVIPServiceURL.serviceUrls.get("AuthenticationServiceURL");
 	}
 
 }

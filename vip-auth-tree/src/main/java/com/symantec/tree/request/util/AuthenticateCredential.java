@@ -41,6 +41,7 @@ public class AuthenticateCredential {
 	 */
 	public String authCredential(String credID, String displayMsgText, String displayMsgTitle,String displayMsgProfile,
 			String key_store,String key_store_pass) throws NodeProcessException {
+		//TODO Duplicate Code
 		String transactionID = "";
 		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
 		HttpPost post = new HttpPost(getURL());
@@ -128,6 +129,6 @@ public class AuthenticateCredential {
 	 * @throws NodeProcessException 
 	 */
 	private String getURL() throws NodeProcessException {
-		return GetVIPServiceURL.getInstance().serviceUrls.get("AuthenticationServiceURL");
+		return GetVIPServiceURL.serviceUrls.get("AuthenticationServiceURL");
 	}
 }

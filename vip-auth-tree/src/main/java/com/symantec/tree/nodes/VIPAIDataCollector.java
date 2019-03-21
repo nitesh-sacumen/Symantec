@@ -40,10 +40,10 @@ public class VIPAIDataCollector extends SingleOutcomeNode {
 		@Attribute(order = 100, requiredValue = true)
 		default String Script() {
 			return "";
-		};
+		}
 		
-		 @Attribute(order = 200)
-	        default boolean PageNode() {
+		@Attribute(order = 200)
+		default boolean PageNode() {
 	            return false;
 	        }
 	}
@@ -68,13 +68,14 @@ public class VIPAIDataCollector extends SingleOutcomeNode {
 		List<Callback> cbList = new ArrayList<>();
 		HiddenValueCallback ncb = new HiddenValueCallback(VIPIA.MOBILE_AUTH_DATA);
 		HiddenValueCallback hcb = new HiddenValueCallback(VIPIA.DEVICE_FINGERPRINT);
-		ScriptTextOutputCallback scb = new ScriptTextOutputCallback(String.format(getAuthDataScript(context.sharedState.get(VIPIA.SCRIPT_URL).asString())));
+		ScriptTextOutputCallback scb = new ScriptTextOutputCallback(
+				getAuthDataScript(context.sharedState.get(VIPIA.SCRIPT_URL).asString()));
 		cbList.add(ncb);
 		cbList.add(hcb);
 		cbList.add(scb);
 		if(!config.PageNode()) {
 			debug.message("Page node is enabled...");
-			ScriptTextOutputCallback lscb = new ScriptTextOutputCallback(String.format(VIPIA.DISABLE_LOGIN_BUTTON_SCRIPT));
+			ScriptTextOutputCallback lscb = new ScriptTextOutputCallback(VIPIA.DISABLE_LOGIN_BUTTON_SCRIPT);
 			cbList.add(lscb);
 
 		}
@@ -97,23 +98,19 @@ public class VIPAIDataCollector extends SingleOutcomeNode {
 			String webAuthData = context.getCallbacks(HiddenValueCallback.class).get(1).getValue();
 			
 
-		if (!(mobileAuthData.equals(VIPIA.MOBILE_AUTH_DATA))) {
+			if (!(mobileAuthData.equals(VIPIA.MOBILE_AUTH_DATA))) {
 			
-			debug.message("Mobile Auth Data is "+mobileAuthData);
-
-			sharedState.put(VIPIA.MOBILE_AUTH_DATA,mobileAuthData);
-			sharedState.put(VIPIA.AUTH_DATA, mobileAuthData);
-		}
-		else{
-			debug.message("Web Auth Data "+webAuthData);
-
-			sharedState.put(VIPIA.DEVICE_FINGERPRINT, webAuthData);
-			sharedState.put(VIPIA.AUTH_DATA,webAuthData);
-		}
-			
+				debug.message("Mobile Auth Data is "+mobileAuthData);
+				sharedState.put(VIPIA.MOBILE_AUTH_DATA,mobileAuthData);
+				sharedState.put(VIPIA.AUTH_DATA, mobileAuthData);
+			}
+			else {
+				debug.message("Web Auth Data "+webAuthData);
+				sharedState.put(VIPIA.DEVICE_FINGERPRINT, webAuthData);
+				sharedState.put(VIPIA.AUTH_DATA,webAuthData);
+			}
 		return goToNext().build();
-
-	}
+		}
 		else {
 			return collectData(context);
 		}

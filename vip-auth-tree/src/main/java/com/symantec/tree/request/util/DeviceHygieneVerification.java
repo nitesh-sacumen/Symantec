@@ -32,7 +32,7 @@ public class DeviceHygieneVerification {
 	private final Debug debug = Debug.getInstance("VIP");
 
 
-	public String mapJwaToJcaSignatureAlgorithm(String jwtSigAlg) {
+	private String mapJwaToJcaSignatureAlgorithm(String jwtSigAlg) {
 		switch (jwtSigAlg) {
 		case "RS256":
 			return "SHA256WithRSA";
@@ -72,8 +72,8 @@ public class DeviceHygieneVerification {
 		try {
 
 			// Decode URL safe base64 encoded String
-			String raw_payload = null;
-			String raw_header = null;
+			String raw_payload;
+			String raw_header;
 
 			raw_payload = new String(Base64.decodeBase64(payload));
 			raw_header = new String(Base64.decodeBase64(header));
@@ -82,7 +82,7 @@ public class DeviceHygieneVerification {
 
 			String sigAlg = headerJsonObject.getString("alg");
 			JSONArray certArray = headerJsonObject.getJSONArray("x5c");
-			String certString = null;
+			String certString;
 			if (certArray != null && certArray.length() > 0) {
 				certString = certArray.getString(0);// as we know we have added only one cert.
 			} else {
@@ -125,12 +125,7 @@ public class DeviceHygieneVerification {
 				dis.readFully(keyBytes);
 				dis.close();
 
-			}
-			catch (FileNotFoundException e) {
-				e.printStackTrace();
-				throw new NodeProcessException(e.getLocalizedMessage());
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 				throw new NodeProcessException(e.getLocalizedMessage());
 			}
@@ -150,10 +145,7 @@ public class DeviceHygieneVerification {
 			debug.message("signature verification failed with an exception");
 			e.printStackTrace();
 			throw new NodeProcessException(e.getLocalizedMessage());
-		} catch (CertificateException exp) {
-			exp.printStackTrace();
-			throw new NodeProcessException(exp.getLocalizedMessage());
-		} catch (JSONException exp) {
+		} catch (CertificateException | JSONException exp) {
 			exp.printStackTrace();
 			throw new NodeProcessException(exp.getLocalizedMessage());
 		}

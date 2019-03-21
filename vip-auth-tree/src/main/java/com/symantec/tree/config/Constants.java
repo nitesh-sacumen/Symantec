@@ -19,6 +19,7 @@ public final class Constants {
 	public static final String TXN_ID = "TransactionID";
 	public static final String MOB_NUM = "Mobile Number";
 	public static final String CONFIRM_CRED_CHOICE = " Cred Choice";
+	//TODO Not Used
 	public static final String SECURE_CODE_ERROR = "Securiy Code Error";
 	public static final String PUSH_ERROR = "Push Auth Error";
 	public static final String CREDENTIAL_ID_ERROR = "Credential Id Error";
@@ -30,8 +31,10 @@ public final class Constants {
 	public static final String AUTHENTICATION_SERVICE_URL = "Authentication_Service_URL";
 	public static final String QUERY_SERVICE_URL = "Query_Service_URL";
 	public static final String MANAGEMENT_SERVICE_URL = "Management_Service_URL";
+	//TODO Not Used
 	public static final String DUPLICATE_CREDENTIAL_MESSAGE = "Duplicate Credential Message";
 	public static final String SDK_SERVICE_URL = "Sdk Service URL";
+	//TODO Not Used
 	public static final String IA_SERVICE_URL = "IA Service URL";
 
 	public static final String PUSH_DISPLAY_MESSAGE_TEXT = "push_display_message_text";
@@ -114,6 +117,7 @@ public final class Constants {
 		public static final String REGISTERED = "0000";
 		public static final String NOT_REGISTERED = "6009";
 		public static final String DEVICE_FINGERPRINT = "deviceFingerprint";
+		//TODO Not Used
 		public static final String DEVICE_FINGERPRINT_AFTER_REGISTRATION = "deviceFingerprintAfterRegistration";
 		public static final String DEVICE_FRIENDLY_NAME = "IA_New";
 		public static final String TEST_AGENT = "TestAgent";

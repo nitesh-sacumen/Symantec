@@ -75,8 +75,8 @@ public class VIPDRDataEval extends AbstractDecisionNode{
 
 		String value = config.DRDataFields().toString();
 		
-		debug.message("value coming from configuration is "+value);
-		debug.message("value coming from shared state is "+sharedState.get(value).asString());
+		debug.message("value coming from configuration is " + value);
+		debug.message("value coming from shared state is " + sharedState.get(value).asString());
 		
 		if(sharedState.get(value).asString().equalsIgnoreCase("\"true\"")) {
 			return goTo(true).build();

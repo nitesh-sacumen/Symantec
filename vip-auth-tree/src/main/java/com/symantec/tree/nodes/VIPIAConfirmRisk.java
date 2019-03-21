@@ -2,25 +2,22 @@ package com.symantec.tree.nodes;
 import static com.symantec.tree.config.Constants.KEY_STORE_PASS;
 import static com.symantec.tree.config.Constants.KEY_STORE_PATH;
 
-import java.util.List;
-import java.util.ResourceBundle;
-
-import javax.inject.Inject;
-
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
+import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.OutcomeProvider;
 import org.forgerock.openam.auth.node.api.SharedStateConstants;
 import org.forgerock.openam.auth.node.api.TreeContext;
-import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.i18n.PreferredLocales;
+
 import com.google.common.collect.ImmutableList;
 import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants.VIPIA;
 import com.symantec.tree.request.util.ConfirmRisk;
 
+<<<<<<< HEAD
 /**
  * 
  * @author Sacumen (www.sacumen.com)
@@ -33,6 +30,12 @@ import com.symantec.tree.request.util.ConfirmRisk;
  * True outcome is connected to "Success" and false outcome is connected to "Failure". 
  *
  */
+=======
+import java.util.List;
+import java.util.ResourceBundle;
+import javax.inject.Inject;
+
+>>>>>>> remotes/origin/no_sdk_frank_changes
 @Node.Metadata(outcomeProvider = VIPIAConfirmRisk.SymantecOutcomeProvider.class, configClass = VIPIAConfirmRisk.Config.class)
 public class VIPIAConfirmRisk implements Node{
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPIAConfirmRisk";

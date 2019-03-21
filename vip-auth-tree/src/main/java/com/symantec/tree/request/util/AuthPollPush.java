@@ -45,6 +45,7 @@ public class AuthPollPush {
 		String payLoad = getViewUserPayload(authId);
 		debug.message("Request Payload in authPollPush: " + payLoad);
 		try {
+			//TODO Duplicate Code
 			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
 			post.setEntity(new StringEntity(payLoad));
 			HttpResponse response = httpClient.execute(post);
@@ -89,7 +90,7 @@ public class AuthPollPush {
 	 * @throws NodeProcessException 
 	 */
 	private String getURL() throws NodeProcessException {
-		return GetVIPServiceURL.getInstance().serviceUrls.get("QueryServiceURL");
+		return GetVIPServiceURL.serviceUrls.get("QueryServiceURL");
 	}
 
 }
