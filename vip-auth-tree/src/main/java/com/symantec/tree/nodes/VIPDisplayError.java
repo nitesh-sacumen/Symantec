@@ -9,7 +9,8 @@ import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.util.Strings;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -21,7 +22,7 @@ import com.sun.identity.shared.debug.Debug;
 @Node.Metadata(outcomeProvider  = SingleOutcomeNode.OutcomeProvider.class,
                configClass      = VIPDisplayError.Config.class)
 public class VIPDisplayError extends SingleOutcomeNode{
-	private final Debug debug = Debug.getInstance("VIP");
+	 private final Logger logger = LoggerFactory.getLogger(VIPDisplayError.class);
 
 	    
 	    /**
@@ -48,21 +49,12 @@ public class VIPDisplayError extends SingleOutcomeNode{
 	     */
 	    @Override
 	    public Action process(TreeContext context) {
-	    	debug.message("Inside VIP DISPLAY ERROR Page");
+	    	logger.info("Inside VIP Display Error Page");
 	    	return context.getCallback(TextOutputCallback.class).map(TextOutputCallback::getMessage)
-<<<<<<< HEAD
-	                .map(String::new)
-	                .filter(name -> !Strings.isNullOrEmpty(name))
-	                .map(name -> {
-	                	return goToNext().build();
-	                }).orElseGet(() -> {
-						debug.message("Displaying Error");
-=======
 						  .map(String::new)
 						  .filter(name -> !Strings.isNullOrEmpty(name))
 						  .map(name -> goToNext().build()).orElseGet(() -> {
 						logger.debug("Displaying Error");
->>>>>>> remotes/origin/no_sdk_frank_changes
 						return displayError(context);
 					});
 	                	

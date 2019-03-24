@@ -9,6 +9,7 @@ import static com.symantec.tree.config.Constants.*;
 import com.google.common.collect.ImmutableList;
 import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.request.util.AddCredential;
+import com.symantec.tree.request.util.GetVIPServiceURL;
 import com.symantec.tree.request.util.VIPGetUser;
 
 import javax.inject.Inject;
@@ -57,21 +58,19 @@ public class VIPAddCredential implements Node {
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
 
-		//TODO Duplicate code
-		String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 		String credValue = context.sharedState.get(CRED_ID).asString();
-		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
-		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
+		
 		
 		//Searching User in VIP data base, If it exist and register with Credential ID then it will throw error for already registered Credential ID.
-		HashMap<String, String> credentialDetail = vipSearchUser.getCredentialBindingDetail(userName, key_store, key_store_pass, context);
+		HashMap<String, String> credentialDetail = vipSearchUser.getCredentialBindingDetail(vip.getUserName(),vip.getKeyStorePath(),vip.getKeyStorePasswod(), context);
 		if(credentialDetail!=null && credentialDetail.containsKey("OATH_TIME")&& credentialDetail.get("OATH_TIME").equalsIgnoreCase(credValue)) {
 			context.sharedState.put(CREDENTIAL_ID_ERROR, "Entered Credential ID is already registered, Please enter valid Credential ID or choose other option.");
 			return goTo(Symantec.FALSE).build();
 		}
 		
 		// Adding Credential to the VIP Database
-		String statusCode = addCred.addCredential(userName, credValue,STANDARD_OTP,key_store,key_store_pass);
+		String statusCode = addCred.addCredential(vip.getUserName(), credValue,STANDARD_OTP,vip.getKeyStorePath(),vip.getKeyStorePasswod());
 		debug.message("isCredAdded: "+statusCode);
 		
 		// Making decision based on AddCredential request response

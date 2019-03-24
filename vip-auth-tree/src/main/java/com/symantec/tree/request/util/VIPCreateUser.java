@@ -61,40 +61,14 @@ public class VIPCreateUser {
 	 */
 	public boolean createVIPUser(String userId,String key_store,String key_store_pass) throws NodeProcessException {
 		    boolean isUserExisted = false;
-		//TODO Duplicate code
-
-		HttpPost httpPost = new HttpPost(getURL());
-			httpPost.addHeader("Accept-Encoding", "gzip,deflate");
-			httpPost.addHeader("Content-Type", "text/xml;charset=utf-8");
-			httpPost.addHeader("SOAPAction", ""); /* \"\" */
-			httpPost.addHeader("User-Agent", "Apache-HttpClient/4.1.1");
 
 			String userPayload = createUserPayload(userId);
-			InputStream is = new ByteArrayInputStream(userPayload.getBytes());
+			Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), userPayload);
 
-			InputStreamEntity reqEntity = new InputStreamEntity(is, -1);
-			reqEntity.setContentType("text/xml");
-			reqEntity.setContentEncoding("charset=utf-8");
-			reqEntity.setChunked(true);
-
-			debug.message("req content length:\t" + reqEntity.getContentLength());
-			httpPost.setEntity(reqEntity);
 			String statusMessage;
-			try {
-			HttpClient httpClient = HttpClientUtil.getInstance().getHttpClientForgerock(key_store,key_store_pass);
-			HttpResponse response = httpClient.execute(httpPost);
-			HttpEntity entity = response.getEntity();
-			String body = IOUtils.toString(entity.getContent());
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			InputSource src = new InputSource();
-			src.setCharacterStream(new StringReader(body));
-			Document doc = builder.parse(src);
+			
 			statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
-			}
-			catch (IOException | ParserConfigurationException | SAXException e) {
-				debug.error("Not able to process Request");
-				throw new NodeProcessException(e);
-			}
+			
 			if ("Success".equals(statusMessage)) {
 				isUserExisted = true;
 			}

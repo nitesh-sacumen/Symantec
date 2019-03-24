@@ -39,29 +39,13 @@ public class AuthPollPush {
 	 */
 	public String authPollPush(String authId,String key_store,String key_store_pass) throws NodeProcessException {
 
-		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
-		HttpPost post = new HttpPost(getURL());
-		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getViewUserPayload(authId);
 		debug.message("Request Payload in authPollPush: " + payLoad);
-		try {
-			//TODO Duplicate Code
-			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
-			post.setEntity(new StringEntity(payLoad));
-			HttpResponse response = httpClient.execute(post);
-			HttpEntity entity = response.getEntity();
-			String body = IOUtils.toString(entity.getContent());
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			InputSource src = new InputSource();
-			src.setCharacterStream(new StringReader(body));
-			Document doc = builder.parse(src);
-			String status = doc.getElementsByTagName("status").item(1).getTextContent();
-			return status;
+		
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
+		String status = doc.getElementsByTagName("status").item(1).getTextContent();
+		return status;
 
-		} catch (IOException | ParserConfigurationException | SAXException e) {
-			debug.error("Not able to process Request");
-			throw new NodeProcessException(e);
-		}
 	}
 
 	/**

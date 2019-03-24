@@ -27,6 +27,8 @@ import org.forgerock.util.Strings;
 import org.forgerock.util.i18n.PreferredLocales;
 import com.symantec.tree.config.Constants.VIPIA;
 import com.symantec.tree.request.util.DenyRisk;
+import com.symantec.tree.request.util.GetVIPServiceURL;
+
 import static com.symantec.tree.config.Constants.*;
 
 /**
@@ -147,6 +149,8 @@ public class VIPIARegistration implements Node {
 
 	private Action processForWeb(TreeContext context) throws NodeProcessException {
 		debug.message("VIP registration for web flow.......");
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
 
 		JsonValue sharedState = context.sharedState;
 
@@ -164,10 +168,10 @@ public class VIPIARegistration implements Node {
 			String deviceFriendlyName = VIPIA.DEVICE_FRIENDLY_NAME;
 			
 			//Executing Deny Risk request
-			String status = denyRisk.denyRisk(sharedState.get(SharedStateConstants.USERNAME).asString(),
+			String status = denyRisk.denyRisk(vip.getUserName(),
 					sharedState.get(VIPIA.EVENT_ID).asString(), sharedState.get(VIPIA.DEVICE_FINGERPRINT).asString(),
-					deviceFriendlyName, sharedState.get(KEY_STORE_PATH).asString(),
-					sharedState.get(KEY_STORE_PASS).asString());
+					deviceFriendlyName,vip.getKeyStorePath(),
+					vip.getKeyStorePasswod());
 
 			debug.message("status in vip ia registration is " + status);
 
@@ -179,16 +183,10 @@ public class VIPIARegistration implements Node {
 			}
 
 		} else {
-<<<<<<< HEAD
-            
+			
 			// Getting script to set Auth data
-			String setAuthData = String.format(setAuthDataScriptString(sharedState.get(VIPIA.DEVICE_TAG).asString(),
-					sharedState.get(VIPIA.SCRIPT_URL).asString()));
-=======
-
-			String setAuthData = setAuthDataScriptString(sharedState.get(VIPIA.DEVICE_TAG).asString(),
+            String setAuthData = setAuthDataScriptString(sharedState.get(VIPIA.DEVICE_TAG).asString(),
 														 sharedState.get(VIPIA.SCRIPT_URL).asString());
->>>>>>> remotes/origin/no_sdk_frank_changes
 
 			debug.message("setAuthData script is " + setAuthData);
 
@@ -208,6 +206,8 @@ public class VIPIARegistration implements Node {
 
 		debug.message("vip registration for Mobile..........");
 		JsonValue sharedState = context.sharedState;
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
 
 		if (!context.getCallbacks(HiddenValueCallback.class).isEmpty()) {
 			
@@ -222,9 +222,9 @@ public class VIPIARegistration implements Node {
 			String deviceFriendlyName = VIPIA.DEVICE_FRIENDLY_NAME;
 
 			//Executing deny Risk request
-			String status = denyRisk.denyRisk(sharedState.get(SharedStateConstants.USERNAME).asString(), eventID,
-					authData, deviceFriendlyName, sharedState.get(KEY_STORE_PATH).asString(),
-					sharedState.get(KEY_STORE_PASS).asString());
+			String status = denyRisk.denyRisk(vip.getUserName(), eventID,
+					authData, deviceFriendlyName,vip.getKeyStorePath(),
+					vip.getKeyStorePasswod());
 
 			debug.message("status in vip ia registration is " + status);
 

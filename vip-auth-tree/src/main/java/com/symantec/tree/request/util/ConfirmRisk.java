@@ -40,32 +40,16 @@ public class ConfirmRisk {
 	 * @throws NodeProcessException
 	 */
 	public String confirmRisk(String userName,String eventID,String key_store,String key_store_pass) throws NodeProcessException {
-		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
-		HttpPost post = new HttpPost(getURL());
-		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getPayload(userName,eventID);
 		debug.message("Confirm Risk Request Payload: " + payLoad);
-		String status;
-		try {
-			//TODO Duplicate Code
-			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
-			post.setEntity(new StringEntity(payLoad));
-			HttpResponse response = httpClient.execute(post);
-			HttpEntity entity = response.getEntity();
-			String body = IOUtils.toString(entity.getContent());
-			debug.message("Confirm Risk Response is "+body);
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			InputSource src = new InputSource();
-			src.setCharacterStream(new StringReader(body));
-			Document doc = builder.parse(src);
-			status = doc.getElementsByTagName("status").item(0).getTextContent();
-					
-		} catch (IOException | ParserConfigurationException | SAXException e) {
-			debug.error("Not able to process Request");
-			throw new NodeProcessException(e);
-		}
+		
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
 
-		debug.message("Confirm Risk request response code is "+status);
+		String status;
+		
+		status = doc.getElementsByTagName("status").item(0).getTextContent();
+					
+	    debug.message("Confirm Risk request response code is "+status);
 		return status;
 	}
 	

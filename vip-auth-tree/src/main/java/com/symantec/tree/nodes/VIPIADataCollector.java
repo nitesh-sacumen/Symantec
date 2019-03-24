@@ -30,8 +30,8 @@ import com.symantec.tree.config.Constants.VIPIA;
  * Single outcome node, collects data and fetch data to "VIP Evaluate Risk" node.
  *
  */
-@Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class, configClass = VIPAIDataCollector.Config.class)
-public class VIPAIDataCollector extends SingleOutcomeNode {
+@Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class, configClass = VIPIADataCollector.Config.class)
+public class VIPIADataCollector extends SingleOutcomeNode {
 	private final Debug debug = Debug.getInstance("VIP");
 	private final Config config;
 
@@ -49,7 +49,7 @@ public class VIPAIDataCollector extends SingleOutcomeNode {
 	}
 
 	@Inject
-	public VIPAIDataCollector(@Assisted Config config) {
+	public VIPIADataCollector(@Assisted Config config) {
 		this.config = config;
 	}
 

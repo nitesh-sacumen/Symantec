@@ -4,7 +4,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants.VIPIA;
 import com.symantec.tree.request.util.EvaluateRisk;
-
+import com.symantec.tree.request.util.GetVIPServiceURL;
 import com.google.common.collect.ImmutableList;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.*;
@@ -33,8 +33,8 @@ import static com.symantec.tree.config.Constants.*;
  * True outcome is connected to "VIP Risk Score Decision Node" and false outcome is connected to "VIP IA Registration" and Error
  * outcome is connected to "DISPLAY ERROR" nodes.
  */
-@Node.Metadata(outcomeProvider = VIPIACheck.SymantecOutcomeProvider.class, configClass = VIPIACheck.Config.class)
-public class VIPIACheck implements Node {
+@Node.Metadata(outcomeProvider = VIPIAEvaluateRisk.SymantecOutcomeProvider.class, configClass = VIPIAEvaluateRisk.Config.class)
+public class VIPIAEvaluateRisk implements Node {
 
 	private EvaluateRisk evaluateRisk;
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPIACheck";
@@ -50,7 +50,7 @@ public class VIPIACheck implements Node {
 	 * 
 	 */
 	@Inject
-	public VIPIACheck(EvaluateRisk evaluateRisk) {
+	public VIPIAEvaluateRisk(EvaluateRisk evaluateRisk) {
 		this.evaluateRisk = evaluateRisk;
 	}
 
@@ -84,7 +84,7 @@ public class VIPIACheck implements Node {
 	public static class SymantecOutcomeProvider implements OutcomeProvider {
 		@Override
 		public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {
-			ResourceBundle bundle = locales.getBundleInPreferredLocale(VIPIACheck.BUNDLE,
+			ResourceBundle bundle = locales.getBundleInPreferredLocale(VIPIAEvaluateRisk.BUNDLE,
 					SymantecOutcomeProvider.class.getClassLoader());
 			return ImmutableList.of(new Outcome(Symantec.TRUE.name(), bundle.getString("trueOutcome")),
 					new Outcome(Symantec.FALSE.name(), bundle.getString("falseOutcome")),
@@ -103,23 +103,11 @@ public class VIPIACheck implements Node {
 		JsonValue sharedState = context.sharedState;
 		JsonValue transientState = context.sharedState;
 		
-		// Getting ketstore.ks file path and password to execute Symantec APIs.
-		String key_store = sharedState.get(KEY_STORE_PATH).asString();
-		String key_store_pass = sharedState.get(KEY_STORE_PASS).asString();
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+		
 
-<<<<<<< HEAD
 		//Getting IP Address.
-=======
-		//TODO Duplicate code
-		//TODO this gets the local address of where AM is located. This does not get the IP of the client
->>>>>>> remotes/origin/no_sdk_frank_changes
-		InetAddress localhost=null;
-		try {
-			localhost = InetAddress.getLocalHost();
-		} catch (UnknownHostException e) {
-			new NodeProcessException(e.getLocalizedMessage());
-		}
-		String ip = localhost.getHostAddress().trim();
+		String ip = context.request.clientIp;
 		
 		//Getting Test Agent
 		String userAgent = VIPIA.TEST_AGENT;
@@ -130,8 +118,8 @@ public class VIPIACheck implements Node {
         
 		// Executing Evaluate Risk API
 		HashMap<String, String> evaluateRiskResponseAttribute = evaluateRisk.evaluateRisk(
-				sharedState.get(SharedStateConstants.USERNAME).asString(), ip, authData, userAgent,
-				key_store,key_store_pass);
+				vip.getUserName(), ip, authData, userAgent,
+				vip.getKeyStorePath(),vip.getKeyStorePasswod());
 
 		//Getting status, event id, device tag and score from Evaluate Risk response.
 		String status = evaluateRiskResponseAttribute.get("status");

@@ -3,6 +3,8 @@ package com.symantec.tree.nodes;
 import com.symantec.tree.config.Constants.VIPPollPush;
 import com.symantec.tree.request.util.AuthPollPush;
 import com.symantec.tree.request.util.DeleteCredential;
+import com.symantec.tree.request.util.GetVIPServiceURL;
+
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.inject.Inject;
@@ -72,14 +74,13 @@ public class VIPPollPushReg implements Node {
 	private Action verifyAuth(TreeContext context) {
 		debug.message("Entered into verifyAuth method");
 		String credId = context.sharedState.get(CRED_ID).asString();
-		String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
-		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
-		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
 		String credType = STANDARD_OTP;
 		JsonValue newSharedState = context.sharedState.copy();
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
 		try {
 
-			String result = pollPush.authPollPush(context.sharedState.get(TXN_ID).asString(),key_store,key_store_pass);
+			String result = pollPush.authPollPush(context.sharedState.get(TXN_ID).asString(),vip.getKeyStorePath(),vip.getKeyStorePasswod());
 
 			if (result != null) {
 
@@ -92,11 +93,11 @@ public class VIPPollPushReg implements Node {
 						return goTo(Symantec.UNANSWERED).replaceSharedState(newSharedState).build();
 
 					} else if (result.equalsIgnoreCase(VIPPollPush.REJECTED)) {
-						deleteCredential(userName, credId, credType,context);
+						deleteCredential(vip.getUserName(), credId, credType,context);
 						return goTo(Symantec.FALSE).replaceSharedState(newSharedState).build();
 
 					} else {
-						deleteCredential(userName, credId, credType,context);
+						deleteCredential(vip.getUserName(), credId, credType,context);
 						context.sharedState.put(OTP_ERROR,"Not able to send push, Please enter Security Code");
 						return goTo(Symantec.ERROR).build();
 

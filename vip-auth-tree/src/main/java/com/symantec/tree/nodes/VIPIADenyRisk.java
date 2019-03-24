@@ -1,8 +1,5 @@
 package com.symantec.tree.nodes;
-<<<<<<< HEAD
-=======
 
->>>>>>> remotes/origin/no_sdk_frank_changes
 import static com.symantec.tree.config.Constants.KEY_STORE_PASS;
 import static com.symantec.tree.config.Constants.KEY_STORE_PATH;
 
@@ -20,8 +17,8 @@ import com.google.common.collect.ImmutableList;
 import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants.VIPIA;
 import com.symantec.tree.request.util.DenyRisk;
+import com.symantec.tree.request.util.GetVIPServiceURL;
 
-<<<<<<< HEAD
 /**
  * 
  * @author Sacumen (www.sacumen.com)
@@ -34,11 +31,9 @@ import com.symantec.tree.request.util.DenyRisk;
  * True outcome is connected to "Success" and false outcome is connected to "Failure". 
  *
  */
-=======
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.inject.Inject;
->>>>>>> remotes/origin/no_sdk_frank_changes
 
 @Node.Metadata(outcomeProvider = VIPIADenyRisk.SymantecOutcomeProvider.class, configClass = VIPIADenyRisk.Config.class)
 public class VIPIADenyRisk implements Node{
@@ -99,17 +94,18 @@ public class VIPIADenyRisk implements Node{
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
-	   JsonValue sharedState = context.sharedState;  
+	   JsonValue sharedState = context.sharedState; 
+	   GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
 	   //Getting device friendly name
        String deviceFriendlyName=VIPIA.DEVICE_FRIENDLY_NAME;
   
        // Executing Deny Risk request.
 		String status = denyRisk.denyRisk(
-				sharedState.get(SharedStateConstants.USERNAME).asString(),
+				vip.getUserName(),
 				sharedState.get(VIPIA.EVENT_ID).asString(), 
 				sharedState.get(VIPIA.AUTH_DATA).asString(),
-				deviceFriendlyName,sharedState.get(KEY_STORE_PATH).asString(),sharedState.get(KEY_STORE_PASS).asString());
+				deviceFriendlyName,vip.getKeyStorePath(),vip.getKeyStorePasswod());
 
 		debug.message("status in vip ia registration is "+status);
 		

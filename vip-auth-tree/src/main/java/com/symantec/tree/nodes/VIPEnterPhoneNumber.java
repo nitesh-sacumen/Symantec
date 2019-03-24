@@ -22,6 +22,8 @@ import org.forgerock.openam.auth.node.api.OutcomeProvider;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.i18n.PreferredLocales;
+
+import com.symantec.tree.request.util.GetVIPServiceURL;
 import com.symantec.tree.request.util.SMSVoiceRegister;
 import static com.symantec.tree.config.Constants.*;
 
@@ -61,9 +63,10 @@ public class VIPEnterPhoneNumber implements Node {
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
 		debug.message("Collect PhoneNumber started");
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
 		JsonValue sharedState = context.sharedState;
-		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
-		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
+		
 		return context.getCallback(NameCallback.class).map(NameCallback::getName).map(String::new)
 				.filter(name -> !Strings.isNullOrEmpty(name)).map(name -> {
 					debug.message("CredID has been collected and placed  into the Shared State");
@@ -72,7 +75,7 @@ public class VIPEnterPhoneNumber implements Node {
 						debug.message("calling sms register method");
 						String status = null;
 						try {
-							status = svRegister.smsRegister(name, key_store, key_store_pass);
+							status = svRegister.smsRegister(name,vip.getKeyStorePath(),vip.getKeyStorePasswod());
 							sharedState.put(MOB_NUM, name);
 						} catch (NodeProcessException e) {
 							e.printStackTrace();
@@ -83,7 +86,7 @@ public class VIPEnterPhoneNumber implements Node {
 						String status = null;
 						debug.message("calling voice register method");
 						try {
-							status = svRegister.voiceRegister(name, key_store, key_store_pass);
+							status = svRegister.voiceRegister(name,vip.getKeyStorePath(),vip.getKeyStorePasswod());
 							sharedState.put(MOB_NUM, name);
 						} catch (NodeProcessException e) {
 							e.printStackTrace();

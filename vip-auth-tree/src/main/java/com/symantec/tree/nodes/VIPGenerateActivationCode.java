@@ -4,6 +4,8 @@ import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants.VIPSDKStatusCode;
 import com.symantec.tree.request.util.GenerateActivationCode;
+import com.symantec.tree.request.util.GetVIPServiceURL;
+
 import org.forgerock.openam.auth.node.api.*;
 import static com.symantec.tree.config.Constants.*;
 import javax.inject.Inject;
@@ -44,11 +46,11 @@ public class VIPGenerateActivationCode extends AbstractDecisionNode {
 	@Override
 	 public Action process(TreeContext context) throws NodeProcessException {
     	debug.message("Collecting activtion code...");
-    	String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
-		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
+
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
 		// Executing GetActivationCode request
-    	String Stat = generateActivationCode.generateCode(key_store,key_store_pass);
+    	String Stat = generateActivationCode.generateCode(vip.getKeyStorePath(),vip.getKeyStorePasswod());
 		
     	// Getting GetActivationCode request response
     	String[] array = Stat.split(",");

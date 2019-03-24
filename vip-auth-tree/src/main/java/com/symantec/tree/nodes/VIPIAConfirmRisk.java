@@ -16,8 +16,8 @@ import com.google.common.collect.ImmutableList;
 import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants.VIPIA;
 import com.symantec.tree.request.util.ConfirmRisk;
+import com.symantec.tree.request.util.GetVIPServiceURL;
 
-<<<<<<< HEAD
 /**
  * 
  * @author Sacumen (www.sacumen.com)
@@ -30,12 +30,10 @@ import com.symantec.tree.request.util.ConfirmRisk;
  * True outcome is connected to "Success" and false outcome is connected to "Failure". 
  *
  */
-=======
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.inject.Inject;
 
->>>>>>> remotes/origin/no_sdk_frank_changes
 @Node.Metadata(outcomeProvider = VIPIAConfirmRisk.SymantecOutcomeProvider.class, configClass = VIPIAConfirmRisk.Config.class)
 public class VIPIAConfirmRisk implements Node{
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPIAConfirmRisk";
@@ -94,13 +92,16 @@ public class VIPIAConfirmRisk implements Node{
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
-	   JsonValue sharedState = context.sharedState;  
+	   JsonValue sharedState = context.sharedState; 
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
+	   
 	   
 	   //Executing Confirm Risk request
        String status = confirmRisk.confirmRisk(
-				sharedState.get(SharedStateConstants.USERNAME).asString(),
+				vip.getUserName(),
 				sharedState.get(VIPIA.EVENT_ID).asString(), 
-				sharedState.get(KEY_STORE_PATH).asString(),sharedState.get(KEY_STORE_PASS).asString());
+				vip.getKeyStorePath(),vip.getKeyStorePasswod());
 
 		debug.message("status in vip ia registration is "+status);
 		

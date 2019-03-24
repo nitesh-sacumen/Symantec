@@ -23,20 +23,20 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.symantec.tree.config.Constants.VIPIA;
-import com.symantec.tree.nodes.VIPIACheck;
+import com.symantec.tree.nodes.VIPIAEvaluateRisk;
 import com.symantec.tree.request.util.EvaluateRisk;
 
 @Test
 public class VIPIACheckTest {
 	
 	@Mock
-	private VIPIACheck.Config config;
+	private VIPIAEvaluateRisk.Config config;
 	
 	@Mock
 	private EvaluateRisk evaluateRisk;
 	
 	@InjectMocks
-	VIPIACheck node;
+	VIPIAEvaluateRisk node;
 	
 	@BeforeMethod
 	public void before() {

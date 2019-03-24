@@ -22,7 +22,8 @@ import com.sun.identity.shared.debug.Debug;
 
 /**
  * 
- * @author Sacumen(www.sacumen.com) <br> <br> 
+ * @author Sacumen(www.sacumen.com) <br>
+ *         <br>
  * @Desription Getting activation code using GetActivationCode request
  *
  */
@@ -34,38 +35,21 @@ public class GenerateActivationCode {
 	 * @return activation code with status
 	 * @throws NodeProcessException
 	 */
-	public String generateCode(String key_store,String key_store_pass) throws NodeProcessException {
+	public String generateCode(String key_store, String key_store_pass) throws NodeProcessException {
 		String activationCode;
-		HttpPost post = new HttpPost(getURL());
 		String status;
-		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
+
 		String payLoad = createPayload();
 		debug.message("Request Payload: " + payLoad);
-		try {
-			//TODO Duplicate Code
-			HttpClient httpClient = HttpClientUtil.getInstance().getHttpClientForgerock(key_store,key_store_pass);
-			post.setEntity(new StringEntity(payLoad));
-			HttpResponse response = httpClient.execute(post);
-			HttpEntity entity = response.getEntity();
-			String body = IOUtils.toString(entity.getContent());
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			InputSource src = new InputSource();
-			src.setCharacterStream(new StringReader(body));
-			Document doc = builder.parse(src);
-			status = doc.getElementsByTagName("ReasonCode").item(0).getTextContent();
-<<<<<<< HEAD
-=======
-			//TODO Never used
-			String statusMessage = doc.getElementsByTagName("StatusMessage").item(0).getTextContent();
->>>>>>> remotes/origin/no_sdk_frank_changes
-			if (doc.getElementsByTagName("ActivationCode").item(0) != null) {
-				activationCode = doc.getElementsByTagName("ActivationCode").item(0).getTextContent();
-			} else
-				activationCode = " ";
-		} catch (IOException | ParserConfigurationException | SAXException e) {
-			debug.error("Not able to process Request");
-			throw new NodeProcessException(e);
-		}
+
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
+
+		status = doc.getElementsByTagName("ReasonCode").item(0).getTextContent();
+		if (doc.getElementsByTagName("ActivationCode").item(0) != null) {
+			activationCode = doc.getElementsByTagName("ActivationCode").item(0).getTextContent();
+		} else
+			activationCode = " ";
+
 		String code = status + "," + activationCode;
 		debug.message("Status and TransactionId \t" + code);
 		return code;
@@ -75,38 +59,16 @@ public class GenerateActivationCode {
 	 * 
 	 * @return GetActivationCode payload
 	 */
-<<<<<<< HEAD
-	public String createPayload() {
-		debug.message("gtting GetActivationCode payload");
-		StringBuilder str = new StringBuilder();
-		str.append(
-				"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:vip=\"http://www.verisign.com/2006/08/vipservice\">");
-		str.append("   <soapenv:Header/>");
-		str.append("   <soapenv:Body>");
-		str.append(
-				"      <vip:GetActivationCode Version=\"1.0\" Id=" + "\"" + Math.round(Math.random() * 100000) + "\">");
-		str.append("        <vip:ACProfile>" + "MOBILEPHONE" + "</vip:ACProfile>");
-		str.append("      </vip:GetActivationCode>");
-		str.append("   </soapenv:Body>");
-		str.append("</soapenv:Envelope>");
-		return str.toString();
-=======
-	private static String createPayload() {
-		logger.info("gtting GetActivationCode payload");
-		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:vip=\"http://www" +
-				".verisign.com/2006/08/vipservice\">" +
-				"   <soapenv:Header/>" +
-				"   <soapenv:Body>" +
-				"      <vip:GetActivationCode Version=\"1.0\" Id=" + "\"" + Math.round(Math.random() * 100000) +
-				"\">" +
-				"        <vip:ACProfile>" + "MOBILEPHONE" + "</vip:ACProfile>" +
-				"      </vip:GetActivationCode>" +
-				"   </soapenv:Body>" +
-				"</soapenv:Envelope>";
->>>>>>> remotes/origin/no_sdk_frank_changes
+	private String createPayload() {
+//		logger.info("gtting GetActivationCode payload");
+		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:vip=\"http://www"
+				+ ".verisign.com/2006/08/vipservice\">" + "   <soapenv:Header/>" + "   <soapenv:Body>"
+				+ "      <vip:GetActivationCode Version=\"1.0\" Id=" + "\"" + Math.round(Math.random() * 100000) + "\">"
+				+ "        <vip:ACProfile>" + "MOBILEPHONE" + "</vip:ACProfile>" + "      </vip:GetActivationCode>"
+				+ "   </soapenv:Body>" + "</soapenv:Envelope>";
 
 	}
-	
+
 	private String getURL() {
 		return GetVIPServiceURL.serviceUrls.get("SDKServiceURL");
 	}

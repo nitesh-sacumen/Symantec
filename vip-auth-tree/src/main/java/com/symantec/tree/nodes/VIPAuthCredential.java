@@ -6,6 +6,8 @@ import com.symantec.tree.config.Constants;
 import com.symantec.tree.config.Constants.VIPAuthStatusCode;
 import com.symantec.tree.request.util.AuthenticateCredential;
 import com.symantec.tree.request.util.DeleteCredential;
+import com.symantec.tree.request.util.GetVIPServiceURL;
+
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.*;
 import javax.inject.Inject;
@@ -75,10 +77,9 @@ public class VIPAuthCredential extends AbstractDecisionNode {
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
 		String credId = context.sharedState.get(CRED_ID).asString();
-        String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
-        String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
-		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
 		
 		debug.message("Calling VIP Auth credential");
 		
@@ -86,7 +87,7 @@ public class VIPAuthCredential extends AbstractDecisionNode {
 		String Stat = authPushCred.authCredential(credId, vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_TEXT),
 				vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_TITLE),
 				vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_PROFILE),
-				key_store,key_store_pass);
+				vip.getKeyStorePath(),vip.getKeyStorePasswod());
 		
 		// Getting AuthenticateCredentialsRequest response
 		String[] trastat = Stat.split(",");
@@ -106,7 +107,7 @@ public class VIPAuthCredential extends AbstractDecisionNode {
 			return goTo(true).build();
 		} else {
 			context.sharedState.put(OTP_ERROR,"Not able to send push, Please enter Security Code");
-			deleteCredential(userName, credId,context);
+			deleteCredential(vip.getUserName(), credId,context);
 			return goTo(false).build();
 		}
 

@@ -2,6 +2,8 @@ package com.symantec.tree.nodes;
 
 import com.symantec.tree.config.Constants.VIPPollPush;
 import com.symantec.tree.request.util.AuthPollPush;
+import com.symantec.tree.request.util.GetVIPServiceURL;
+
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.inject.Inject;
@@ -68,12 +70,12 @@ public class VIPPollPushAuth implements Node {
 	private Action verifyAuth(TreeContext context) {
 		debug.message("Entered into verifyAuth method");
 		JsonValue newSharedState = context.sharedState.copy();
-		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
-		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
 		try {
             
 			//Executing PollPushStatusRequest
-			String result = pollPush.authPollPush(context.sharedState.get(TXN_ID).asString(),key_store,key_store_pass);
+			String result = pollPush.authPollPush(context.sharedState.get(TXN_ID).asString(),vip.getKeyStorePath(),vip.getKeyStorePasswod());
 
 			//Making decision based on PollPushStatusRequest response
 			if (result != null) {

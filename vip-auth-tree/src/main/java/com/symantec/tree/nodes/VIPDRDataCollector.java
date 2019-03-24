@@ -19,7 +19,6 @@ import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants.VIPDR;
 import com.symantec.tree.request.util.DeviceHygieneVerification;
 
-<<<<<<< HEAD
 /**
  * 
  * @author Sacumen (www.sacumen.com)
@@ -32,14 +31,12 @@ import com.symantec.tree.request.util.DeviceHygieneVerification;
  *
  * Node with true/false outcome. true outcome is connected to "VIP DR Data Eval" and false outcome will be connected to "Failure"
  */
-=======
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.security.auth.callback.Callback;
 
->>>>>>> remotes/origin/no_sdk_frank_changes
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class, configClass = VIPDRDataCollector.Config.class)
 public class VIPDRDataCollector extends AbstractDecisionNode {
 	private final Debug debug = Debug.getInstance("VIP");

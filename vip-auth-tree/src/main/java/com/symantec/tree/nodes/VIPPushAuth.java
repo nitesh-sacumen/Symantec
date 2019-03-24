@@ -6,6 +6,8 @@ import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants;
 import com.symantec.tree.request.util.AuthenticateUser;
+import com.symantec.tree.request.util.GetVIPServiceURL;
+
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
@@ -78,13 +80,12 @@ public class VIPPushAuth extends AbstractDecisionNode {
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
-		String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
-		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
-		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
-		String transactionId = pushAuthUser.authUser(userName, vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_TEXT),
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
+		String transactionId = pushAuthUser.authUser(vip.getUserName(), vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_TEXT),
 				vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_TITLE),
 				vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_PROFILE),
-				key_store,key_store_pass);
+				vip.getKeyStorePath(),vip.getKeyStorePasswod());
 		debug.message("TransactionId is " + transactionId);
 		if (transactionId != null && !transactionId.isEmpty()) {
 			context.sharedState.put(TXN_ID, transactionId);

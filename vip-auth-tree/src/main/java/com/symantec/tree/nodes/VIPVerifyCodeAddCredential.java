@@ -4,7 +4,11 @@ import static com.symantec.tree.config.Constants.*;
 
 import java.util.List;
 import java.util.ResourceBundle;
+
+import com.symantec.tree.nodes.VIPOTPCheck.Symantec;
 import com.symantec.tree.request.util.AddCredential;
+import com.symantec.tree.request.util.GetVIPServiceURL;
+
 import javax.inject.Inject;
 import com.google.common.collect.ImmutableList;
 import com.sun.identity.shared.debug.Debug;
@@ -55,27 +59,26 @@ public class VIPVerifyCodeAddCredential implements Node {
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
 		context.sharedState.remove(OTP_ERROR);
-		String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
 		String credValue = context.sharedState.get(CRED_ID).asString();
 		String credPhoneNumber = context.sharedState.get(MOB_NUM).asString();
 		String otpReceived = context.sharedState.get(SECURE_CODE).asString();
-		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
-		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
 		debug.message("Secure code" + otpReceived);
 		String credIdType;
 		if (context.sharedState.get(CRED_CHOICE).asString().equalsIgnoreCase(SMS)) {
 			credIdType = SMS_OTP;
-			String statusCode = addCred.addCredential(userName, credPhoneNumber, credIdType, otpReceived,
-					key_store,key_store_pass);
+			String statusCode = addCred.addCredential(vip.getUserName(), credPhoneNumber, credIdType, otpReceived,
+					vip.getUserName(),vip.getKeyStorePasswod());
 			return sendOutput(statusCode, context);
 		} else if (context.sharedState.get(CRED_CHOICE).asString().equalsIgnoreCase(VOICE)) {
 			credIdType = VOICE_OTP;
-			String statusCode = addCred.addCredential(userName, credPhoneNumber, credIdType, otpReceived,
-					key_store,key_store_pass);
+			String statusCode = addCred.addCredential(vip.getUserName(), credPhoneNumber, credIdType, otpReceived,
+					vip.getKeyStorePath(),vip.getKeyStorePasswod());
 			return sendOutput(statusCode, context);
 		} else {
 			credIdType = STANDARD_OTP;
-			String statusCode = addCred.addCredential(userName, credValue, credIdType, otpReceived,key_store,key_store_pass);
+			String statusCode = addCred.addCredential(vip.getUserName(), credValue, credIdType, otpReceived,vip.getKeyStorePath(),vip.getKeyStorePasswod());
 			return sendOutput(statusCode, context);
 		}
 	}

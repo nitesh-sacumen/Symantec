@@ -21,13 +21,14 @@ import com.sun.identity.shared.debug.Debug;
 
 /**
  * 
- * @author Sacumen(www.sacumen.com) <br> <br>
- * Authenticate credentials using AuthenticateCredentialsRequest
+ * @author Sacumen(www.sacumen.com) <br>
+ *         <br>
+ *         Authenticate credentials using AuthenticateCredentialsRequest
  *
  */
 public class AuthenticateCredential {
 	private final Debug debug = Debug.getInstance("VIP");
-	
+
 	/**
 	 * 
 	 * @param credID
@@ -39,41 +40,22 @@ public class AuthenticateCredential {
 	 * @return status of AuthenticateCredentialsRequest
 	 * @throws NodeProcessException
 	 */
-	public String authCredential(String credID, String displayMsgText, String displayMsgTitle,String displayMsgProfile,
-			String key_store,String key_store_pass) throws NodeProcessException {
-		//TODO Duplicate Code
+	public String authCredential(String credID, String displayMsgText, String displayMsgTitle, String displayMsgProfile,
+			String key_store, String key_store_pass) throws NodeProcessException {
 		String transactionID = "";
-		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
-		HttpPost post = new HttpPost(getURL());
-		String status = null;
-		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getViewUserPayload(credID, displayMsgText, displayMsgTitle, displayMsgProfile);
+
 		debug.message("AuthenticateCredentialsRequest Payload: " + payLoad);
-		try {
-			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
-			post.setEntity(new StringEntity(payLoad));
-			HttpResponse response = httpClient.execute(post);
-			HttpEntity entity = response.getEntity();
-			String body = IOUtils.toString(entity.getContent());
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			InputSource src = new InputSource();
-			src.setCharacterStream(new StringReader(body));
-			Document doc = builder.parse(src);
-			status = doc.getElementsByTagName("status").item(0).getTextContent();
-			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
-			if(doc.getElementsByTagName("transactionId").item(0) !=null) {
-				transactionID = doc.getElementsByTagName("transactionId").item(0).getTextContent();
-			}
-			else
-				transactionID = " ";
-			debug.message("Status is:\t" + statusMessage);
-		
-		} catch (IOException | ParserConfigurationException | SAXException e) {
-		    debug.error("Not able to process Request");
-			throw new NodeProcessException(e);
+
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
+		String status = null;
+
+		status = doc.getElementsByTagName("status").item(0).getTextContent();
+		if (doc.getElementsByTagName("transactionId").item(0) != null) {
+			transactionID = doc.getElementsByTagName("transactionId").item(0).getTextContent();
 		}
-		String transtat=status+","+transactionID;
-		debug.message( "Status and TransactionId \t"+transtat);
+		String transtat = status + "," + transactionID;
+		debug.message("Status and TransactionId \t" + transtat);
 		return transtat;
 	}
 
@@ -86,47 +68,28 @@ public class AuthenticateCredential {
 	 * @return AuthenticateCredentialsRequest payload
 	 */
 	private String getViewUserPayload(String credId, String displayMsgText, String displayMsgTitle,
-											  String displayMsgProfile) {
+			String displayMsgProfile) {
 		debug.message("getting payload for AuthenticateCredentialsRequest");
-		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
-				"xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" +
-				"   <soapenv:Header/>" +
-				"   <soapenv:Body>" +
-				"      <vip:AuthenticateCredentialsRequest>" +
-				"<vip:requestId>" + Math.round(Math.random() * 100000) + "</vip:requestId>" +
-				"           <vip:credentials>" +
-				"            <vip:credentialId>" + credId + "</vip:credentialId>" +
-				"            <vip:credentialType>" + com.symantec.tree.config.Constants.STANDARD_OTP + "</vip" +
-				":credentialType>" +
-				"           </vip:credentials>     " +
-				"<vip:pushAuthData>" +
-				"<!--0 to 20 repetitions:-->" +
-				"<vip:displayParameters>" +
-				"<vip:Key>" + "display.message.text" + "</vip:Key>" +
-				"<vip:Value>" + displayMsgText + "</vip:Value>" +
-				"" +
-				"</vip:displayParameters>" +
-				"<vip:displayParameters>" +
-				"<vip:Key>" + "display.message.title" + "</vip:Key>" +
-				"<vip:Value>" + displayMsgTitle + "</vip:Value>" +
-				"" +
-				"</vip:displayParameters>" +
-				"<vip:displayParameters>" +
-				"<vip:Key>" + "display.message.profile" + "</vip:Key>" +
-				"<vip:Value>" + displayMsgProfile + "</vip:Value>" +
-				"" +
-				"</vip:displayParameters>" +
-				"" +
-				"</vip:pushAuthData>" +
-				"       </vip:AuthenticateCredentialsRequest>" +
-				"   </soapenv:Body>" +
-				"</soapenv:Envelope>";
+		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "   <soapenv:Header/>"
+				+ "   <soapenv:Body>" + "      <vip:AuthenticateCredentialsRequest>" + "<vip:requestId>"
+				+ Math.round(Math.random() * 100000) + "</vip:requestId>" + "           <vip:credentials>"
+				+ "            <vip:credentialId>" + credId + "</vip:credentialId>" + "            <vip:credentialType>"
+				+ com.symantec.tree.config.Constants.STANDARD_OTP + "</vip" + ":credentialType>"
+				+ "           </vip:credentials>     " + "<vip:pushAuthData>" + "<!--0 to 20 repetitions:-->"
+				+ "<vip:displayParameters>" + "<vip:Key>" + "display.message.text" + "</vip:Key>" + "<vip:Value>"
+				+ displayMsgText + "</vip:Value>" + "" + "</vip:displayParameters>" + "<vip:displayParameters>"
+				+ "<vip:Key>" + "display.message.title" + "</vip:Key>" + "<vip:Value>" + displayMsgTitle
+				+ "</vip:Value>" + "" + "</vip:displayParameters>" + "<vip:displayParameters>" + "<vip:Key>"
+				+ "display.message.profile" + "</vip:Key>" + "<vip:Value>" + displayMsgProfile + "</vip:Value>" + ""
+				+ "</vip:displayParameters>" + "" + "</vip:pushAuthData>"
+				+ "       </vip:AuthenticateCredentialsRequest>" + "   </soapenv:Body>" + "</soapenv:Envelope>";
 	}
-	
+
 	/**
 	 * 
-	 * @return AuthenticationServiceURL 
-	 * @throws NodeProcessException 
+	 * @return AuthenticationServiceURL
+	 * @throws NodeProcessException
 	 */
 	private String getURL() throws NodeProcessException {
 		return GetVIPServiceURL.serviceUrls.get("AuthenticationServiceURL");

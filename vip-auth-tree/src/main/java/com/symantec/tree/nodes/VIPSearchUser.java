@@ -9,22 +9,16 @@ import static com.symantec.tree.config.Constants.NO_CRED_REGISTERED;
 import static com.symantec.tree.config.Constants.SUCCESS_CODE;
 import static com.symantec.tree.config.Constants.USER_DOES_NOT_EXIST;
 import static com.symantec.tree.config.Constants.VIP_CRED_REGISTERED;
-
-<<<<<<< HEAD
 import java.util.List;
 import java.util.ResourceBundle;
 
-import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
+import com.symantec.tree.request.util.GetVIPServiceURL;
 import com.symantec.tree.request.util.VIPGetUser;
 import javax.inject.Inject;
 import com.google.common.collect.ImmutableList;
 import org.forgerock.json.JsonValue;
-import org.forgerock.openam.auth.node.api.*;
-=======
-import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
->>>>>>> remotes/origin/no_sdk_frank_changes
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
@@ -32,13 +26,6 @@ import org.forgerock.openam.auth.node.api.OutcomeProvider;
 import org.forgerock.openam.auth.node.api.SharedStateConstants;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.util.i18n.PreferredLocales;
-
-import com.google.common.collect.ImmutableList;
-import com.symantec.tree.request.util.VIPGetUser;
-
-import java.util.List;
-import java.util.ResourceBundle;
-import javax.inject.Inject;
 
 /**
  * 
@@ -76,19 +63,15 @@ public class VIPSearchUser implements Node {
 	 * @throws NodeProcessException 
 	 */
 	@Override
-	public Action process(TreeContext context) throws NodeProcessException {
-		//TODO This duplicated code should be pulled out in a helper method that all nodes use
-		String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
-		
-		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
-		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
-		
-		String statusCode = vipSearchUser.viewUserInfo(userName,key_store,key_store_pass);
+	public Action process(TreeContext context) throws NodeProcessException {	
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
+		String statusCode = vipSearchUser.viewUserInfo(vip.getUserName(),vip.getKeyStorePath(),vip.getKeyStorePasswod());
         debug.message("status code in VIP Search User"+statusCode);
 		String mobNum;
 
 			if (statusCode.equalsIgnoreCase(SUCCESS_CODE)) {
-				mobNum = vipSearchUser.getMobInfo(userName,key_store,key_store_pass);
+				mobNum = vipSearchUser.getMobInfo(vip.getUserName(),vip.getKeyStorePath(),vip.getKeyStorePasswod());
 				debug.message("Phone Number in VIP Search User" + mobNum);
 
 				if (mobNum != null && mobNum.equalsIgnoreCase(NO_CRED_REGISTERED)) {

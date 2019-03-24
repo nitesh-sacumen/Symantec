@@ -41,32 +41,14 @@ public class DeleteCredential {
 	 * @throws NodeProcessException
 	 */
 	public void deleteCredential(String userName, String credId, String credType,String key_store,String key_store_pass) throws NodeProcessException {
-		HttpPost post = new HttpPost(getURL());
-		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getRemoveCredPayload(userName, credId, credType);
-		debug.message("Request Payload: " + payLoad);
-		String status;
-		try {
-			//TODO Duplicate Code
-			HttpClient httpClient = HttpClientUtil.getInstance().getHttpClientForgerock(key_store,key_store_pass);
-			post.setEntity(new StringEntity(payLoad));
-			HttpResponse response = httpClient.execute(post);
-			HttpEntity entity = response.getEntity();
-			String body = IOUtils.toString(entity.getContent());
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			InputSource src = new InputSource();
-			src.setCharacterStream(new StringReader(body));
-			Document doc = builder.parse(src);
-			status = doc.getElementsByTagName("status").item(0).getTextContent();
-			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
 
-		} catch (IOException | ParserConfigurationException | SAXException e) {
-			debug.error("Not able to process Request");
-			throw new NodeProcessException(e);
-		}
-		if (SUCCESS_CODE.equals(status)) {
-			debug.message("Credential " + credType + " removed successfully for " + userName);
-		}
+		debug.message("Request Payload: " + payLoad);
+		
+		String status;
+	    status = doc.getElementsByTagName("status").item(0).getTextContent();
+	    
 	}
 
 	/**

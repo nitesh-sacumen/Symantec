@@ -17,6 +17,35 @@ import java.util.Hashtable;
 public class GetVIPServiceURL {
 	private static GetVIPServiceURL getVIPServiceUrl = null;
 	final static Hashtable<String,String> serviceUrls = new Hashtable<>();
+	private String keyStorePath;
+	private String keyStorePasswod;
+	private String userName;
+	
+	public String getKeyStorePath() {
+		return keyStorePath;
+	}
+
+	public void setKeyStorePath(String keyStorePath) {
+		this.keyStorePath = keyStorePath;
+	}
+
+	public String getKeyStorePasswod() {
+		return keyStorePasswod;
+	}
+
+	public void setKeyStorePasswod(String keyStorePasswod) {
+		this.keyStorePasswod = keyStorePasswod;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+
 	
 	private GetVIPServiceURL(){
 	}
@@ -28,11 +57,11 @@ public class GetVIPServiceURL {
 		return getVIPServiceUrl;
 	}
 	
-	public void setServiceURL(TreeContext context) {
-		serviceUrls.put("ManagementServiceURL",context.sharedState.get(MANAGEMENT_SERVICE_URL).asString());
-		serviceUrls.put("AuthenticationServiceURL",context.sharedState.get(AUTHENTICATION_SERVICE_URL).asString());
-		serviceUrls.put("QueryServiceURL", context.sharedState.get(QUERY_SERVICE_URL).asString());
-		serviceUrls.put("SDKServiceURL", context.sharedState.get(SDK_SERVICE_URL).asString());
+	public void setServiceURL(String managementServiceURL, String authenticationServiceURL, String queryServiceURL, String SDKServiceURL) {
+		serviceUrls.put("ManagementServiceURL",managementServiceURL);
+		serviceUrls.put("AuthenticationServiceURL",authenticationServiceURL);
+		serviceUrls.put("QueryServiceURL", queryServiceURL);
+		serviceUrls.put("SDKServiceURL", SDKServiceURL);
 
 	}
 }

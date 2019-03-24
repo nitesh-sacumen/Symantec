@@ -3,14 +3,12 @@ package com.symantec.tree.nodes;
 import static com.symantec.tree.config.Constants.KEY_STORE_PASS;
 import static com.symantec.tree.config.Constants.KEY_STORE_PATH;
 import static com.symantec.tree.config.Constants.NO_CREDENTIALS_REGISTERED;
-
-<<<<<<< HEAD
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
+import com.symantec.tree.request.util.GetVIPServiceURL;
 import com.symantec.tree.request.util.VIPCreateUser;
 import javax.inject.Inject;
 import org.forgerock.openam.auth.node.api.*;
-=======
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
@@ -19,7 +17,6 @@ import org.forgerock.openam.auth.node.api.SharedStateConstants;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
->>>>>>> remotes/origin/no_sdk_frank_changes
 
 import com.symantec.tree.request.util.VIPCreateUser;
 
@@ -63,10 +60,9 @@ public class VIPRegisterUser extends AbstractDecisionNode {
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
-		String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
 		String credRegistrationStatus = context.transientState.get(NO_CREDENTIALS_REGISTERED).toString();
-		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
-		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
 		boolean isVIPProfileRegistered;
 
 		debug.message("credRegistrationStatus:" + credRegistrationStatus);
@@ -76,7 +72,7 @@ public class VIPRegisterUser extends AbstractDecisionNode {
 			return goTo(true).build();
 		} else {
 			debug.message("User not registered and hence making user registration call");
-			isVIPProfileRegistered = vIPCreateUser.createVIPUser(userName,key_store,key_store_pass);
+			isVIPProfileRegistered = vIPCreateUser.createVIPUser(vip.getUserName(),vip.getKeyStorePath(),vip.getKeyStorePasswod());
 			return goTo(isVIPProfileRegistered).build();
 		}
 	}

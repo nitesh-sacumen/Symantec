@@ -1,4 +1,5 @@
 package com.symantec.tree.request.util;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Random;
@@ -22,7 +23,8 @@ import com.sun.identity.shared.debug.Debug;
 
 /**
  * 
- * @author Sacumen (www.sacumen.com) <br> <br>
+ * @author Sacumen (www.sacumen.com) <br>
+ *         <br>
  * @Description Executing SendOtpRequest
  *
  */
@@ -37,31 +39,17 @@ public class SmsDeviceRegister {
 	 * @return true if success, else false
 	 * @throws NodeProcessException
 	 */
-	public Boolean smsDeviceRegister(String userName, String credValue,String key_store,String key_store_pass) throws NodeProcessException {
-		//TODO Duplicate code
-
-		HttpPost post = new HttpPost(getURL());
-
-		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
+	public Boolean smsDeviceRegister(String userName, String credValue, String key_store, String key_store_pass)
+			throws NodeProcessException {
 		String payLoad = getViewUserPayload(userName, credValue);
 		debug.message("Request Payload: " + payLoad);
-		String statusMessage;
-		try {
-			HttpClient httpClient = HttpClientUtil.getInstance().getHttpClientForgerock(key_store,key_store_pass);
-			post.setEntity(new StringEntity(payLoad));
 
-			HttpResponse response = httpClient.execute(post);
-			HttpEntity entity = response.getEntity();
-			String body = IOUtils.toString(entity.getContent());
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			InputSource src = new InputSource();
-			src.setCharacterStream(new StringReader(body));
-			Document doc = builder.parse(src);
-			statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
-		} catch (IOException | ParserConfigurationException | SAXException e) {
-			debug.error("Not able to process Request");
-			throw new NodeProcessException(e);
-		}
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
+
+		String statusMessage;
+
+		statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
+
 		if ("success".equalsIgnoreCase(statusMessage)) {
 			return true;
 

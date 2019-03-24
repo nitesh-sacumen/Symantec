@@ -3,6 +3,8 @@ package com.symantec.tree.nodes;
 import static com.symantec.tree.config.Constants.*;
 
 import com.symantec.tree.request.util.CheckVIPOtp;
+import com.symantec.tree.request.util.GetVIPServiceURL;
+
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.inject.Inject;
@@ -54,14 +56,12 @@ public class VIPOTPCheck implements Node {
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
 
-		//TODO Duplicate code
-		String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
 		String otpValue = context.sharedState.get(SECURE_CODE).asString();
-		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
-		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
 		
 		debug.message("executing CheckOtpRequest");
-		String statusCode = checkOtp.checkOtp(userName, otpValue, key_store, key_store_pass);
+		String statusCode = checkOtp.checkOtp(vip.getUserName(), otpValue,vip.getKeyStorePath(),vip.getKeyStorePasswod());
 		
 		//Making decision based on CheckOtpRequest response
 		return sendOutput(statusCode, context);

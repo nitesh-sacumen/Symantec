@@ -38,33 +38,9 @@ public class AddCredential {
 	 */
 	public String addCredential(String userName, String credValue, String credIdType,String key_store,String key_store_pass) throws NodeProcessException {
 
-		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
-		HttpPost post = new HttpPost(getURL());
-		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
-		String payLoad = getViewUserPayload(userName, credValue, credIdType);
-<<<<<<< HEAD
-		debug.message("AddCredentialRequest Payload: " + payLoad);
-=======
-		logger.debug("Request Payload: " + payLoad);
-		//TODO Duplicate code
->>>>>>> remotes/origin/no_sdk_frank_changes
-		String status;
-		try {
-			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
-			post.setEntity(new StringEntity(payLoad));
-			HttpResponse response = httpClient.execute(post);
-			HttpEntity entity = response.getEntity();
-			String body = IOUtils.toString(entity.getContent());
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			InputSource src = new InputSource();
-			src.setCharacterStream(new StringReader(body));
-			Document doc = builder.parse(src);
-			status = doc.getElementsByTagName("status").item(0).getTextContent();
-		} catch (IOException | ParserConfigurationException | SAXException e) {
-			throw new NodeProcessException(e);
-		}
-
-		return status;
+		String payload = getViewUserPayload(userName, credValue, credIdType);
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payload);
+	    return doc.getElementsByTagName("status").item(0).getTextContent();
 	}
 	
 
@@ -98,30 +74,9 @@ public class AddCredential {
 	 */
 	public String addCredential(String userName, String credValue, String credIdType, String otpreceived,String key_store,String key_store_pass)
 			throws NodeProcessException {
-		//TODO Duplicate Code
-		HttpClientUtil clientUtil = HttpClientUtil.getInstance();
-		HttpPost post = new HttpPost(getURL());
-
-		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
 		String payLoad = getViewUserPayload(userName, credValue, credIdType, otpreceived);
-		debug.message("AddCredentialRequest Payload: " + payLoad);
-		String status;
-		try {
-			HttpClient httpClient = clientUtil.getHttpClientForgerock(key_store,key_store_pass);
-			post.setEntity(new StringEntity(payLoad));
-			HttpResponse response = httpClient.execute(post);
-			HttpEntity entity = response.getEntity();
-			String body = IOUtils.toString(entity.getContent());
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			InputSource src = new InputSource();
-			src.setCharacterStream(new StringReader(body));
-			Document doc = builder.parse(src);
-			status = doc.getElementsByTagName("status").item(0).getTextContent();
-		} catch (IOException | ParserConfigurationException | SAXException e) {
-		    debug.error("Not able to process Request");
-			throw new NodeProcessException(e);
-		}
-		return status;
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
+	    return doc.getElementsByTagName("status").item(0).getTextContent();
 	}
 
 	/**

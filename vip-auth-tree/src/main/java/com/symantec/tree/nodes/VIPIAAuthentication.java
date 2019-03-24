@@ -4,6 +4,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
 import com.symantec.tree.config.Constants.VIPIA;
 import com.symantec.tree.request.util.EvaluateRisk;
+import com.symantec.tree.request.util.GetVIPServiceURL;
 import com.google.common.collect.ImmutableList;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.*;
@@ -99,50 +100,28 @@ public class VIPIAAuthentication implements Node {
 	public Action process(TreeContext context) throws NodeProcessException {
 		JsonValue transientState = context.sharedState;
 		JsonValue sharedState = context.sharedState;
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
 
 		debug.message("Authentication IA Data.....");
-		
+				
 		//Getting IP Address
-		InetAddress localhost = null;
-<<<<<<< HEAD
-=======
-
-		//TODO Duplicate code
-
-		//TODO This is the IP Address the AM is running on, not the IP Address that the client is connecting from
-		// use context.request.clientIP to get this address
->>>>>>> remotes/origin/no_sdk_frank_changes
-		try {
-			localhost = InetAddress.getLocalHost();
-		} catch (UnknownHostException e) {
-			new NodeProcessException(e.getLocalizedMessage());
-		}
-		String ip = localhost.getHostAddress().trim();
+		String ip = context.request.clientIp;
 		
 		// Getting test agent
 		String userAgent = VIPIA.TEST_AGENT;
-
-<<<<<<< HEAD
-		debug.message("Auth data in AI Authentication is "+context.sharedState.get(VIPIA.AUTH_DATA).asString());
 		
 		// Executing Evaluate Risk call 
-=======
 		debug.message("Auth data in AI Authentication is " + context.sharedState.get(VIPIA.AUTH_DATA).asString());
->>>>>>> remotes/origin/no_sdk_frank_changes
-		HashMap<String, String> evaluateRiskResponseAttribute = evaluateRisk.evaluateRisk(sharedState.get(SharedStateConstants.USERNAME).asString(),
+		
+		HashMap<String, String> evaluateRiskResponseAttribute = evaluateRisk.evaluateRisk(vip.getUserName(),
 				ip, context.sharedState.get(VIPIA.AUTH_DATA).asString(), userAgent,
-				sharedState.get(KEY_STORE_PATH).asString(), sharedState.get(KEY_STORE_PASS).asString());
+				vip.getKeyStorePath(),vip.getKeyStorePasswod());
 
-<<<<<<< HEAD
         // Getting status and score from the request
-		debug.message("status in IA authntication is " + evaluateRiskResponseAttribute.get("status"));
-		debug.message("score in IA authntication is " + evaluateRiskResponseAttribute.get("score"));
-=======
 		debug.message("status in IA authentication is " + evaluateRiskResponseAttribute.get("status"));
 		debug.message("score in IA authentication is " + evaluateRiskResponseAttribute.get("score"));
 
-
->>>>>>> remotes/origin/no_sdk_frank_changes
 		String status = evaluateRiskResponseAttribute.get("status");
 		
 		//Making decision

@@ -3,6 +3,7 @@ package com.symantec.tree.nodes;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.shared.debug.Debug;
 import com.sun.identity.sm.RequiredValueValidator;
+import com.symantec.tree.request.util.GetVIPServiceURL;
 import com.symantec.tree.request.util.SmsDeviceRegister;
 import com.symantec.tree.request.util.VoiceDeviceRegister;
 
@@ -71,11 +72,10 @@ public class VIPOTPAuth implements Node {
 	public Action process(TreeContext context) {
 		debug.message("Selecting option from SMS/VOICE/TOKEN");
 		JsonValue sharedState = context.sharedState;
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
 		
-		String userName = context.sharedState.get(SharedStateConstants.USERNAME).asString();
 		String credValue = context.sharedState.get(MOB_NUM).asString();
-		String key_store = context.sharedState.get(KEY_STORE_PATH).asString();
-		String key_store_pass = context.sharedState.get(KEY_STORE_PASS).asString();
 
 		//Selecting option from user as a SMS/VOICE/TOKEN
 		return context.getCallback(ChoiceCallback.class).map(c -> c.getSelectedIndexes()[0]).map(Integer::new)
@@ -89,8 +89,8 @@ public class VIPOTPAuth implements Node {
 						try {
 							
 						   //Executing SendOtpRequest 
-						   isOTPVoiceAuthenticated = voiceDeviceRegister.voiceDeviceRegister(userName, credValue,
-									key_store, key_store_pass);
+						   isOTPVoiceAuthenticated = voiceDeviceRegister.voiceDeviceRegister(vip.getUserName(), credValue,
+									vip.getKeyStorePath(),vip.getKeyStorePasswod());
 						} 
 						catch (NodeProcessException e) {
 							e.printStackTrace();
@@ -108,8 +108,8 @@ public class VIPOTPAuth implements Node {
 						boolean isOTPSmsAuthenticated = false;
 						try {
 							//Executing SendOtpRequest
-							isOTPSmsAuthenticated = smsDeviceRegister.smsDeviceRegister(userName, credValue, key_store,
-									key_store_pass);
+							isOTPSmsAuthenticated = smsDeviceRegister.smsDeviceRegister(vip.getUserName(), credValue,vip.getKeyStorePath(),
+									vip.getKeyStorePasswod());
 						} 
 						catch (NodeProcessException e) {
 							e.printStackTrace();

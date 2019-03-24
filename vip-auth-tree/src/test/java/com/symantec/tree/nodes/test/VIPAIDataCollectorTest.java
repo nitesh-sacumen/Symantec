@@ -25,13 +25,13 @@ import org.testng.annotations.Test;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
 import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
 import com.symantec.tree.config.Constants.VIPIA;
-import com.symantec.tree.nodes.VIPAIDataCollector;
+import com.symantec.tree.nodes.VIPIADataCollector;
 
 @Test
 public class VIPAIDataCollectorTest {
 
 	@Mock
-	private VIPAIDataCollector.Config config;
+	private VIPIADataCollector.Config config;
 
 	@BeforeMethod
 	public void before() {
@@ -43,7 +43,7 @@ public class VIPAIDataCollectorTest {
 	@Test
 	public void testProcessWithNoCallbacksReturnsASingleCallback() {
 		// Given
-		VIPAIDataCollector node = new VIPAIDataCollector(config);
+		VIPIADataCollector node = new VIPIADataCollector(config);
 		JsonValue sharedState = json(object(1));
 		PreferredLocales preferredLocales = mock(PreferredLocales.class);
 
@@ -63,7 +63,7 @@ public class VIPAIDataCollectorTest {
 	
 	@Test
     public void testProcessWithCallbacksInCaseOfMobile() {
-		VIPAIDataCollector node = new VIPAIDataCollector(config);
+		VIPIADataCollector node = new VIPIADataCollector(config);
         JsonValue sharedState = json(object(field(VIPIA.SCRIPT_URL, "test.js")));
         
 		List<Callback> cbList = new ArrayList<>();
@@ -91,7 +91,7 @@ public class VIPAIDataCollectorTest {
 	
 	@Test
     public void testProcessWithCallbacksInCaseOfWeb() {
-		VIPAIDataCollector node = new VIPAIDataCollector(config);
+		VIPIADataCollector node = new VIPIADataCollector(config);
         JsonValue sharedState = json(object(field(VIPIA.SCRIPT_URL, "test.js")));
         
 		List<Callback> cbList = new ArrayList<>();
