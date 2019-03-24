@@ -22,7 +22,7 @@ import org.forgerock.secrets.keys.KeyFormatRaw;
 import org.forgerock.secrets.keys.SigningKey;
 import org.forgerock.util.promise.Promise;
 import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import com.symantec.tree.config.Constants.VIPDR;
 
 @Node.Metadata(outcomeProvider  = AbstractDecisionNode.OutcomeProvider.class,
@@ -33,7 +33,7 @@ public class VIPFetchPublicCertificate extends AbstractDecisionNode{
 	    private static final Purpose<SigningKey> DEFAULT_SIGNING = purpose(DEFAULT_NODE_SIGNING, SigningKey.class);
 	    private static final DefaultingPurpose<SigningKey> CUSTOM_SIGNING =
 	            new DefaultingPurpose<>(DEFAULT_SIGNING, CUSTOM_NODE_SIGNING);
-		private final Debug debug = Debug.getInstance("VIP");
+	    private Logger logger = LoggerFactory.getLogger(VIPFetchPublicCertificate.class);
 	    private final Config config;
 	    private final SecretsProviderFacade secrets;
 

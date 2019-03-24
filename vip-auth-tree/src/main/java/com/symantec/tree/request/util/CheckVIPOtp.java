@@ -1,23 +1,21 @@
 package com.symantec.tree.request.util;
 
+import static com.symantec.tree.config.Constants.AUTHENTICATION_FAILED;
+import static com.symantec.tree.config.Constants.DISPLAY_ERROR;
+import static com.symantec.tree.config.Constants.INVALID_CREDENIALS;
+import static com.symantec.tree.config.Constants.OTP_ERROR;
+import static com.symantec.tree.config.Constants.SUCCESS_CODE;
+
 import java.util.Random;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
+import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
+import org.forgerock.openam.auth.node.api.TreeContext;
+import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import com.sun.identity.shared.debug.Debug;
+import com.symantec.tree.nodes.VIPOTPCheck.Symantec;
+
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -27,7 +25,7 @@ import com.sun.identity.shared.debug.Debug;
  */
 public class CheckVIPOtp {
 
-	private final Debug debug = Debug.getInstance("VIP");
+private Logger logger = LoggerFactory.getLogger(CheckVIPOtp.class);
 
 	/**
 	 * 
@@ -42,7 +40,7 @@ public class CheckVIPOtp {
 		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
 
 		String status;
-		debug.message("Request Payload: " + payLoad);
+		logger.debug("Request Payload: " + payLoad);
 
 		status = doc.getElementsByTagName("status").item(0).getTextContent();
 		return status;
@@ -56,7 +54,7 @@ public class CheckVIPOtp {
 	 * @return CheckOtpRequest payload
 	 */
 	private String getViewUserPayload(String userName, String otpValue) {
-//		logger.info("getting CheckOtpRequest payload");
+		logger.info("getting CheckOtpRequest payload");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "   <soapenv:Header/>"
 				+ "   <soapenv:Body>" + "      <vip:CheckOtpRequest>" + "<vip:requestId>" + new Random().nextInt(10)
@@ -75,5 +73,32 @@ public class CheckVIPOtp {
 		return GetVIPServiceURL.serviceUrls.get("AuthenticationServiceURL");
 	}
 	
+	/**
+	 * 
+	 * @param statusCode
+	 * @param context
+	 * @return Action Object.
+	 */
+	public Action sendOutput(String statusCode, TreeContext context) {
+		logger.info("Sending Output....");
+		
+		if (statusCode.equalsIgnoreCase(SUCCESS_CODE)) {
+			return goTo(Symantec.TRUE).build();
+		}
+		
+		else if(statusCode.equalsIgnoreCase(INVALID_CREDENIALS) || statusCode.equalsIgnoreCase(AUTHENTICATION_FAILED)) {
+				context.sharedState.put(OTP_ERROR, "Entered otp Code is Invalid,Please enter valid OTP");
+				return goTo(Symantec.FALSE).build();
+		}
+		
+		else {
+			context.sharedState.put(DISPLAY_ERROR, "Your Credentials is disabled, Please contact your administrator.");
+			return goTo(Symantec.ERROR).build();
+		}
+	}
+	
+	private ActionBuilder goTo(Symantec outcome) {
+		return Action.goTo(outcome.name());
+	}
 	
 }

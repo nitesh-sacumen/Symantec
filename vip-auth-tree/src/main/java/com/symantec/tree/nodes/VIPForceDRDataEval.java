@@ -7,7 +7,7 @@ import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class, configClass =
@@ -15,7 +15,7 @@ VIPForceDRDataEval.Config.class)
 public class VIPForceDRDataEval extends AbstractDecisionNode{
 	
 	private final Config config;
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPForceDRDataEval.class);
 
 	
 	/**
@@ -44,7 +44,7 @@ public class VIPForceDRDataEval extends AbstractDecisionNode{
 	
 	public Action process(TreeContext context) {
 
-		debug.message("collecting DR Fields ........");
+		logger.info("collecting DR Fields ........");
 		return goTo(true).build();
 		
 	}

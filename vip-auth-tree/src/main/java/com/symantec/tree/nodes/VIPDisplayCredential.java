@@ -6,7 +6,6 @@ import static org.forgerock.openam.auth.node.api.Action.send;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.shared.debug.Debug;
 import com.sun.identity.sm.RequiredValueValidator;
 import java.util.*;
 import javax.inject.Inject;
@@ -21,6 +20,8 @@ import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.OutcomeProvider;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.util.i18n.PreferredLocales;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -36,7 +37,7 @@ public class VIPDisplayCredential implements Node {
 
 	private final Config config;
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPDisplayCredential";
-	private final Debug debug = Debug.getInstance("VIP");
+	private Logger logger = LoggerFactory.getLogger(VIPDisplayCredential.class);
 
 	/**
 	 * Configuration for the node.
@@ -85,7 +86,7 @@ public class VIPDisplayCredential implements Node {
 					}
 
 				}).orElseGet(() -> {
-					debug.message("collecting choice");
+					logger.debug("collecting choice");
 					return displayCredentials(context);
 				});
 	}
@@ -104,7 +105,7 @@ public class VIPDisplayCredential implements Node {
 		
 		//Getting output error if it exists
 		String outputError = context.sharedState.get(CREDENTIAL_ID_ERROR).asString();
-		debug.message("text block error" + outputError);
+		logger.debug("text block error" + outputError);
 		
 		// collecting choice
 		if (outputError == null) {

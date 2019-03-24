@@ -12,7 +12,7 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.TextOutputCallback;
 import org.forgerock.util.Strings;
 import com.google.common.collect.ImmutableList;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
@@ -34,7 +34,7 @@ import static com.symantec.tree.config.Constants.*;
 public class VIPEnterOTP extends SingleOutcomeNode {
 
     private static final String BUNDLE = "com/symantec/tree/nodes/VIPEnterOTP";
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPEnterOTP.class);
 
     /**
      * Configuration for the node.
@@ -53,7 +53,7 @@ public class VIPEnterOTP extends SingleOutcomeNode {
 	 */
     @Override
     public Action process(TreeContext context) {
-    	debug.message("Collect SecurityCode started");
+    	logger.info("Collect SecurityCode started");
     	context.sharedState.remove(PHONE_NUMBER_ERROR);
         JsonValue sharedState = context.sharedState;
         return context.getCallback(PasswordCallback.class)
@@ -75,6 +75,7 @@ public class VIPEnterOTP extends SingleOutcomeNode {
     private Action displayCredentials(TreeContext context) {
 		List<Callback> cbList = new ArrayList<>(2);
 		String outputError = context.sharedState.get(OTP_ERROR).asString();
+		logger.debug("OTP_ERROR is "+outputError);
 		if (outputError == null) {
 			ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE, getClass().getClassLoader());
 			PasswordCallback pcb = new PasswordCallback(bundle.getString("callback.securecode"), false);

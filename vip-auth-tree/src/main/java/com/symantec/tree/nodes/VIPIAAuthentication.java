@@ -1,7 +1,5 @@
 package com.symantec.tree.nodes;
-
-import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import com.symantec.tree.config.Constants.VIPIA;
 import com.symantec.tree.request.util.EvaluateRisk;
 import com.symantec.tree.request.util.GetVIPServiceURL;
@@ -11,8 +9,6 @@ import org.forgerock.openam.auth.node.api.*;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.i18n.PreferredLocales;
 import static com.symantec.tree.config.Constants.*;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -38,7 +34,7 @@ public class VIPIAAuthentication implements Node {
 
 	private EvaluateRisk evaluateRisk;
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPIAAuthentication";
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPIAAuthentication.class);
 
 	/**
 	 * Configuration for the node.
@@ -103,7 +99,7 @@ public class VIPIAAuthentication implements Node {
 		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
 
-		debug.message("Authentication IA Data.....");
+		logger.info("Authentication IA Data.....");
 				
 		//Getting IP Address
 		String ip = context.request.clientIp;
@@ -112,15 +108,15 @@ public class VIPIAAuthentication implements Node {
 		String userAgent = VIPIA.TEST_AGENT;
 		
 		// Executing Evaluate Risk call 
-		debug.message("Auth data in AI Authentication is " + context.sharedState.get(VIPIA.AUTH_DATA).asString());
+		logger.debug("Auth data in AI Authentication is " + context.sharedState.get(VIPIA.AUTH_DATA).asString());
 		
 		HashMap<String, String> evaluateRiskResponseAttribute = evaluateRisk.evaluateRisk(vip.getUserName(),
 				ip, context.sharedState.get(VIPIA.AUTH_DATA).asString(), userAgent,
 				vip.getKeyStorePath(),vip.getKeyStorePasswod());
 
         // Getting status and score from the request
-		debug.message("status in IA authentication is " + evaluateRiskResponseAttribute.get("status"));
-		debug.message("score in IA authentication is " + evaluateRiskResponseAttribute.get("score"));
+		logger.debug("status in IA authentication is " + evaluateRiskResponseAttribute.get("status"));
+		logger.debug("score in IA authentication is " + evaluateRiskResponseAttribute.get("score"));
 
 		String status = evaluateRiskResponseAttribute.get("status");
 		

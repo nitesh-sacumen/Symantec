@@ -1,26 +1,9 @@
 package com.symantec.tree.request.util;
 
-import java.io.IOException;
-import java.io.StringReader;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import com.sun.identity.shared.debug.Debug;
-
-import static com.symantec.tree.config.Constants.*;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 
 /**
@@ -31,7 +14,7 @@ import static com.symantec.tree.config.Constants.*;
  *
  */
 public class DeleteCredential {
-	private final Debug debug = Debug.getInstance("VIP");
+private Logger logger = LoggerFactory.getLogger(DeleteCredential.class);
 
 	/**
 	 * 
@@ -42,12 +25,14 @@ public class DeleteCredential {
 	 */
 	public void deleteCredential(String userName, String credId, String credType,String key_store,String key_store_pass) throws NodeProcessException {
 		String payLoad = getRemoveCredPayload(userName, credId, credType);
-		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
-
-		debug.message("Request Payload: " + payLoad);
 		
-		String status;
-	    status = doc.getElementsByTagName("status").item(0).getTextContent();
+		logger.info("Request payload is "+payLoad);
+
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
+		
+		String status = doc.getElementsByTagName("status").item(0).getTextContent();
+		
+		logger.debug("status of delete cred request response is "+status);
 	    
 	}
 

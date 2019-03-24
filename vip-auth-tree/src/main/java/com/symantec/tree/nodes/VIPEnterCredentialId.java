@@ -12,7 +12,7 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.TextOutputCallback;
 import org.forgerock.util.Strings;
 import com.google.common.collect.ImmutableList;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
@@ -33,8 +33,9 @@ import static com.symantec.tree.config.Constants.*;
 public class VIPEnterCredentialId extends SingleOutcomeNode {
 
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPEnterCredentialId";
-	private final Debug debug = Debug.getInstance("VIP");
-	/**
+    private Logger logger = LoggerFactory.getLogger(VIPEnterCredentialId.class);
+	
+    /**
 	 * Configuration for the node.
 	 */
 	public interface Config {
@@ -67,16 +68,16 @@ public class VIPEnterCredentialId extends SingleOutcomeNode {
 	 */
 	@Override
 	public Action process(TreeContext context) {
-		debug.message("Collect CredID started");
+		logger.info("Collect CredID started");
 		JsonValue sharedState = context.sharedState;
 
 		context.sharedState.remove(CREDENTIAL_ID_ERROR);
 		return context.getCallback(NameCallback.class).map(NameCallback::getName).map(String::new)
 				.filter(password -> !Strings.isNullOrEmpty(password)).map(password -> {
-					debug.message("Credential ID has been collected and placed into the Shared State");
+					logger.info("Credential ID has been collected and placed into the Shared State");
 					return goToNext().replaceSharedState(sharedState.copy().put(CRED_ID, password)).build();
 				}).orElseGet(() -> {
-					debug.message("Enter Credential ID");
+					logger.info("Enter Credential ID");
 					return collectOTP(context);
 				});
 	}

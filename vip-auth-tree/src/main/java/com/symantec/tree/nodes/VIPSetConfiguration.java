@@ -1,12 +1,7 @@
 package com.symantec.tree.nodes;
 
-import static com.symantec.tree.config.Constants.AUTHENTICATION_SERVICE_URL;
 import static com.symantec.tree.config.Constants.KEY_STORE_PASS;
 import static com.symantec.tree.config.Constants.KEY_STORE_PATH;
-import static com.symantec.tree.config.Constants.MANAGEMENT_SERVICE_URL;
-import static com.symantec.tree.config.Constants.QUERY_SERVICE_URL;
-import static com.symantec.tree.config.Constants.SDK_SERVICE_URL;
-
 
 import javax.inject.Inject;
 
@@ -25,15 +20,15 @@ import com.symantec.tree.request.util.GetVIPServiceURL;
  * 
  * @author Sacumen (www.sacumen.com)
  * 
- * Setting and adding all the VIP Service URLs to the shared state.
+ *         Setting and adding all the VIP Service URLs to the shared state.
  * 
  *
  */
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class, configClass = VIPSetConfiguration.Config.class)
 public class VIPSetConfiguration extends SingleOutcomeNode {
-	
+
 	private final Config config;
- 
+
 	/**
 	 * Configuration for the node.
 	 */
@@ -57,29 +52,29 @@ public class VIPSetConfiguration extends SingleOutcomeNode {
 		String SDK_Service_URL();
 	}
 
-	    /**
-		 * Create the node.
-		 *
-		 */
-		@Inject
-		public VIPSetConfiguration(@Assisted Config config) {
-			this.config = config;
-		}
-		
-		@Override
-		public Action process(TreeContext context) throws NodeProcessException{
-			context.sharedState.put(KEY_STORE_PATH,config.Key_Store_Path());
-			context.sharedState.put(KEY_STORE_PASS,config.Key_Store_Password());
-			
-			GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
-			vip.setServiceURL(config.Management_Service_URL(), config.Authentication_Service_URL(),
-					config.Query_Service_URL(),config.SDK_Service_URL());
-			
-			vip.setKeyStorePasswod(config.Key_Store_Password());
-			vip.setKeyStorePath(config.Key_Store_Path());
-			vip.setUserName(context.sharedState.get(SharedStateConstants.USERNAME).asString());
+	/**
+	 * Create the node.
+	 *
+	 */
+	@Inject
+	public VIPSetConfiguration(@Assisted Config config) {
+		this.config = config;
+	}
 
-            return goToNext().build();
-		}
+	@Override
+	public Action process(TreeContext context) throws NodeProcessException {
+		context.sharedState.put(KEY_STORE_PATH, config.Key_Store_Path());
+		context.sharedState.put(KEY_STORE_PASS, config.Key_Store_Password());
+
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+		vip.setServiceURL(config.Management_Service_URL(), config.Authentication_Service_URL(),
+				config.Query_Service_URL(), config.SDK_Service_URL());
+
+		vip.setKeyStorePasswod(config.Key_Store_Password());
+		vip.setKeyStorePath(config.Key_Store_Path());
+		vip.setUserName(context.sharedState.get(SharedStateConstants.USERNAME).asString());
+
+		return goToNext().build();
+	}
 
 }

@@ -12,7 +12,7 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.TextOutputCallback;
 import org.forgerock.util.Strings;
 import com.google.common.collect.ImmutableList;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
@@ -33,7 +33,7 @@ import static com.symantec.tree.config.Constants.ACTIVATION_CODE;
 public class VIPSDKEnterCredentialId extends SingleOutcomeNode {
 
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPEnterCredentialId";
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPSDKEnterCredentialId.class);
 
 	/**
 	 * Configuration for the node.
@@ -55,7 +55,7 @@ public class VIPSDKEnterCredentialId extends SingleOutcomeNode {
      * @return password callback
      */
 	private Action collectCredentialId(TreeContext context) {
-		debug.message("collecting CredentialId.........");
+		logger.info("collecting CredentialId.........");
 		List<Callback> cbList = new ArrayList<>(2);
 		
 		String activationCode = context.sharedState.get(ACTIVATION_CODE).asString();
@@ -73,7 +73,7 @@ public class VIPSDKEnterCredentialId extends SingleOutcomeNode {
 	 */
     @Override
     public Action process(TreeContext context) {
-    	debug.message("Collecting Credential id");
+    	logger.info("Collecting Credential id");
         JsonValue sharedState = context.sharedState;
         
         return context.getCallback(PasswordCallback.class)
@@ -83,7 +83,7 @@ public class VIPSDKEnterCredentialId extends SingleOutcomeNode {
                 .map(password -> goToNext()
 					.replaceSharedState(sharedState.copy().put(CRED_ID, password)).build())
                 .orElseGet(() -> {
-                	debug.message("Enter Credential ID");
+                	logger.info("Enter Credential ID");
                     return collectCredentialId(context);
                 });
     }

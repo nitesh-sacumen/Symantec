@@ -1,7 +1,6 @@
 package com.symantec.tree.nodes;
 
-import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import com.symantec.tree.config.Constants.VIPIA;
 import com.symantec.tree.request.util.EvaluateRisk;
 import com.symantec.tree.request.util.GetVIPServiceURL;
@@ -10,8 +9,6 @@ import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.*;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.i18n.PreferredLocales;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -38,7 +35,7 @@ public class VIPIAEvaluateRisk implements Node {
 
 	private EvaluateRisk evaluateRisk;
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPIACheck";
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPIAEvaluateRisk.class);
 
 	/**
 	 * Configuration for the node.
@@ -99,7 +96,7 @@ public class VIPIAEvaluateRisk implements Node {
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
-		debug.message("Evaluating IA Request....");
+		logger.info("Evaluating IA Request....");
 		JsonValue sharedState = context.sharedState;
 		JsonValue transientState = context.sharedState;
 		
@@ -114,7 +111,7 @@ public class VIPIAEvaluateRisk implements Node {
 		
 		//Getting Auth data
 		String authData = sharedState.get(VIPIA.AUTH_DATA).asString();
-		debug.message("auth data in ia check is "+authData);
+		logger.debug("auth data in ia check is "+authData);
         
 		// Executing Evaluate Risk API
 		HashMap<String, String> evaluateRiskResponseAttribute = evaluateRisk.evaluateRisk(
@@ -124,10 +121,10 @@ public class VIPIAEvaluateRisk implements Node {
 		//Getting status, event id, device tag and score from Evaluate Risk response.
 		String status = evaluateRiskResponseAttribute.get("status");
 		
-		debug.message("status is in ia check: " + status);
-		debug.message("EVENT_ID is in ia check: " + evaluateRiskResponseAttribute.get(VIPIA.EVENT_ID));
-        debug.message("DEVICE_TAG is in ia check: " + evaluateRiskResponseAttribute.get(VIPIA.DEVICE_TAG));
-        debug.message("SCORE is in ia check: " + evaluateRiskResponseAttribute.get(VIPIA.SCORE));
+		logger.debug("status is in ia check: " + status);
+		logger.debug("EVENT_ID is in ia check: " + evaluateRiskResponseAttribute.get(VIPIA.EVENT_ID));
+        logger.debug("DEVICE_TAG is in ia check: " + evaluateRiskResponseAttribute.get(VIPIA.DEVICE_TAG));
+        logger.debug("SCORE is in ia check: " + evaluateRiskResponseAttribute.get(VIPIA.SCORE));
 		
 		sharedState.put(VIPIA.EVENT_ID, evaluateRiskResponseAttribute.get(VIPIA.EVENT_ID));
 		sharedState.put(VIPIA.DEVICE_TAG, evaluateRiskResponseAttribute.get(VIPIA.DEVICE_TAG));

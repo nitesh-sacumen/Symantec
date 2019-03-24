@@ -10,7 +10,7 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 import org.forgerock.util.Strings;
 import com.google.common.collect.ImmutableList;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
@@ -18,7 +18,6 @@ import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.OutcomeProvider;
-import org.forgerock.openam.auth.node.api.SharedStateConstants;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.util.i18n.PreferredLocales;
 import static com.symantec.tree.config.Constants.*;
@@ -36,7 +35,7 @@ import static com.symantec.tree.config.Constants.*;
 @Node.Metadata(outcomeProvider = VIPPollPushReg.SymantecOutcomeProvider.class, configClass = VIPPollPushReg.Config.class)
 public class VIPPollPushReg implements Node {
 	
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPPollPushReg.class);
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPPollPushReg";
 
 	private AuthPollPush pollPush;
@@ -61,7 +60,7 @@ public class VIPPollPushReg implements Node {
 	 * Main logic of the node.
 	 */
 	public Action process(TreeContext context) {
-		debug.message("Entered into ValidaePush porcess method");
+		logger.info("Entered into ValidaePush porcess method");
 		return verifyAuth(context);
 
 	}
@@ -72,7 +71,7 @@ public class VIPPollPushReg implements Node {
 	 * @return Action
 	 */
 	private Action verifyAuth(TreeContext context) {
-		debug.message("Entered into verifyAuth method");
+		logger.info("Entered into verifyAuth method");
 		String credId = context.sharedState.get(CRED_ID).asString();
 		String credType = STANDARD_OTP;
 		JsonValue newSharedState = context.sharedState.copy();
@@ -81,6 +80,8 @@ public class VIPPollPushReg implements Node {
 		try {
 
 			String result = pollPush.authPollPush(context.sharedState.get(TXN_ID).asString(),vip.getKeyStorePath(),vip.getKeyStorePasswod());
+			
+			logger.debug("status of authPollPush request response is "+result);
 
 			if (result != null) {
 
@@ -107,7 +108,7 @@ public class VIPPollPushReg implements Node {
 			}
 
 		} catch (Exception e) {
-			debug.error(e.getMessage());
+			logger.error(e.getMessage());
 		}
 
 		return goTo(Symantec.FALSE).replaceSharedState(newSharedState).build();
@@ -157,7 +158,7 @@ public class VIPPollPushReg implements Node {
 	}
 
 	private void deleteCredential(String userName, String credId, String credType,TreeContext context) throws NodeProcessException {
-		debug.message("deleting credential");
+		logger.debug("deleting credential");
 		DeleteCredential delCred = new DeleteCredential();
 		String key_store = context.sharedState.get("key_store_path").asString();
 		String key_store_pass = context.sharedState.get("key_store_pass").asString();

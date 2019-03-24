@@ -6,14 +6,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import com.symantec.tree.config.Constants.VIPDR;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.*;
@@ -29,7 +28,7 @@ import java.security.cert.X509Certificate;
  */
 public class DeviceHygieneVerification {
 	
-	private final Debug debug = Debug.getInstance("VIP");
+private Logger logger = LoggerFactory.getLogger(DeviceHygieneVerification.class);
 
 
 	private String mapJwaToJcaSignatureAlgorithm(String jwtSigAlg) {
@@ -56,10 +55,10 @@ public class DeviceHygieneVerification {
 			cert.verify(caCert.getPublicKey());
 			return true;
 		} catch (CertificateException | InvalidKeyException | SignatureException e) {
-			debug.message("Failed to verify client certificate due to invalid certificate data.");
+			logger.debug("Failed to verify client certificate due to invalid certificate data.");
 			return false;
 		} catch (NoSuchAlgorithmException | NoSuchProviderException e) {
-			debug.message("Failed to verify client certificate due to incorrect algorithm or provider.");
+			logger.debug("Failed to verify client certificate due to incorrect algorithm or provider.");
 			return false;
 		}
 	}
@@ -77,7 +76,7 @@ public class DeviceHygieneVerification {
 
 			raw_payload = new String(Base64.decodeBase64(payload));
 			raw_header = new String(Base64.decodeBase64(header));
-			debug.message("payload data is " + raw_payload);
+			logger.debug("payload data is " + raw_payload);
 			JSONObject headerJsonObject = new JSONObject(raw_header);
 
 			String sigAlg = headerJsonObject.getString("alg");
@@ -104,11 +103,11 @@ public class DeviceHygieneVerification {
 			sig.update(tbs.getBytes());
 			if (!sig.verify(sigBytes)) {
 				result[0] = VIPDR.DEVICE_HYGIENE_VERIFICATION_FAILURE_MSG;
-				debug.message("device verification failed");
+				logger.error("device verification failed");
 
 			} else {
 				result[0] = VIPDR.DEVICE_HYGIENE_VERIFICATION_SUCCESS_MSG;
-				debug.message("Device verification successful");
+				logger.info("Device verification successful");
 
 			}
 
@@ -134,18 +133,21 @@ public class DeviceHygieneVerification {
 			ByteArrayInputStream bis = new ByteArrayInputStream(temp.getBytes());
 			if (!isChainedToCA(certificate, (X509Certificate) factory.generateCertificate(bis))) {
 				result[1] = VIPDR.DEVICE_HYGIENE_VERIFICATION_WITH_VIP_FAILURE_MSG;
-				debug.message("The certificate is not chained to the trusted VIP CA.");
+				logger.error("The certificate is not chained to the trusted VIP CA.");
 
 			} else {
 				result[1] = VIPDR.DEVICE_HYGIENE_VERIFICATION_WITH_VIP_SUCCESS_MSG;
-				debug.message("The certificate is chained to the trusted VIP CA.");
+				logger.info("The certificate is chained to the trusted VIP CA.");
 			}
 
 		} catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
-			debug.message("signature verification failed with an exception");
+			logger.error("signature verification failed with an exception");
+			
 			e.printStackTrace();
 			throw new NodeProcessException(e.getLocalizedMessage());
 		} catch (CertificateException | JSONException exp) {
+			logger.error("signature verification failed with an exception");
+
 			exp.printStackTrace();
 			throw new NodeProcessException(exp.getLocalizedMessage());
 		}

@@ -5,15 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import static com.symantec.tree.config.Constants.*;
-
 import com.google.common.collect.ImmutableList;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import com.symantec.tree.request.util.AddCredential;
 import com.symantec.tree.request.util.GetVIPServiceURL;
 import com.symantec.tree.request.util.VIPGetUser;
-
 import javax.inject.Inject;
-
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.*;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
@@ -30,8 +27,8 @@ import org.forgerock.util.i18n.PreferredLocales;
 @Node.Metadata(outcomeProvider = VIPAddCredential.SymantecOutcomeProvider.class, configClass = VIPAddCredential.Config.class)
 public class VIPAddCredential implements Node {
 
-	private final Debug debug = Debug.getInstance("VIP");
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPAddCredential";
+	private Logger logger = LoggerFactory.getLogger(VIPAddCredential.class);
 
 	private AddCredential addCred;
 	private VIPGetUser vipSearchUser;
@@ -57,7 +54,7 @@ public class VIPAddCredential implements Node {
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
-
+        logger.info("Adding Credentials");
 		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 		String credValue = context.sharedState.get(CRED_ID).asString();
 		
@@ -65,26 +62,27 @@ public class VIPAddCredential implements Node {
 		//Searching User in VIP data base, If it exist and register with Credential ID then it will throw error for already registered Credential ID.
 		HashMap<String, String> credentialDetail = vipSearchUser.getCredentialBindingDetail(vip.getUserName(),vip.getKeyStorePath(),vip.getKeyStorePasswod(), context);
 		if(credentialDetail!=null && credentialDetail.containsKey("OATH_TIME")&& credentialDetail.get("OATH_TIME").equalsIgnoreCase(credValue)) {
+			logger.info("Entered Credential ID is already registered, Please enter valid Credential ID or choose other option.");
 			context.sharedState.put(CREDENTIAL_ID_ERROR, "Entered Credential ID is already registered, Please enter valid Credential ID or choose other option.");
 			return goTo(Symantec.FALSE).build();
 		}
 		
 		// Adding Credential to the VIP Database
 		String statusCode = addCred.addCredential(vip.getUserName(), credValue,STANDARD_OTP,vip.getKeyStorePath(),vip.getKeyStorePasswod());
-		debug.message("isCredAdded: "+statusCode);
+		logger.debug("isCredAdded: "+statusCode);
 		
 		// Making decision based on AddCredential request response
 		if(statusCode.equalsIgnoreCase(SUCCESS_CODE)) {
-			debug.message("Crdentials is added successfully");
+			logger.info("Crdentials is added successfully");
 			return goTo(Symantec.TRUE).build();
 		}
 		else if(statusCode.equalsIgnoreCase(INVALID_CREDENIALS)||statusCode.equalsIgnoreCase(SCHEMA_INVALID)){
-			debug.message("Entered Credential ID is Invalid");
+			logger.info("Entered Credential ID is Invalid");
 			context.sharedState.put(CREDENTIAL_ID_ERROR, "Entered Credential ID is Invalid,Please enter valid Credential ID or choose other option.");
 			return goTo(Symantec.FALSE).build();
 		}
 		else {
-			debug.message("There is some error with entered Credential ID");
+			logger.info("There is some error with entered Credential ID");
 			context.sharedState.put(DISPLAY_ERROR, "Your Credential ID is disabled, Please contact to administrator");
 			return goTo(Symantec.ERROR).build();
 		}

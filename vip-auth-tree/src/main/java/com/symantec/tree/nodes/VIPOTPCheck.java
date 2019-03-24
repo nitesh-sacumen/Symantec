@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javax.inject.Inject;
 import com.google.common.collect.ImmutableList;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.*;
@@ -28,7 +28,7 @@ import org.forgerock.util.i18n.PreferredLocales;
 public class VIPOTPCheck implements Node {
 
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPOTPCheck";
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPOTPCheck.class);
 
 	private CheckVIPOtp checkOtp;
 
@@ -60,15 +60,13 @@ public class VIPOTPCheck implements Node {
 		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
 		
-		debug.message("executing CheckOtpRequest");
+		logger.info("executing CheckOtpRequest");
 		String statusCode = checkOtp.checkOtp(vip.getUserName(), otpValue,vip.getKeyStorePath(),vip.getKeyStorePasswod());
 		
+		logger.debug("Check OTP request status is "+statusCode);
+		
 		//Making decision based on CheckOtpRequest response
-		return sendOutput(statusCode, context);
-	}
-
-	private ActionBuilder goTo(Symantec outcome) {
-		return Action.goTo(outcome.name());
+		return checkOtp.sendOutput(statusCode, context);
 	}
 
 	/**
@@ -80,7 +78,7 @@ public class VIPOTPCheck implements Node {
 		 */
 		TRUE,
 		/**
-		 * Authentication failed.
+		 * Authentication failed.s
 		 */
 		FALSE,
 		/**
@@ -104,28 +102,5 @@ public class VIPOTPCheck implements Node {
 		}
 	}
 	
-	
-	/**
-	 * 
-	 * @param statusCode
-	 * @param context
-	 * @return Action Object.
-	 */
-	private Action sendOutput(String statusCode, TreeContext context) {
-		//TODO Duplicate code
-		if (statusCode.equalsIgnoreCase(SUCCESS_CODE)) {
-			return goTo(Symantec.TRUE).build();
-		}
-		
-		else if(statusCode.equalsIgnoreCase(INVALID_CREDENIALS) || statusCode.equalsIgnoreCase(AUTHENTICATION_FAILED)) {
-				context.sharedState.put(OTP_ERROR, "Entered otp Code is Invalid,Please enter valid OTP");
-				return goTo(Symantec.FALSE).build();
-		}
-		
-		else {
-			context.sharedState.put(DISPLAY_ERROR, "Your Credentials is disabled, Please contact your administrator.");
-			return goTo(Symantec.ERROR).build();
-		}
-	}
 
 }

@@ -12,7 +12,7 @@ import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.i18n.PreferredLocales;
 import com.google.common.collect.ImmutableList;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 import static org.forgerock.openam.auth.node.api.Action.send;
 
@@ -35,7 +35,7 @@ import static com.symantec.tree.config.Constants.CONFIRM_CRED_CHOICE;
 public class VIPConfirmCredential implements Node {
 
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPConfirmCredential";
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPConfirmCredential.class);
 
 	/**
 	 * Configuration for the node.
@@ -63,13 +63,13 @@ public class VIPConfirmCredential implements Node {
 		// Getting choice from user if he wants to add more credential or not.
 		List<ConfirmationCallback> confirmationCallbacks = context.getCallbacks(ConfirmationCallback.class);
         for (ConfirmationCallback cc : confirmationCallbacks) {
-			debug.message("Option type is:\t" + cc.getOptionType());
-			debug.message("Selected option is:\t" + cc.getSelectedIndex());
+			logger.debug("Option type is:\t" + cc.getOptionType());
+			logger.debug("Selected option is:\t" + cc.getSelectedIndex());
 			
 			inputChoice = SymantecConfirmCredOutcomeChoice.getChoiceByCode(cc.getSelectedIndex());
 			sharedState.put(CONFIRM_CRED_CHOICE, inputChoice);
 		}
-		debug.message("Choice value:" + inputChoice);
+		logger.debug("Choice value:" + inputChoice);
 		
 		// MAking decision based on User's choice.
 		switch (inputChoice) {

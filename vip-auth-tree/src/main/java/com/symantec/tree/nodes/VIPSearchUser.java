@@ -1,8 +1,6 @@
 package com.symantec.tree.nodes;
 
 import static com.symantec.tree.config.Constants.DISPLAY_ERROR;
-import static com.symantec.tree.config.Constants.KEY_STORE_PASS;
-import static com.symantec.tree.config.Constants.KEY_STORE_PATH;
 import static com.symantec.tree.config.Constants.MOB_NUM;
 import static com.symantec.tree.config.Constants.NO_CREDENTIALS_REGISTERED;
 import static com.symantec.tree.config.Constants.NO_CRED_REGISTERED;
@@ -12,7 +10,7 @@ import static com.symantec.tree.config.Constants.VIP_CRED_REGISTERED;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import com.symantec.tree.request.util.GetVIPServiceURL;
 import com.symantec.tree.request.util.VIPGetUser;
 import javax.inject.Inject;
@@ -23,7 +21,6 @@ import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.OutcomeProvider;
-import org.forgerock.openam.auth.node.api.SharedStateConstants;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.util.i18n.PreferredLocales;
 
@@ -37,7 +34,8 @@ import org.forgerock.util.i18n.PreferredLocales;
  */
 @Node.Metadata(outcomeProvider = VIPSearchUser.SymantecOutcomeProvider.class, configClass = VIPSearchUser.Config.class)
 public class VIPSearchUser implements Node {
-	private final Debug debug = Debug.getInstance("VIP");
+    
+	private Logger logger = LoggerFactory.getLogger(VIPSearchUser.class);
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPSearchUser";
 
 	/**
@@ -63,26 +61,27 @@ public class VIPSearchUser implements Node {
 	 * @throws NodeProcessException 
 	 */
 	@Override
-	public Action process(TreeContext context) throws NodeProcessException {	
+	public Action process(TreeContext context) throws NodeProcessException {
+		logger.info("VIP Search User");
 		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
 		String statusCode = vipSearchUser.viewUserInfo(vip.getUserName(),vip.getKeyStorePath(),vip.getKeyStorePasswod());
-        debug.message("status code in VIP Search User"+statusCode);
+        logger.debug("status code in VIP Search User"+statusCode);
 		String mobNum;
 
 			if (statusCode.equalsIgnoreCase(SUCCESS_CODE)) {
 				mobNum = vipSearchUser.getMobInfo(vip.getUserName(),vip.getKeyStorePath(),vip.getKeyStorePasswod());
-				debug.message("Phone Number in VIP Search User" + mobNum);
+				logger.debug("Phone Number in VIP Search User" + mobNum);
 
 				if (mobNum != null && mobNum.equalsIgnoreCase(NO_CRED_REGISTERED)) {
-					debug.message("No Credential Registered in VIP Search User");
+					logger.debug("No Credential Registered in VIP Search User");
 					context.transientState.put(NO_CREDENTIALS_REGISTERED, true);
 					return goTo(Symantec.FALSE).build();
 				} else if (mobNum != null && mobNum.equalsIgnoreCase(VIP_CRED_REGISTERED)) {
-					debug.message("VIP Credential Registered in VIP Search User");
+					logger.debug("VIP Credential Registered in VIP Search User");
 					return goTo(Symantec.TRUE).build();
 				} else {
-					debug.message("Fall back options in VIP Search User");
+					logger.debug("Fall back options in VIP Search User");
 
 					context.sharedState.put(MOB_NUM, mobNum);
 					return goTo(Symantec.TRUE).build();

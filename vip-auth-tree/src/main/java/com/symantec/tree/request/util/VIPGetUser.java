@@ -5,7 +5,7 @@ import org.forgerock.openam.auth.node.api.TreeContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 
 /**
@@ -18,7 +18,7 @@ import java.util.HashMap;
 
 public class VIPGetUser {
 
-	private final Debug debug = Debug.getInstance("VIP");
+private Logger logger = LoggerFactory.getLogger(VIPGetUser.class);
 
 	/**
 	 * 
@@ -33,13 +33,11 @@ public class VIPGetUser {
 
 		String userPayload = getViewUserPayload(userId);
 		
-		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), userPayload);
+		logger.info("request payload is "+userPayload);
 
-		String status;
-	
-		status = doc.getElementsByTagName("status").item(0).getTextContent();
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), userPayload);
 		
-		return status;
+		return doc.getElementsByTagName("status").item(0).getTextContent();
 	}
 
 	/**
@@ -48,7 +46,7 @@ public class VIPGetUser {
 	 * @return GetUserInfoRequest Payload
 	 */
 	private String getViewUserPayload(String userId) {
-		debug.message("getting GetUserInfoRequest payload");
+		logger.info("getting GetUserInfoRequest payload");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "<soapenv:Header/>"
 				+ "<soapenv:Body>" + "<vip:GetUserInfoRequest>" + "<vip:requestId>" + Math.round(Math.random() * 100000)
@@ -101,7 +99,7 @@ public class VIPGetUser {
 				}
 			} else {
 				String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
-				debug.message("Status is:\t" + statusMessage);
+				logger.debug("Status is:\t" + statusMessage);
 				if (statusMessage != null && statusMessage.equalsIgnoreCase("Success")) {
 					return "NO_CRED_REGISTERED";
 				}

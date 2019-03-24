@@ -1,24 +1,9 @@
 package com.symantec.tree.request.util;
 
-import java.io.IOException;
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -28,7 +13,7 @@ import com.sun.identity.shared.debug.Debug;
  *
  */
 public class GenerateActivationCode {
-	private final Debug debug = Debug.getInstance("VIP");
+private Logger logger = LoggerFactory.getLogger(GenerateActivationCode.class);
 
 	/**
 	 * 
@@ -40,7 +25,7 @@ public class GenerateActivationCode {
 		String status;
 
 		String payLoad = createPayload();
-		debug.message("Request Payload: " + payLoad);
+		logger.debug("Request Payload: " + payLoad);
 
 		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
 
@@ -51,7 +36,7 @@ public class GenerateActivationCode {
 			activationCode = " ";
 
 		String code = status + "," + activationCode;
-		debug.message("Status and TransactionId \t" + code);
+		logger.debug("Status and TransactionId \t" + code);
 		return code;
 	}
 
@@ -60,7 +45,7 @@ public class GenerateActivationCode {
 	 * @return GetActivationCode payload
 	 */
 	private String createPayload() {
-//		logger.info("gtting GetActivationCode payload");
+		logger.info("gtting GetActivationCode payload");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:vip=\"http://www"
 				+ ".verisign.com/2006/08/vipservice\">" + "   <soapenv:Header/>" + "   <soapenv:Body>"
 				+ "      <vip:GetActivationCode Version=\"1.0\" Id=" + "\"" + Math.round(Math.random() * 100000) + "\">"

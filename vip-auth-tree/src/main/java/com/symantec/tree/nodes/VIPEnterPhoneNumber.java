@@ -12,7 +12,7 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.TextOutputCallback;
 import org.forgerock.util.Strings;
 import com.google.common.collect.ImmutableList;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
@@ -40,7 +40,7 @@ import static com.symantec.tree.config.Constants.*;
 public class VIPEnterPhoneNumber implements Node {
 
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPEnterPhoneNumber";
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPEnterPhoneNumber.class);
 	private SMSVoiceRegister svRegister;
 
 	/**
@@ -62,33 +62,35 @@ public class VIPEnterPhoneNumber implements Node {
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
-		debug.message("Collect PhoneNumber started");
+		logger.info("Collect PhoneNumber started");
 		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
 		JsonValue sharedState = context.sharedState;
 		
 		return context.getCallback(NameCallback.class).map(NameCallback::getName).map(String::new)
 				.filter(name -> !Strings.isNullOrEmpty(name)).map(name -> {
-					debug.message("CredID has been collected and placed  into the Shared State");
+					logger.info("CredID has been collected and placed  into the Shared State");
 					String credType = context.sharedState.get(CRED_CHOICE).asString();
 					if (credType.equalsIgnoreCase(SMS)) {
-						debug.message("calling sms register method");
+						logger.info("calling sms register method");
 						String status = null;
 						try {
 							status = svRegister.smsRegister(name,vip.getKeyStorePath(),vip.getKeyStorePasswod());
 							sharedState.put(MOB_NUM, name);
 						} catch (NodeProcessException e) {
+							logger.error("Not able to complete smsRegister successfully");
 							e.printStackTrace();
 						}
 						return sendOutput(status, context);
 
 					} else if (credType.equalsIgnoreCase(VOICE)) {
 						String status = null;
-						debug.message("calling voice register method");
+						logger.debug("calling voice register method");
 						try {
 							status = svRegister.voiceRegister(name,vip.getKeyStorePath(),vip.getKeyStorePasswod());
 							sharedState.put(MOB_NUM, name);
 						} catch (NodeProcessException e) {
+							logger.error("Not able to complete voiceRegister successfully");
 							e.printStackTrace();
 						}
 						return sendOutput(status, context);
@@ -99,7 +101,7 @@ public class VIPEnterPhoneNumber implements Node {
 					}
 				
 			     }).orElseGet(() -> {
-					debug.message("Enter Credential ID");
+					logger.info("Enter Credential ID");
 					return collectOTP(context);
 				});
 	}

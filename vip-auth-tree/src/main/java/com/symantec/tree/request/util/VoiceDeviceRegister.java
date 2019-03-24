@@ -3,7 +3,7 @@ package com.symantec.tree.request.util;
 import java.util.Random;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.w3c.dom.Document;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -13,7 +13,7 @@ import com.sun.identity.shared.debug.Debug;
  */
 public class VoiceDeviceRegister {
 
-	private final Debug debug = Debug.getInstance("VIP");
+private Logger logger = LoggerFactory.getLogger(VoiceDeviceRegister.class);
 
 	/**
 	 * 
@@ -30,7 +30,7 @@ public class VoiceDeviceRegister {
 
 		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
 
-		debug.message("Request Payload: " + payLoad);
+		logger.debug("Request Payload: " + payLoad);
 
 		String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
 		if ("success".equalsIgnoreCase(statusMessage)) {
@@ -48,7 +48,7 @@ public class VoiceDeviceRegister {
 	 * @return SendOtpRequest payload
 	 */
 	private String getViewUserPayload(String userName, String credValue) {
-		debug.message("getting SendOtpRequest ");
+		logger.info("getting SendOtpRequest ");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "<soapenv:Header/>"
 				+ "<soapenv:Body>" + "<vip:SendOtpRequest>" + "<vip:requestId>" + new Random().nextInt(10) + 11111

@@ -11,6 +11,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import com.symantec.tree.nodes.VIPOTPCheck;
+import com.symantec.tree.nodes.VIPOTPCheck.Symantec;
 import com.symantec.tree.request.util.CheckVIPOtp;
 
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import org.forgerock.openam.auth.node.api.ExternalRequestContext;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.SharedStateConstants;
 import org.forgerock.openam.auth.node.api.TreeContext;
+import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.openam.core.CoreWrapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -57,6 +59,8 @@ public class VIPOtpCheckTest {
 		TreeContext context = getTreeContext(new HashMap<>());
 
 		given(checkOtp.checkOtp(any(), any(), any(), any())).willReturn("0000");
+		given(checkOtp.sendOutput(any(), any())).willReturn(goTo(Symantec.TRUE).build());
+
 		context.sharedState.put(SharedStateConstants.USERNAME, "vip123");
 		context.sharedState.put(SECURE_CODE, "78695981");
 		context.sharedState.put(KEY_STORE_PATH,"C://Users//keystore.ks");
@@ -76,6 +80,8 @@ public class VIPOtpCheckTest {
 		TreeContext context = getTreeContext(new HashMap<>());
 
 		given(checkOtp.checkOtp(any(), any(), any(), any())).willReturn("6009");
+		given(checkOtp.sendOutput(any(), any())).willReturn(goTo(Symantec.FALSE).build());
+
 		context.sharedState.put(SharedStateConstants.USERNAME, "vip123");
 		context.sharedState.put(SECURE_CODE, "78695981");
 		context.sharedState.put(KEY_STORE_PATH,"C://Users//keystore.ks");
@@ -85,7 +91,6 @@ public class VIPOtpCheckTest {
 		Action action = node.process(context);
 		
 		//THEN
-		assertThat(action.callbacks).isEmpty();
 		assertThat(action.outcome).isEqualTo("FALSE");
 
 	}
@@ -95,5 +100,9 @@ public class VIPOtpCheckTest {
 	private TreeContext getTreeContext(Map<String, String[]> parameters) {
 		return new TreeContext(JsonValue.json(object(1)),
 				new ExternalRequestContext.Builder().parameters(parameters).build(), emptyList());
+	}
+	
+	private ActionBuilder goTo(Symantec outcome) {
+		return Action.goTo(outcome.name());
 	}
 }

@@ -19,7 +19,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -30,7 +30,7 @@ import com.sun.identity.shared.debug.Debug;
  */
 public class SmsDeviceRegister {
 
-	private final Debug debug = Debug.getInstance("VIP");
+private Logger logger = LoggerFactory.getLogger(SmsDeviceRegister.class);
 
 	/**
 	 * 
@@ -42,7 +42,7 @@ public class SmsDeviceRegister {
 	public Boolean smsDeviceRegister(String userName, String credValue, String key_store, String key_store_pass)
 			throws NodeProcessException {
 		String payLoad = getViewUserPayload(userName, credValue);
-		debug.message("Request Payload: " + payLoad);
+		logger.debug("Request Payload: " + payLoad);
 
 		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
 
@@ -64,7 +64,7 @@ public class SmsDeviceRegister {
 	 * @return SendOtpRequest payoad
 	 */
 	private String getViewUserPayload(String userName, String credValue) {
-		debug.message("getting SendOtpRequest payload");
+		logger.info("getting SendOtpRequest payload");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "<soapenv:Header/>"
 				+ "<soapenv:Body>" + "<vip:SendOtpRequest>" + "<vip:requestId>" + new Random().nextInt(10) + 11111

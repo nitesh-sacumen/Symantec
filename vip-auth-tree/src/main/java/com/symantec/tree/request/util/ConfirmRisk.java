@@ -1,25 +1,9 @@
 package com.symantec.tree.request.util;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.Random;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -28,7 +12,7 @@ import com.sun.identity.shared.debug.Debug;
  *
  */
 public class ConfirmRisk {
-	private final Debug debug = Debug.getInstance("VIP");
+private Logger logger = LoggerFactory.getLogger(ConfirmRisk.class);
 		
 	/**
 	 * 
@@ -41,7 +25,7 @@ public class ConfirmRisk {
 	 */
 	public String confirmRisk(String userName,String eventID,String key_store,String key_store_pass) throws NodeProcessException {
 		String payLoad = getPayload(userName,eventID);
-		debug.message("Confirm Risk Request Payload: " + payLoad);
+		logger.debug("Confirm Risk Request Payload: " + payLoad);
 		
 		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
 
@@ -49,7 +33,7 @@ public class ConfirmRisk {
 		
 		status = doc.getElementsByTagName("status").item(0).getTextContent();
 					
-	    debug.message("Confirm Risk request response code is "+status);
+	    logger.debug("Confirm Risk request response code is "+status);
 		return status;
 	}
 	
@@ -60,7 +44,7 @@ public class ConfirmRisk {
 	 * @return Confirm Risk request payload
 	 */
 	private String getPayload(String userName,String eventID) {
-		debug.message("getting payload for Confirm Risk");
+		logger.info("getting payload for Confirm Risk");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 		       + "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "<soapenv:Header/>"
 		       + "<soapenv:Body>" + "<vip:ConfirmRiskRequest>" + "<vip:requestId>" + new Random().nextInt(10) + 11111

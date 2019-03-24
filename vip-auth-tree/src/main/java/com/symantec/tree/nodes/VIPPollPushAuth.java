@@ -9,7 +9,7 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 import org.forgerock.util.Strings;
 import com.google.common.collect.ImmutableList;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
@@ -34,7 +34,7 @@ import static com.symantec.tree.config.Constants.*;
 @Node.Metadata(outcomeProvider = VIPPollPushAuth.SymantecOutcomeProvider.class, configClass = VIPPollPushAuth.Config.class)
 public class VIPPollPushAuth implements Node {
 
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPPollPushAuth.class);
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPPollPushAuth";
 
 	private AuthPollPush pollPush;
@@ -68,7 +68,7 @@ public class VIPPollPushAuth implements Node {
 	 * @return next action.
 	 */
 	private Action verifyAuth(TreeContext context) {
-		debug.message("Entered into verifyAuth method");
+		logger.info("Entered into verifyAuth method");
 		JsonValue newSharedState = context.sharedState.copy();
 		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
@@ -76,6 +76,8 @@ public class VIPPollPushAuth implements Node {
             
 			//Executing PollPushStatusRequest
 			String result = pollPush.authPollPush(context.sharedState.get(TXN_ID).asString(),vip.getKeyStorePath(),vip.getKeyStorePasswod());
+			
+			logger.debug("status of authPollPush request response is result");
 
 			//Making decision based on PollPushStatusRequest response
 			if (result != null) {
@@ -101,7 +103,7 @@ public class VIPPollPushAuth implements Node {
 			}
 
 		} catch (Exception e) {
-			debug.error(e.getMessage());
+			logger.error(e.getMessage());
 		}
 
 		return goTo(Symantec.FALSE).replaceSharedState(newSharedState).build();

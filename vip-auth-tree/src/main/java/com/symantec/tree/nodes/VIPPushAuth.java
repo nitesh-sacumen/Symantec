@@ -3,7 +3,7 @@
 import static com.symantec.tree.config.Constants.*;
 
 import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import com.symantec.tree.config.Constants;
 import com.symantec.tree.request.util.AuthenticateUser;
 import com.symantec.tree.request.util.GetVIPServiceURL;
@@ -25,7 +25,7 @@ import org.forgerock.openam.auth.node.api.*;
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class, configClass = VIPPushAuth.Config.class)
 public class VIPPushAuth extends AbstractDecisionNode {
 
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPPushAuth.class);
 
 	private AuthenticateUser pushAuthUser;
 	private final Map<String, String> vipPushCodeMap = new HashMap<>();
@@ -62,13 +62,13 @@ public class VIPPushAuth extends AbstractDecisionNode {
 	public VIPPushAuth(@Assisted Config config,AuthenticateUser pushAuthUser) {
 
 		this.config = config;
-		debug.message("Display Message Text:", config.displayMsgText());
+		logger.debug("Display Message Text:", config.displayMsgText());
 		vipPushCodeMap.put(Constants.PUSH_DISPLAY_MESSAGE_TEXT, config.displayMsgText());
 
-		debug.message("Display Message Title", config.displayMsgTitle());
+		logger.debug("Display Message Title", config.displayMsgTitle());
 		vipPushCodeMap.put(Constants.PUSH_DISPLAY_MESSAGE_TITLE, config.displayMsgTitle());
 
-		debug.message("Display Message Profile", config.displayMsgProfile());
+		logger.debug("Display Message Profile", config.displayMsgProfile());
 		vipPushCodeMap.put(Constants.PUSH_DISPLAY_MESSAGE_PROFILE, config.displayMsgProfile());
 
 		this.pushAuthUser = pushAuthUser;
@@ -80,13 +80,16 @@ public class VIPPushAuth extends AbstractDecisionNode {
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
+		logger.info("VIP Push Auth");
 		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
 		String transactionId = pushAuthUser.authUser(vip.getUserName(), vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_TEXT),
 				vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_TITLE),
 				vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_PROFILE),
 				vip.getKeyStorePath(),vip.getKeyStorePasswod());
-		debug.message("TransactionId is " + transactionId);
+		
+		logger.debug("TransactionId is " + transactionId);
+		
 		if (transactionId != null && !transactionId.isEmpty()) {
 			context.sharedState.put(TXN_ID, transactionId);
 			return goTo(true).build();

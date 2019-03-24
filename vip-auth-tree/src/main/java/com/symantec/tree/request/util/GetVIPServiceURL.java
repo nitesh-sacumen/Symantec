@@ -1,11 +1,7 @@
 package com.symantec.tree.request.util;
 
-import static com.symantec.tree.config.Constants.AUTHENTICATION_SERVICE_URL;
-import static com.symantec.tree.config.Constants.MANAGEMENT_SERVICE_URL;
-import static com.symantec.tree.config.Constants.QUERY_SERVICE_URL;
-import static com.symantec.tree.config.Constants.SDK_SERVICE_URL;
-
-import org.forgerock.openam.auth.node.api.TreeContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Hashtable;
 /**
@@ -17,6 +13,8 @@ import java.util.Hashtable;
 public class GetVIPServiceURL {
 	private static GetVIPServiceURL getVIPServiceUrl = null;
 	final static Hashtable<String,String> serviceUrls = new Hashtable<>();
+	private Logger logger = LoggerFactory.getLogger(GetVIPServiceURL.class);
+
 	private String keyStorePath;
 	private String keyStorePasswod;
 	private String userName;
@@ -58,6 +56,11 @@ public class GetVIPServiceURL {
 	}
 	
 	public void setServiceURL(String managementServiceURL, String authenticationServiceURL, String queryServiceURL, String SDKServiceURL) {
+		logger.debug("managementServiceURL is "+managementServiceURL);
+		logger.debug("AuthenticationServiceURL is "+authenticationServiceURL);
+        logger.debug("queryServiceURL is "+queryServiceURL);
+        logger.debug("SDKServiceURL is "+SDKServiceURL);
+
 		serviceUrls.put("ManagementServiceURL",managementServiceURL);
 		serviceUrls.put("AuthenticationServiceURL",authenticationServiceURL);
 		serviceUrls.put("QueryServiceURL", queryServiceURL);

@@ -10,7 +10,7 @@ import org.forgerock.util.i18n.PreferredLocales;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import com.symantec.tree.config.Constants.VIPIA;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class VIPIARiskScoreDecision implements Node{
 	
 	private final Config config;
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPIARiskScoreDecision";
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPIARiskScoreDecision.class);
 	
 	
 	/**
@@ -92,20 +92,20 @@ public class VIPIARiskScoreDecision implements Node{
 	 */
 	@Override
 	public Action process(TreeContext context) {
-		debug.message("Making Decision based on score......");
+		logger.info("Making Decision based on score......");
 		String score = context.transientState.get(VIPIA.SCORE).asString();
 		int RiskScore = Integer.parseInt(score);
 		
 		if (RiskScore <= config.low_threshold()) {
-			debug.message("Score is LOW");
+			logger.info("Score is LOW");
 			return goTo(Symantec.LOW).build();
 		}
 		else if((config.low_threshold() < RiskScore)&& (config.high_threshold() >= RiskScore)) {
-			debug.message("Score is MEDIUM");
+			logger.info("Score is MEDIUM");
 			return goTo(Symantec.MEDIUM).build();
 		}
 		else {
-			debug.message("Score is HIGH");
+			logger.info("Score is HIGH");
 			return goTo(Symantec.HIGH).build();
 		}
 	}

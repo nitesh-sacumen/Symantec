@@ -13,14 +13,13 @@ import javax.security.auth.callback.TextOutputCallback;
 import com.google.common.collect.ImmutableList;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
 import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.OutcomeProvider;
-import org.forgerock.openam.auth.node.api.SharedStateConstants;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.Strings;
@@ -28,9 +27,6 @@ import org.forgerock.util.i18n.PreferredLocales;
 import com.symantec.tree.config.Constants.VIPIA;
 import com.symantec.tree.request.util.DenyRisk;
 import com.symantec.tree.request.util.GetVIPServiceURL;
-
-import static com.symantec.tree.config.Constants.*;
-
 /**
  * 
  * @author Sacumen (www.sacumen.com)
@@ -46,7 +42,7 @@ import static com.symantec.tree.config.Constants.*;
 @Node.Metadata(outcomeProvider = VIPIARegistration.SymantecOutcomeProvider.class, configClass = VIPIARegistration.Config.class)
 public class VIPIARegistration implements Node {
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPIARegistration";
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPIARegistration.class);
 	private DenyRisk denyRisk;
 
 	/**
@@ -131,6 +127,7 @@ public class VIPIARegistration implements Node {
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
+		logger.info("VIP IA Registeration");
 		
 		//Getting auth data through mobile.
 		String mobileAuthData = context.sharedState.get(VIPIA.MOBILE_AUTH_DATA).asString();
@@ -148,7 +145,7 @@ public class VIPIARegistration implements Node {
 	}
 
 	private Action processForWeb(TreeContext context) throws NodeProcessException {
-		debug.message("VIP registration for web flow.......");
+		logger.info("VIP registration for web flow.......");
 		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
 
@@ -161,7 +158,7 @@ public class VIPIARegistration implements Node {
 		if (result.isPresent()) {
 			
 			// Adding auth data to shared state
-			debug.message("auth data in IA Registration is " + result.get());
+			logger.debug("auth data in IA Registration is " + result.get());
 			sharedState.put(VIPIA.DEVICE_FINGERPRINT, result.get());
 
 			//Getting device friendly name
@@ -173,7 +170,7 @@ public class VIPIARegistration implements Node {
 					deviceFriendlyName,vip.getKeyStorePath(),
 					vip.getKeyStorePasswod());
 
-			debug.message("status in vip ia registration is " + status);
+			logger.debug("status in vip ia registration is " + status);
 
 			// Making decision based on Deny Risk request response
 			if (status.equals(VIPIA.REGISTERED)) {
@@ -188,7 +185,7 @@ public class VIPIARegistration implements Node {
             String setAuthData = setAuthDataScriptString(sharedState.get(VIPIA.DEVICE_TAG).asString(),
 														 sharedState.get(VIPIA.SCRIPT_URL).asString());
 
-			debug.message("setAuthData script is " + setAuthData);
+			logger.debug("setAuthData script is " + setAuthData);
 
 			//Script output call back to execute script on forgerock platform
 			ScriptTextOutputCallback setAuthDataScriptOutputCallback = new ScriptTextOutputCallback(setAuthData);
@@ -204,8 +201,7 @@ public class VIPIARegistration implements Node {
 
 	private Action processForMobile(TreeContext context) throws NodeProcessException {
 
-		debug.message("vip registration for Mobile..........");
-		JsonValue sharedState = context.sharedState;
+		logger.info("vip registration for Mobile..........");
 		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
 
@@ -215,8 +211,8 @@ public class VIPIARegistration implements Node {
 			String eventID = context.getCallbacks(HiddenValueCallback.class).get(0).getValue();
 			String authData = context.getCallbacks(HiddenValueCallback.class).get(1).getValue();
 
-			debug.message("event id is " + eventID);
-			debug.message("auth data is " + authData);
+			logger.debug("event id is " + eventID);
+			logger.debug("auth data is " + authData);
 
 			//Getting device friendly name
 			String deviceFriendlyName = VIPIA.DEVICE_FRIENDLY_NAME;
@@ -226,7 +222,7 @@ public class VIPIARegistration implements Node {
 					authData, deviceFriendlyName,vip.getKeyStorePath(),
 					vip.getKeyStorePasswod());
 
-			debug.message("status in vip ia registration is " + status);
+			logger.debug("status in vip ia registration is " + status);
 
 			//Making decision based on Deny Risk request response.
 			if (status.equals(VIPIA.REGISTERED)) {

@@ -8,7 +8,7 @@ import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -23,12 +23,11 @@ import com.sun.identity.shared.debug.Debug;
  * This node having true/false outcome. true is connected to "Set Session Properties" Node and false is connected to "Success".
  */
 
-@Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class, configClass =
-VIPDRDataEval.Config.class)
+@Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class, configClass =VIPDRDataEval.Config.class)
 public class VIPDRDataEval extends AbstractDecisionNode{
 	
 	private final Config config;
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPDRDataEval.class);
 	
 	/**
 	 * Configuration for the node.
@@ -53,7 +52,7 @@ public class VIPDRDataEval extends AbstractDecisionNode{
 		 sslStripDetected,
 		 sslMITMDetected,
 		 contentTamperDetected,
-		 usbDebugEnabled,
+		 usbdebugEnabled,
 		 dnsSpoofDetected,
 		 touchIDDisabled,
 		 osTamper,
@@ -70,13 +69,13 @@ public class VIPDRDataEval extends AbstractDecisionNode{
 	
 	public Action process(TreeContext context) {
 
-		debug.message("Evaluating DR data...");
+		logger.info("Evaluating DR data...");
 		JsonValue sharedState = context.sharedState;
 
 		String value = config.DRDataFields().toString();
 		
-		debug.message("value coming from configuration is " + value);
-		debug.message("value coming from shared state is " + sharedState.get(value).asString());
+		logger.debug("value coming from configuration is " + value);
+		logger.debug("value coming from shared state is " + sharedState.get(value).asString());
 		
 		if(sharedState.get(value).asString().equalsIgnoreCase("\"true\"")) {
 			return goTo(true).build();

@@ -1,7 +1,8 @@
 package com.symantec.tree.nodes;
 
 import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.sun.identity.sm.RequiredValueValidator;
 import com.symantec.tree.request.util.GetVIPServiceURL;
 import com.symantec.tree.request.util.SmsDeviceRegister;
@@ -25,16 +26,17 @@ import static com.symantec.tree.config.Constants.*;
 
 /**
  * 
- * @author Sacumen(www.sacumen.com) <br> <br>
+ * @author Sacumen(www.sacumen.com) <br>
+ *         <br>
  * @category Node
- * @Descrition "VIP OTPAuth Creds" node with SMS, VOICE, ERROR and TOKEN outcome. If
- *             SMS,TOKEN and VOICE, it will go to "VIP Enter SecurityCode/OTP". If
- *             ERROR, go to "VIP Display Error".
+ * @Descrition "VIP OTPAuth Creds" node with SMS, VOICE, ERROR and TOKEN
+ *             outcome. If SMS,TOKEN and VOICE, it will go to "VIP Enter
+ *             SecurityCode/OTP". If ERROR, go to "VIP Display Error".
  *
  */
 @Node.Metadata(outcomeProvider = VIPOTPAuth.OTPAuthOutcomeProvider.class, configClass = VIPOTPAuth.Config.class)
 public class VIPOTPAuth implements Node {
-	private final Debug debug = Debug.getInstance("VIP");
+	private Logger logger = LoggerFactory.getLogger(VIPOTPAuth.class);
 
 	private final Config config;
 	private VoiceDeviceRegister voiceDeviceRegister;
@@ -70,65 +72,66 @@ public class VIPOTPAuth implements Node {
 	 */
 	@Override
 	public Action process(TreeContext context) {
-		debug.message("Selecting option from SMS/VOICE/TOKEN");
+		logger.info("Selecting option from SMS/VOICE/TOKEN");
 		JsonValue sharedState = context.sharedState;
 		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
-		
 		String credValue = context.sharedState.get(MOB_NUM).asString();
 
-		//Selecting option from user as a SMS/VOICE/TOKEN
+		// Selecting option from user as a SMS/VOICE/TOKEN
 		return context.getCallback(ChoiceCallback.class).map(c -> c.getSelectedIndexes()[0]).map(Integer::new)
 				.filter(choice -> -1 < choice && choice < 3).map(choice -> {
 					sharedState.put(CRED_CHOICE, config.referrerCredList().get(choice));
-					
-					//User has selected VOICE
+
+					// User has selected VOICE
 					switch (choice) {
-                    case 1:
+					case 1:
 						boolean isOTPVoiceAuthenticated = false;
 						try {
-							
-						   //Executing SendOtpRequest 
-						   isOTPVoiceAuthenticated = voiceDeviceRegister.voiceDeviceRegister(vip.getUserName(), credValue,
-									vip.getKeyStorePath(),vip.getKeyStorePasswod());
-						} 
-						catch (NodeProcessException e) {
+
+							// Executing SendOtpRequest
+							isOTPVoiceAuthenticated = voiceDeviceRegister.voiceDeviceRegister(vip.getUserName(),
+									credValue, vip.getKeyStorePath(), vip.getKeyStorePasswod());
+							logger.debug("OTPVoiceAuthenticated is "+isOTPVoiceAuthenticated);
+						} catch (NodeProcessException e) {
+							logger.error("Not able to execute voiceDeviceRegister Successfully");
 							e.printStackTrace();
 						}
-						
-						if(isOTPVoiceAuthenticated) {
+
+						if (isOTPVoiceAuthenticated) {
 							return goTo(SymantecOTPAuthOutcome.VOICE).replaceSharedState(sharedState).build();
-						}
-						else {
-							context.sharedState.put(DISPLAY_ERROR,"There is error to Send OTP through Voice, either Authenticate with other credentials or contact to admin. ");
+						} else {
+							context.sharedState.put(DISPLAY_ERROR,
+									"There is error to Send OTP through Voice, either Authenticate with other credentials or contact to admin. ");
 							return goTo(SymantecOTPAuthOutcome.ERROR).replaceSharedState(sharedState).build();
 						}
-					
-                    case 0:
+
+					case 0:
 						boolean isOTPSmsAuthenticated = false;
 						try {
-							//Executing SendOtpRequest
-							isOTPSmsAuthenticated = smsDeviceRegister.smsDeviceRegister(vip.getUserName(), credValue,vip.getKeyStorePath(),
-									vip.getKeyStorePasswod());
-						} 
-						catch (NodeProcessException e) {
+							// Executing SendOtpRequest
+							isOTPSmsAuthenticated = smsDeviceRegister.smsDeviceRegister(vip.getUserName(), credValue,
+									vip.getKeyStorePath(), vip.getKeyStorePasswod());
+							logger.debug("OTPSmsAuthenticated is "+isOTPSmsAuthenticated);
+
+						} catch (NodeProcessException e) {
+							logger.error("Not able to execute smsDeviceRegister Successfully");
 							e.printStackTrace();
 						}
-						if(isOTPSmsAuthenticated) {
+						if (isOTPSmsAuthenticated) {
 							return goTo(SymantecOTPAuthOutcome.SMS).replaceSharedState(sharedState).build();
-						}
-						else {
-							context.sharedState.put(DISPLAY_ERROR,"There is error to Send OTP through SMS, either Authenticate with other credentials or contact to admin. ");
+						} else {
+							context.sharedState.put(DISPLAY_ERROR,
+									"There is error to Send OTP through SMS, either Authenticate with other credentials or contact to admin. ");
 							return goTo(SymantecOTPAuthOutcome.ERROR).replaceSharedState(sharedState).build();
 						}
-						
+
 					default:
 						return goTo(SymantecOTPAuthOutcome.TOKEN).replaceSharedState(sharedState).build();
-						
 
 					}
 				}).orElseGet(() -> {
-					debug.message("collecting choice");
+					logger.info("collecting choice");
 					return displayCredentials(context);
 				});
 	}
@@ -142,20 +145,20 @@ public class VIPOTPAuth implements Node {
 		List<Callback> cbList = new ArrayList<>(2);
 		Collection<String> values = config.referrerCredList().values();
 		String[] targetArray = values.toArray(new String[0]);
-		
-		//Getting output error if exists
+
+		// Getting output error if exists
 		String outputError = context.sharedState.get(PUSH_ERROR).asString();
-		debug.message("text block error" + outputError);
-		
-		//Collecting choice
+		logger.debug("text block error" + outputError);
+
+		// Collecting choice
 		if (outputError == null) {
-            ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE,
+			ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE,
 					getClass().getClassLoader());
 			ChoiceCallback ccb = new ChoiceCallback(bundle.getString("callback.creds"), targetArray, 0, false);
 			cbList.add(ccb);
 		}
-		
-		//Collecting choice and display error
+
+		// Collecting choice and display error
 		else {
 			TextOutputCallback tcb = new TextOutputCallback(0, outputError);
 			ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE,
@@ -189,7 +192,7 @@ public class VIPOTPAuth implements Node {
 		 * selection for TOKEN.
 		 */
 		TOKEN,
-		
+
 		/**
 		 * selection for TOKEN.
 		 */
@@ -208,7 +211,7 @@ public class VIPOTPAuth implements Node {
 			return ImmutableList.of(new Outcome(SymantecOTPAuthOutcome.SMS.name(), bundle.getString("smsOutcome")),
 					new Outcome(SymantecOTPAuthOutcome.VOICE.name(), bundle.getString("voiceOutcome")),
 					new Outcome(SymantecOTPAuthOutcome.TOKEN.name(), bundle.getString("tokenOutcome")),
-			        new Outcome(SymantecOTPAuthOutcome.ERROR.name(),bundle.getString("errorOutcome")));
+					new Outcome(SymantecOTPAuthOutcome.ERROR.name(), bundle.getString("errorOutcome")));
 		}
 	}
 }

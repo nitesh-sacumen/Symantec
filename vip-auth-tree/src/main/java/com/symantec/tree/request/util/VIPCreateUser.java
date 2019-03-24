@@ -11,7 +11,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import javax.xml.parsers.ParserConfigurationException;
  */
 public class VIPCreateUser {
 
-	private final Debug debug = Debug.getInstance("VIP");
+private Logger logger = LoggerFactory.getLogger(VIPCreateUser.class);
 
 	/**
 	 * 
@@ -39,7 +39,7 @@ public class VIPCreateUser {
 	 * @return CreateUserRequest payload
 	 */
 	private String createUserPayload(String userId) {
-		debug.message("getting CreateUserRequest payload");
+		logger.info("getting CreateUserRequest payload");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
 				"xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" +
 				"   <soapenv:Header/>" +

@@ -1,7 +1,7 @@
 package com.symantec.tree.nodes;
 
 import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import com.symantec.tree.config.Constants.VIPSDKStatusCode;
 import com.symantec.tree.request.util.GenerateActivationCode;
 import com.symantec.tree.request.util.GetVIPServiceURL;
@@ -22,7 +22,7 @@ public class VIPGenerateActivationCode extends AbstractDecisionNode {
 
 	private GenerateActivationCode generateActivationCode;
 	private final Config config;
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPGenerateActivationCode.class);
 
 	/**
 	 * Configuration for the node.
@@ -45,7 +45,7 @@ public class VIPGenerateActivationCode extends AbstractDecisionNode {
 	 */
 	@Override
 	 public Action process(TreeContext context) throws NodeProcessException {
-    	debug.message("Collecting activtion code...");
+    	logger.debug("Collecting activtion code...");
 
 		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
@@ -55,21 +55,21 @@ public class VIPGenerateActivationCode extends AbstractDecisionNode {
     	// Getting GetActivationCode request response
     	String[] array = Stat.split(",");
 		for (String s : array)
-			debug.message("Values:" + s);
+			logger.debug("Values:" + s);
 		String status = array[0];
 		String activationCode = array[1];
 		
-		debug.message("Status of get Activation_code API call: " + status);
-		debug.message("Activation code is: " + activationCode);
+		logger.debug("Status of get Activation_code API call: " + status);
+		logger.debug("Activation code is: " + activationCode);
 		
 		//Making decision based on GetActivationCode request response
 		if (status.equalsIgnoreCase(VIPSDKStatusCode.SUCCESS_CODE)) {
-			debug.message("Activation code generated successfully:" + status);
+			logger.debug("Activation code generated successfully:" + status);
 			context.sharedState.put(ACTIVATION_CODE,activationCode);
 			return goTo(true).build();
 
 		} else {
-			debug.message("Activation code not generated successfully:" + status);
+			logger.debug("Activation code not generated successfully:" + status);
 			context.sharedState.put(ACTIVATION_CODE,"ERROR");
 			return goTo(false).build();
 		}

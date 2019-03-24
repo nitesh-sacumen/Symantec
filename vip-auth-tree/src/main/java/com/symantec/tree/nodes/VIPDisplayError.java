@@ -54,7 +54,7 @@ public class VIPDisplayError extends SingleOutcomeNode{
 						  .map(String::new)
 						  .filter(name -> !Strings.isNullOrEmpty(name))
 						  .map(name -> goToNext().build()).orElseGet(() -> {
-						logger.debug("Displaying Error");
+						logger.info("Displaying Error");
 						return displayError(context);
 					});
 	                	

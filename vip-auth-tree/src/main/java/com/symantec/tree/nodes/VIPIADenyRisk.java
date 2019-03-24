@@ -1,23 +1,22 @@
 package com.symantec.tree.nodes;
 
-import static com.symantec.tree.config.Constants.KEY_STORE_PASS;
-import static com.symantec.tree.config.Constants.KEY_STORE_PATH;
-
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.forgerock.openam.auth.node.api.OutcomeProvider;
-import org.forgerock.openam.auth.node.api.SharedStateConstants;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.util.i18n.PreferredLocales;
 
 import com.google.common.collect.ImmutableList;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import com.symantec.tree.config.Constants.VIPIA;
 import com.symantec.tree.request.util.DenyRisk;
 import com.symantec.tree.request.util.GetVIPServiceURL;
+import java.util.List;
+import java.util.ResourceBundle;
+import javax.inject.Inject;
 
 /**
  * 
@@ -31,14 +30,10 @@ import com.symantec.tree.request.util.GetVIPServiceURL;
  * True outcome is connected to "Success" and false outcome is connected to "Failure". 
  *
  */
-import java.util.List;
-import java.util.ResourceBundle;
-import javax.inject.Inject;
-
 @Node.Metadata(outcomeProvider = VIPIADenyRisk.SymantecOutcomeProvider.class, configClass = VIPIADenyRisk.Config.class)
 public class VIPIADenyRisk implements Node{
 	private static final String BUNDLE = "com/symantec/tree/nodes/VIPIADenyRisk";
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPIADenyRisk.class);
 	private DenyRisk denyRisk;
 
 
@@ -94,6 +89,7 @@ public class VIPIADenyRisk implements Node{
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
+		logger.info("VIP IA Deny Risk..");
 	   JsonValue sharedState = context.sharedState; 
 	   GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
@@ -107,7 +103,7 @@ public class VIPIADenyRisk implements Node{
 				sharedState.get(VIPIA.AUTH_DATA).asString(),
 				deviceFriendlyName,vip.getKeyStorePath(),vip.getKeyStorePasswod());
 
-		debug.message("status in vip ia registration is "+status);
+		logger.debug("status in vip ia denyRisk is "+status);
 		
 		//Making decision based on Deny Risk request rsponse.
 		if(status.equals(VIPIA.REGISTERED)) {

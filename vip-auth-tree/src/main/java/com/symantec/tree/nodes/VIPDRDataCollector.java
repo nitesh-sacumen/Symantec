@@ -15,9 +15,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import com.symantec.tree.config.Constants.VIPDR;
 import com.symantec.tree.request.util.DeviceHygieneVerification;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
+import javax.security.auth.callback.Callback;
 
 /**
  * 
@@ -31,15 +36,10 @@ import com.symantec.tree.request.util.DeviceHygieneVerification;
  *
  * Node with true/false outcome. true outcome is connected to "VIP DR Data Eval" and false outcome will be connected to "Failure"
  */
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.inject.Inject;
-import javax.security.auth.callback.Callback;
 
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class, configClass = VIPDRDataCollector.Config.class)
 public class VIPDRDataCollector extends AbstractDecisionNode {
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPDRDataCollector.class);
 	private DeviceHygieneVerification deviceHygieneVerification;
 
 
@@ -77,7 +77,7 @@ public class VIPDRDataCollector extends AbstractDecisionNode {
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
-		debug.message("Collecting DR Data..........");
+		logger.debug("Collecting DR Data..........");
 		JsonValue sharedState = context.sharedState;
 		if(!context.getCallbacks(HiddenValueCallback.class).isEmpty()) {
 
@@ -90,9 +90,9 @@ public class VIPDRDataCollector extends AbstractDecisionNode {
             // Collecting encoded value of signature
 			String signature = context.getCallbacks(HiddenValueCallback.class).get(2).getValue();
 			
-			debug.message("encoded dr data payload is "+payload);
-			debug.message("encoded dr data header is "+header);
-			debug.message("encoded dr data signature is "+signature);
+			logger.debug("encoded dr data payload is "+payload);
+			logger.debug("encoded dr data header is "+header);
+			logger.debug("encoded dr data signature is "+signature);
 			
 			//Verifying Device Hygiene
 			String[] result = deviceHygieneVerification.validateDHSignatureAndChain(header, payload, signature);
@@ -104,7 +104,7 @@ public class VIPDRDataCollector extends AbstractDecisionNode {
 
             byte[] DecodedDRData = Base64.decodeBase64(payload);
 			
-			debug.message("Decoded DR Data is "+DecodedDRData);
+			logger.debug("Decoded DR Data is "+DecodedDRData);
 			
 			//Extracting all the json key and value from encoded payload and adding to the shared state.
 			String str1 = new String(DecodedDRData);
@@ -112,10 +112,11 @@ public class VIPDRDataCollector extends AbstractDecisionNode {
 			try {
 				JsonNode JsonDRData = mapper.readTree(str1);
 				JsonDRData.fieldNames().forEachRemaining(key -> {
-					debug.message("key and value in DR Json is, key: "+key+" value: "+JsonDRData.get(key).toString());
+					logger.debug("key and value in DR Json is, key: "+key+" value: "+JsonDRData.get(key).toString());
 					sharedState.put(key,JsonDRData.get(key).toString());
 				});
 			} catch (IOException e) {
+				logger.error("Dr Json parsing error..");
 				e.printStackTrace();
 			}
 

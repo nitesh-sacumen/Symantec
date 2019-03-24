@@ -19,7 +19,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -28,7 +28,7 @@ import com.sun.identity.shared.debug.Debug;
  *         Executing RegisterRequest for SMS and Voice
  */
 public class SMSVoiceRegister {
-	private final Debug debug = Debug.getInstance("VIP");
+private Logger logger = LoggerFactory.getLogger(SMSVoiceRegister.class);
 
 	/**
 	 * 
@@ -38,7 +38,7 @@ public class SMSVoiceRegister {
 	public String smsRegister(String credValue, String key_store, String key_store_pass) throws NodeProcessException {
 		String payLoad = getSmsPayload(credValue);
 		String status;
-		debug.message("Request Payload: " + payLoad);
+		logger.debug("Request Payload: " + payLoad);
 
 		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
 
@@ -56,7 +56,7 @@ public class SMSVoiceRegister {
 	public String voiceRegister(String credValue, String key_store, String key_store_pass) throws NodeProcessException {
 		String payLoad = getVoicePayload(credValue);
 		String status;
-		debug.message("Request Payload: " + payLoad);
+		logger.debug("Request Payload: " + payLoad);
 
 		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
 
@@ -72,7 +72,7 @@ public class SMSVoiceRegister {
 	 * @return RegisterRequest payload
 	 */
 	private String getSmsPayload(String credValue) {
-		debug.message("getting RegisterRequest payload for SMS");
+		logger.debug("getting RegisterRequest payload for SMS");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "<soapenv:Header/>"
 				+ "<soapenv:Body>" + "<vip:RegisterRequest>" + "<vip:requestId>" + new Random().nextInt(10) + 11111
@@ -88,7 +88,7 @@ public class SMSVoiceRegister {
 	 * @return RegisterRequest payload for voice
 	 */
 	private String getVoicePayload(String credValue) {
-		debug.message("getting RegisterRequest payload for voice");
+		logger.info("getting RegisterRequest payload for voice");
 		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
 				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "<soapenv:Header/>"
 				+ "<soapenv:Body>" + "<vip:RegisterRequest>" + "<vip:requestId>" + new Random().nextInt(10) + 11111

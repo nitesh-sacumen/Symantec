@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
 import com.sun.identity.authentication.callbacks.ScriptTextOutputCallback;
-import com.sun.identity.shared.debug.Debug;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import com.symantec.tree.config.Constants.VIPIA;
 
 /**
@@ -32,7 +32,7 @@ import com.symantec.tree.config.Constants.VIPIA;
  */
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class, configClass = VIPIADataCollector.Config.class)
 public class VIPIADataCollector extends SingleOutcomeNode {
-	private final Debug debug = Debug.getInstance("VIP");
+    private Logger logger = LoggerFactory.getLogger(VIPIADataCollector.class);
 	private final Config config;
 
 	public interface Config {
@@ -61,9 +61,9 @@ public class VIPIADataCollector extends SingleOutcomeNode {
 	 * Collecting Auth Data.
 	 */
 	private Action collectData(TreeContext context) {
-		debug.message("Collecting IA Data.......");
+		logger.info("Collecting IA Data.......");
 		
-		debug.message("get ai data script is " + getAuthDataScript(context.sharedState.get(VIPIA.SCRIPT_URL).asString()));
+		logger.debug("get ai data script is " + getAuthDataScript(context.sharedState.get(VIPIA.SCRIPT_URL).asString()));
 		
 		List<Callback> cbList = new ArrayList<>();
 		HiddenValueCallback ncb = new HiddenValueCallback(VIPIA.MOBILE_AUTH_DATA);
@@ -74,7 +74,7 @@ public class VIPIADataCollector extends SingleOutcomeNode {
 		cbList.add(hcb);
 		cbList.add(scb);
 		if(!config.PageNode()) {
-			debug.message("Page node is enabled...");
+			logger.info("Page node is enabled...");
 			ScriptTextOutputCallback lscb = new ScriptTextOutputCallback(VIPIA.DISABLE_LOGIN_BUTTON_SCRIPT);
 			cbList.add(lscb);
 
@@ -87,7 +87,7 @@ public class VIPIADataCollector extends SingleOutcomeNode {
 	 */
 	@Override
 	public Action process(TreeContext context) {
-		debug.message("collecting AI DATA..........");
+		logger.info("collecting AI DATA..........");
 		JsonValue sharedState = context.sharedState;
 		sharedState.put(VIPIA.SCRIPT_URL,config.Script());
 		if(!context.getCallbacks(HiddenValueCallback.class).isEmpty()&& 
@@ -100,12 +100,12 @@ public class VIPIADataCollector extends SingleOutcomeNode {
 
 			if (!(mobileAuthData.equals(VIPIA.MOBILE_AUTH_DATA))) {
 			
-				debug.message("Mobile Auth Data is "+mobileAuthData);
+				logger.debug("Mobile Auth Data is "+mobileAuthData);
 				sharedState.put(VIPIA.MOBILE_AUTH_DATA,mobileAuthData);
 				sharedState.put(VIPIA.AUTH_DATA, mobileAuthData);
 			}
 			else {
-				debug.message("Web Auth Data "+webAuthData);
+				logger.debug("Web Auth Data "+webAuthData);
 				sharedState.put(VIPIA.DEVICE_FINGERPRINT, webAuthData);
 				sharedState.put(VIPIA.AUTH_DATA,webAuthData);
 			}
