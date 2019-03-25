@@ -184,7 +184,7 @@ Attributes to be configured are:
 ```
 ![p_4](https://user-images.githubusercontent.com/20396535/54487945-edfa4280-48c1-11e9-941b-6faf14cd6bc5.PNG)
 
-* VIP DR OS Decesion Node
+* VIP DR OS Decesion
 ```js
 This node just verify forDR Data coming from android device or ios device. There are no configurable attributes to it.
 ```
