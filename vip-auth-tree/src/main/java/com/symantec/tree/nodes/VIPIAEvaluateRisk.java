@@ -34,7 +34,7 @@ import static com.symantec.tree.config.Constants.*;
 public class VIPIAEvaluateRisk implements Node {
 
 	private EvaluateRisk evaluateRisk;
-	private static final String BUNDLE = "com/symantec/tree/nodes/VIPIACheck";
+	private static final String BUNDLE = "com/symantec/tree/nodes/VIPIAEvaluateRisk";
     private Logger logger = LoggerFactory.getLogger(VIPIAEvaluateRisk.class);
 
 	/**
@@ -97,6 +97,7 @@ public class VIPIAEvaluateRisk implements Node {
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
 		logger.info("Evaluating IA Request....");
+		
 		JsonValue sharedState = context.sharedState;
 		JsonValue transientState = context.sharedState;
 		
@@ -104,7 +105,8 @@ public class VIPIAEvaluateRisk implements Node {
 		
 
 		//Getting IP Address.
-		String ip = context.request.clientIp;
+//		String ip = context.request.clientIp;
+//		logger.debug("IP is "+ip);
 		
 		//Getting Test Agent
 		String userAgent = VIPIA.TEST_AGENT;
@@ -115,7 +117,7 @@ public class VIPIAEvaluateRisk implements Node {
         
 		// Executing Evaluate Risk API
 		HashMap<String, String> evaluateRiskResponseAttribute = evaluateRisk.evaluateRisk(
-				vip.getUserName(), ip, authData, userAgent,
+				vip.getUserName(),"192.168.56.1", authData, userAgent,
 				vip.getKeyStorePath(),vip.getKeyStorePasswod());
 
 		//Getting status, event id, device tag and score from Evaluate Risk response.
@@ -133,7 +135,6 @@ public class VIPIAEvaluateRisk implements Node {
 		if (status.equals(VIPIA.NOT_REGISTERED)) {
             return goTo(Symantec.FALSE).replaceTransientState(transientState).replaceSharedState(sharedState).build();
         }
-		
 		else if (status.equals(VIPIA.REGISTERED)) {
 			transientState.put(VIPIA.SCORE, evaluateRiskResponseAttribute.get(VIPIA.SCORE));
 			return goTo(Symantec.TRUE).replaceSharedState(sharedState).replaceTransientState(transientState).build();

@@ -54,6 +54,7 @@ public class VIPEnterCredentialId extends SingleOutcomeNode {
 	 * @return sending password call back.
 	 */
 	private Action collectOTP(TreeContext context) {
+		logger.info("Collecting credential id from callback");
 		List<Callback> cbList = new ArrayList<>(2);
 		ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE, getClass().getClassLoader());
 		NameCallback ncb = new NameCallback(bundle.getString("callback.credId"), "Enter Credential ID");

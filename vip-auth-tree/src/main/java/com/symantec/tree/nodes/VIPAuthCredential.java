@@ -80,12 +80,12 @@ public class VIPAuthCredential extends AbstractDecisionNode {
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
+		logger.info("Calling VIP Auth credential");
+
 		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
 		String credId = context.sharedState.get(CRED_ID).asString();
-		
-		logger.info("Calling VIP Auth credential");
-		
+				
 		// Executing AuthenticateCredentialsRequest 
 		String Stat = authPushCred.authCredential(credId, vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_TEXT),
 				vipPushCodeMap.get(Constants.PUSH_DISPLAY_MESSAGE_TITLE),
@@ -107,7 +107,8 @@ public class VIPAuthCredential extends AbstractDecisionNode {
 		if (status.equalsIgnoreCase(VIPAuthStatusCode.SUCCESS_CODE)) {
 			logger.info("Mobile Push is sent successfully");
 			return goTo(true).build();
-		} else {
+		} 
+		else {
 			logger.info("Mobile Push has not sent successfully");
 			context.sharedState.put(OTP_ERROR,"Not able to send push, Please enter Security Code");
 			deleteCredential(vip.getUserName(), credId,context);
@@ -125,10 +126,9 @@ public class VIPAuthCredential extends AbstractDecisionNode {
 		logger.info("Deleting credentials");
 		
 		DeleteCredential delCred = new DeleteCredential();
-		String key_store = context.sharedState.get("key_store_path").asString();
-		String key_store_pass = context.sharedState.get("key_store_pass").asString();
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 		
 		//Executing RemoveCredentialRequest
-		delCred.deleteCredential(userName, credId, Constants.STANDARD_OTP,key_store,key_store_pass);
+		delCred.deleteCredential(userName, credId, Constants.STANDARD_OTP,vip.getKeyStorePath(),vip.getKeyStorePasswod());
 	}
 }

@@ -61,7 +61,7 @@ public class VIPIADataCollector extends SingleOutcomeNode {
 	 * Collecting Auth Data.
 	 */
 	private Action collectData(TreeContext context) {
-		logger.info("Collecting IA Data.......");
+		logger.info("Collecting IA Data for mobile from callbacks.......");
 		
 		logger.debug("get ai data script is " + getAuthDataScript(context.sharedState.get(VIPIA.SCRIPT_URL).asString()));
 		
@@ -88,8 +88,10 @@ public class VIPIADataCollector extends SingleOutcomeNode {
 	@Override
 	public Action process(TreeContext context) {
 		logger.info("collecting AI DATA..........");
+		
 		JsonValue sharedState = context.sharedState;
 		sharedState.put(VIPIA.SCRIPT_URL,config.Script());
+		
 		if(!context.getCallbacks(HiddenValueCallback.class).isEmpty()&& 
 				(!context.getCallbacks(HiddenValueCallback.class).get(0).getValue().equals(VIPIA.MOBILE_AUTH_DATA)||
 				!context.getCallbacks(HiddenValueCallback.class).get(1).getValue().equals(VIPIA.DEVICE_FINGERPRINT))) {
@@ -97,6 +99,8 @@ public class VIPIADataCollector extends SingleOutcomeNode {
 			String mobileAuthData = context.getCallbacks(HiddenValueCallback.class).get(0).getValue();
 			String webAuthData = context.getCallbacks(HiddenValueCallback.class).get(1).getValue();
 			
+			logger.debug("mobileAuthData: "+mobileAuthData);
+			logger.debug("webAuthData: "+webAuthData);
 
 			if (!(mobileAuthData.equals(VIPIA.MOBILE_AUTH_DATA))) {
 			

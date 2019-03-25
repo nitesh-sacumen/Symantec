@@ -76,6 +76,7 @@ public class VIPEnterPhoneNumber implements Node {
 						String status = null;
 						try {
 							status = svRegister.smsRegister(name,vip.getKeyStorePath(),vip.getKeyStorePasswod());
+							logger.debug("smsRegister status is "+status);
 							sharedState.put(MOB_NUM, name);
 						} catch (NodeProcessException e) {
 							logger.error("Not able to complete smsRegister successfully");
@@ -88,6 +89,7 @@ public class VIPEnterPhoneNumber implements Node {
 						logger.debug("calling voice register method");
 						try {
 							status = svRegister.voiceRegister(name,vip.getKeyStorePath(),vip.getKeyStorePasswod());
+							logger.debug("voiceRegister status is "+status);
 							sharedState.put(MOB_NUM, name);
 						} catch (NodeProcessException e) {
 							logger.error("Not able to complete voiceRegister successfully");
@@ -150,17 +152,26 @@ public class VIPEnterPhoneNumber implements Node {
 	 * @return Action type of Object
 	 */
 	private Action sendOutput(String statusCode, TreeContext context) {
+		logger.info("Sending Output from Enter Phone Number node to next node");
+		
 		if (statusCode.equalsIgnoreCase(SUCCESS_CODE)) {
+			logger.info("Sending SUCCESS_CODE..");
 			return goTo(Symantec.TRUE).build();
 		} 
 		else if(statusCode.equalsIgnoreCase(CREDENTIALS_ALREADY_REGISTERED)) {
+			logger.info("Sending CREDENTIALS_ALREADY_REGISTERED mssage..");
+
 			context.sharedState.put(PHONE_NUMBER_ERROR, "Entered phone number is already registered,Please enter valid Phone Number");
 			return goTo(Symantec.FALSE).build();
 		}
 		else if (statusCode.equalsIgnoreCase(INVALID_PHONE_NUMBER)) {
+			logger.info("Sending INVALID_PHONE_NUMBER mssage..");
+			
 			context.sharedState.put(PHONE_NUMBER_ERROR, "Entered phone number is Invalid,Please enter valid Phone Number");
 			return goTo(Symantec.FALSE).build();
 		} else {
+			logger.info("Sending DISPLAY_ERROR mssage..");
+
 			context.sharedState.put(DISPLAY_ERROR, "Not able to send OTP on given Phone Number, Please contact to your administrator.");
 			return goTo(Symantec.ERROR).build();
 		}
@@ -173,6 +184,8 @@ public class VIPEnterPhoneNumber implements Node {
 	 */
 	public Action collectOTP(TreeContext context) {
 		String outputError = context.sharedState.get(PHONE_NUMBER_ERROR).asString();
+		logger.debug("PHONE_NUMBER_ERROR is "+outputError);
+		
 		List<Callback> cbList = new ArrayList<>(2);
 		if(outputError==null) {
 			ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE, getClass().getClassLoader());

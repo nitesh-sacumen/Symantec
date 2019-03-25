@@ -77,7 +77,7 @@ public class VIPPollPushAuth implements Node {
 			//Executing PollPushStatusRequest
 			String result = pollPush.authPollPush(context.sharedState.get(TXN_ID).asString(),vip.getKeyStorePath(),vip.getKeyStorePasswod());
 			
-			logger.debug("status of authPollPush request response is result");
+			logger.debug("status of authPollPush request response is result "+result);
 
 			//Making decision based on PollPushStatusRequest response
 			if (result != null) {
@@ -85,15 +85,19 @@ public class VIPPollPushAuth implements Node {
 				if (!Strings.isNullOrEmpty(result)) {
 
 					if (result.equalsIgnoreCase(VIPPollPush.ACCEPTED)) {
+						logger.info("ACCEPTED");
 						return goTo(Symantec.TRUE).replaceSharedState(newSharedState).build();
 
 					} else if (result.equalsIgnoreCase(VIPPollPush.UNANSWERED)) {
+						logger.info("UNANSWERED");
 						return goTo(Symantec.UNANSWERED).replaceSharedState(newSharedState).build();
 
 					} else if (result.equalsIgnoreCase(VIPPollPush.REJECTED)) {
+						logger.info("REJECTED");
 						return goTo(Symantec.FALSE).replaceSharedState(newSharedState).build();
 
 					} else {
+						logger.info("PUSH_ERROR");
 						context.sharedState.put(PUSH_ERROR,"You have not approved push, Please select other option for authentication");
 						return goTo(Symantec.ERROR).build();
 

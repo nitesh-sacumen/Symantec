@@ -102,7 +102,7 @@ public class VIPIAAuthentication implements Node {
 		logger.info("Authentication IA Data.....");
 				
 		//Getting IP Address
-		String ip = context.request.clientIp;
+//		String ip = context.request.clientIp;
 		
 		// Getting test agent
 		String userAgent = VIPIA.TEST_AGENT;
@@ -111,7 +111,7 @@ public class VIPIAAuthentication implements Node {
 		logger.debug("Auth data in AI Authentication is " + context.sharedState.get(VIPIA.AUTH_DATA).asString());
 		
 		HashMap<String, String> evaluateRiskResponseAttribute = evaluateRisk.evaluateRisk(vip.getUserName(),
-				ip, context.sharedState.get(VIPIA.AUTH_DATA).asString(), userAgent,
+				"192.168.56.1", context.sharedState.get(VIPIA.AUTH_DATA).asString(), userAgent,
 				vip.getKeyStorePath(),vip.getKeyStorePasswod());
 
         // Getting status and score from the request

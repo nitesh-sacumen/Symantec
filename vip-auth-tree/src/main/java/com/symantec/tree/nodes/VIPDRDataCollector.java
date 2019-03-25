@@ -60,6 +60,8 @@ public class VIPDRDataCollector extends AbstractDecisionNode {
 	 * Collecting encoded value of payload, header and signature.
 	 */
 	private Action collectData(TreeContext context) {
+		logger.info("Getting DR Data from callbacks");
+		
 		List<Callback> cbList = new ArrayList<>();
 		
 		HiddenValueCallback ncbp = new HiddenValueCallback(VIPDR.VIP_DR_DATA_PAYLOAD);
@@ -78,6 +80,7 @@ public class VIPDRDataCollector extends AbstractDecisionNode {
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
 		logger.debug("Collecting DR Data..........");
+		
 		JsonValue sharedState = context.sharedState;
 		if(!context.getCallbacks(HiddenValueCallback.class).isEmpty()) {
 
@@ -108,6 +111,7 @@ public class VIPDRDataCollector extends AbstractDecisionNode {
 			
 			//Extracting all the json key and value from encoded payload and adding to the shared state.
 			String str1 = new String(DecodedDRData);
+			
 			ObjectMapper mapper = new ObjectMapper();
 			try {
 				JsonNode JsonDRData = mapper.readTree(str1);

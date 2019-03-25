@@ -142,13 +142,15 @@ public class VIPOTPAuth implements Node {
 	 * @return list of callbacks.
 	 */
 	private Action displayCredentials(TreeContext context) {
+		logger.info("collecting SMS/VOICE/TOKEN choice from user..");
+		
 		List<Callback> cbList = new ArrayList<>(2);
 		Collection<String> values = config.referrerCredList().values();
 		String[] targetArray = values.toArray(new String[0]);
 
 		// Getting output error if exists
 		String outputError = context.sharedState.get(PUSH_ERROR).asString();
-		logger.debug("text block error" + outputError);
+		logger.debug("PUSH_ERROR: " + outputError);
 
 		// Collecting choice
 		if (outputError == null) {

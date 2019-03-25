@@ -39,6 +39,8 @@ public class VIPDisplayError extends SingleOutcomeNode{
 	    
 		private Action displayError(TreeContext context) {
 			String outputError=context.sharedState.get(DISPLAY_ERROR).asString();
+			logger.debug("DISPLAY_ERROR: "+outputError);
+			
 			TextOutputCallback pcb = new TextOutputCallback(0, outputError);
 			return send(pcb).build();
 		}

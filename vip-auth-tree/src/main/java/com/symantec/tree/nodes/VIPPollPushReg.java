@@ -88,16 +88,20 @@ public class VIPPollPushReg implements Node {
 				if (!Strings.isNullOrEmpty(result)) {
 
 					if (result.equalsIgnoreCase(VIPPollPush.ACCEPTED)) {
+						logger.info("Push is ACCEPTED");
 						return goTo(Symantec.TRUE).replaceSharedState(newSharedState).build();
 
 					} else if (result.equalsIgnoreCase(VIPPollPush.UNANSWERED)) {
+						logger.info("Push is UNANSWERED");
 						return goTo(Symantec.UNANSWERED).replaceSharedState(newSharedState).build();
 
 					} else if (result.equalsIgnoreCase(VIPPollPush.REJECTED)) {
+						logger.info("Push is REJECTED");
 						deleteCredential(vip.getUserName(), credId, credType,context);
 						return goTo(Symantec.FALSE).replaceSharedState(newSharedState).build();
 
 					} else {
+						logger.info("OTP_ERROR..");
 						deleteCredential(vip.getUserName(), credId, credType,context);
 						context.sharedState.put(OTP_ERROR,"Not able to send push, Please enter Security Code");
 						return goTo(Symantec.ERROR).build();
@@ -160,9 +164,9 @@ public class VIPPollPushReg implements Node {
 	private void deleteCredential(String userName, String credId, String credType,TreeContext context) throws NodeProcessException {
 		logger.debug("deleting credential");
 		DeleteCredential delCred = new DeleteCredential();
-		String key_store = context.sharedState.get("key_store_path").asString();
-		String key_store_pass = context.sharedState.get("key_store_pass").asString();
-		delCred.deleteCredential(userName, credId, credType,key_store,key_store_pass);
+		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
+
+		delCred.deleteCredential(userName, credId, credType,vip.getKeyStorePath(),vip.getKeyStorePasswod());
 	}
 
 }

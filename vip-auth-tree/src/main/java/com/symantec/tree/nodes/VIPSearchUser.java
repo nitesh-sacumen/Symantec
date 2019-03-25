@@ -81,7 +81,7 @@ public class VIPSearchUser implements Node {
 					logger.debug("VIP Credential Registered in VIP Search User");
 					return goTo(Symantec.TRUE).build();
 				} else {
-					logger.debug("Fall back options in VIP Search User");
+					logger.info("Fall back options in VIP Search User");
 
 					context.sharedState.put(MOB_NUM, mobNum);
 					return goTo(Symantec.TRUE).build();

@@ -99,7 +99,7 @@ public class VIPIARegistration implements Node {
 	 * Returning Event Id and Device Tag to user to set and get mobile data In case of mobile device.
 	 */
 	private Action collectAuthData(TreeContext context) {
-
+        logger.info("Collecting and displaying eventID, auth data and device tag");
 		//Getting event id and device tag
 		String eventId = context.sharedState.get(VIPIA.EVENT_ID).asString();
 		String deviceTag = context.sharedState.get(VIPIA.DEVICE_TAG).asString();
@@ -154,11 +154,11 @@ public class VIPIARegistration implements Node {
 		//Getting Auth Data in case of Web
 		Optional<String> result = context.getCallback(HiddenValueCallback.class).map(HiddenValueCallback::getValue)
 				.filter(scriptOutput -> !Strings.isNullOrEmpty(scriptOutput));
-
+		
 		if (result.isPresent()) {
 			
 			// Adding auth data to shared state
-			logger.debug("auth data in IA Registration is " + result.get());
+			logger.debug("auth data for IA Deny Risk is " + result.get());
 			sharedState.put(VIPIA.DEVICE_FINGERPRINT, result.get());
 
 			//Getting device friendly name
@@ -180,6 +180,7 @@ public class VIPIARegistration implements Node {
 			}
 
 		} else {
+			logger.info("etting and getting auth data from callback");
 			
 			// Getting script to set Auth data
             String setAuthData = setAuthDataScriptString(sharedState.get(VIPIA.DEVICE_TAG).asString(),
@@ -222,7 +223,7 @@ public class VIPIARegistration implements Node {
 					authData, deviceFriendlyName,vip.getKeyStorePath(),
 					vip.getKeyStorePasswod());
 
-			logger.debug("status in vip ia registration is " + status);
+			logger.debug("status of vip ia registration is " + status);
 
 			//Making decision based on Deny Risk request response.
 			if (status.equals(VIPIA.REGISTERED)) {

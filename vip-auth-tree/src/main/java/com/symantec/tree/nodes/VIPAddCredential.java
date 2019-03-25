@@ -4,17 +4,21 @@ package com.symantec.tree.nodes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
-import static com.symantec.tree.config.Constants.*;
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;import org.slf4j.LoggerFactory;
-import com.symantec.tree.request.util.AddCredential;
-import com.symantec.tree.request.util.GetVIPServiceURL;
-import com.symantec.tree.request.util.VIPGetUser;
+
 import javax.inject.Inject;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.*;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.i18n.PreferredLocales;
+import com.symantec.tree.request.util.AddCredential;
+import com.symantec.tree.request.util.GetVIPServiceURL;
+import com.symantec.tree.request.util.VIPGetUser;
+import static com.symantec.tree.config.Constants.*;
+
+
+
 /**
  * 
  * @author Sacumen (www.sacumen.com) <br> <br>
@@ -55,6 +59,7 @@ public class VIPAddCredential implements Node {
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
         logger.info("Adding Credentials");
+        
 		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 		String credValue = context.sharedState.get(CRED_ID).asString();
 		
@@ -69,7 +74,7 @@ public class VIPAddCredential implements Node {
 		
 		// Adding Credential to the VIP Database
 		String statusCode = addCred.addCredential(vip.getUserName(), credValue,STANDARD_OTP,vip.getKeyStorePath(),vip.getKeyStorePasswod());
-		logger.debug("isCredAdded: "+statusCode);
+		logger.debug("Add credentials request status code is : "+statusCode);
 		
 		// Making decision based on AddCredential request response
 		if(statusCode.equalsIgnoreCase(SUCCESS_CODE)) {

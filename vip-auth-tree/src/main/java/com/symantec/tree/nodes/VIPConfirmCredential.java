@@ -71,7 +71,7 @@ public class VIPConfirmCredential implements Node {
 		}
 		logger.debug("Choice value:" + inputChoice);
 		
-		// MAking decision based on User's choice.
+		// Making decision based on User's choice.
 		switch (inputChoice) {
 		case "YES":
 			return goTo(SymantecConfirmCredOutcome.YES).replaceSharedState(sharedState).build();
@@ -90,6 +90,7 @@ public class VIPConfirmCredential implements Node {
 	 * @return list of callbacks
 	 */
 	private Action displayCreds(TreeContext context) {
+		logger.info("collecting choices from VIP Add More Creds");
 		List<Callback> cbList = new ArrayList<>(2);
 		ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE, getClass().getClassLoader());
 		TextOutputCallback textOutputCallback = new TextOutputCallback(0, "Add More Credentials ");

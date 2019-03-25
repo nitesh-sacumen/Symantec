@@ -97,6 +97,7 @@ public class VIPDisplayCredential implements Node {
 	 * @return Action for display credentials options.
 	 */
 	private Action displayCredentials(TreeContext context) {
+		logger.info("collecting choices from VIP Display Creds");
 		
 		//Collecting choice
 		List<Callback> cbList = new ArrayList<>(2);
@@ -105,7 +106,7 @@ public class VIPDisplayCredential implements Node {
 		
 		//Getting output error if it exists
 		String outputError = context.sharedState.get(CREDENTIAL_ID_ERROR).asString();
-		logger.debug("text block error" + outputError);
+		logger.debug("CREDENTIAL_ID_ERROR: " + outputError);
 		
 		// collecting choice
 		if (outputError == null) {

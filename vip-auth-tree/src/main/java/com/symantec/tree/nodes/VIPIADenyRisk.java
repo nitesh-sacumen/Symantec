@@ -103,7 +103,7 @@ public class VIPIADenyRisk implements Node{
 				sharedState.get(VIPIA.AUTH_DATA).asString(),
 				deviceFriendlyName,vip.getKeyStorePath(),vip.getKeyStorePasswod());
 
-		logger.debug("status in vip ia denyRisk is "+status);
+		logger.debug("status of vip ia denyRisk is "+status);
 		
 		//Making decision based on Deny Risk request rsponse.
 		if(status.equals(VIPIA.REGISTERED)) {

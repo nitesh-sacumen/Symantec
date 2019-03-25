@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 public class HttpClientUtil {
 
 	private static HttpClientUtil httpClientUtil = null;
-	private Logger logger = LoggerFactory.getLogger(GetVIPServiceURL.class);
+	private Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
 
 	private HttpClientUtil() {
 	}
@@ -101,7 +101,7 @@ public class HttpClientUtil {
 			HttpEntity entity = response.getEntity();
 			String body = IOUtils.toString(entity.getContent());
 
-			logger.debug("Response body is " + entity);
+			logger.debug("Response body is " + body);
 
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			InputSource src = new InputSource();

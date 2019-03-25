@@ -54,13 +54,17 @@ public class VIPEnterOTP extends SingleOutcomeNode {
     @Override
     public Action process(TreeContext context) {
     	logger.info("Collect SecurityCode started");
+    	
     	context.sharedState.remove(PHONE_NUMBER_ERROR);
-        JsonValue sharedState = context.sharedState;
-        return context.getCallback(PasswordCallback.class)
+        
+    	JsonValue sharedState = context.sharedState;
+        
+    	return context.getCallback(PasswordCallback.class)
                 .map(PasswordCallback::getPassword)
                 .map(String::new)
                 .filter(password -> !Strings.isNullOrEmpty(password))
                 .map(password -> {
+                	logger.debug("Collected OTP is "+password);
                     return goToNext()
                         .replaceSharedState(sharedState.put(SECURE_CODE, password)).build();
                 })
@@ -73,14 +77,19 @@ public class VIPEnterOTP extends SingleOutcomeNode {
      * @return  list of callbacks
      */
     private Action displayCredentials(TreeContext context) {
+    	logger.info("Collecting OTP from callback");
+    	
 		List<Callback> cbList = new ArrayList<>(2);
+		
 		String outputError = context.sharedState.get(OTP_ERROR).asString();
 		logger.debug("OTP_ERROR is "+outputError);
+		
 		if (outputError == null) {
 			ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE, getClass().getClassLoader());
 			PasswordCallback pcb = new PasswordCallback(bundle.getString("callback.securecode"), false);
 			cbList.add(pcb);
-		} else {
+		} 
+		else {
 			TextOutputCallback tcb = new TextOutputCallback(0, outputError);
 			ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE,
 					getClass().getClassLoader());

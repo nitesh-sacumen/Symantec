@@ -65,6 +65,8 @@ public class VIPDRDataOSDecisionNode implements Node{
 		logger.info("collecting OS Field...");
 		JsonValue sharedState = context.sharedState;
 		
+		logger.debug("Mobile OS is "+sharedState.get("os").asString());
+		
 		if(sharedState.get("os").asString().equalsIgnoreCase("\"iOS\"")) {
 			return goTo(Symantec.iOS).build();
 		}

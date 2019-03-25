@@ -13,7 +13,6 @@ import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.*;
-import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.util.i18n.PreferredLocales;
 
 /**
@@ -55,12 +54,11 @@ public class VIPOTPCheck implements Node {
 	 */
 	@Override
 	public Action process(TreeContext context) throws NodeProcessException {
-
+	    logger.info("executing CheckOtpRequest");
+        
 		String otpValue = context.sharedState.get(SECURE_CODE).asString();
 		GetVIPServiceURL vip = GetVIPServiceURL.getInstance();
 
-		
-		logger.info("executing CheckOtpRequest");
 		String statusCode = checkOtp.checkOtp(vip.getUserName(), otpValue,vip.getKeyStorePath(),vip.getKeyStorePasswod());
 		
 		logger.debug("Check OTP request status is "+statusCode);
