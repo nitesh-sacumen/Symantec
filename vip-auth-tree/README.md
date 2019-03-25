@@ -44,14 +44,14 @@ The vip tree nodes are now available in the tree designer to add to authenticati
 
 Following are the nodes that will be available after deploying the jar file:
 
-![p_1](https://user-images.githubusercontent.com/20396535/54488323-77137880-48c6-11e9-9985-6fe6024e7a55.PNG)
+![phase2_nodes_1](https://user-images.githubusercontent.com/20396535/54925446-51c0e300-4f34-11e9-9573-ce18657f0b9a.PNG)
 
-![p_2](https://user-images.githubusercontent.com/20396535/54488325-809ce080-48c6-11e9-9503-21e10cb3e8fe.PNG)
+![phase2_nodes_2](https://user-images.githubusercontent.com/20396535/54925458-59808780-4f34-11e9-871f-04f5f38fded6.PNG)
 
-![p_3](https://user-images.githubusercontent.com/20396535/54488327-8abedf00-48c6-11e9-9935-677255b5ce33.PNG)
+![phase2_nodes_3](https://user-images.githubusercontent.com/20396535/54925479-61402c00-4f34-11e9-8872-8d9e757df11c.PNG)
 
 
-* VIP DISPLAY ERROR
+* VIP Display Error
 ```js
 This node will display error assiciated with exceed attempts of invalid otp. There are no configurable attributes to it.
 ```
@@ -81,7 +81,7 @@ Attributes to be configured are:
 ```
 ![auth-push](https://user-images.githubusercontent.com/20396535/48187242-7c811500-e360-11e8-8bee-a7d7668aed8c.PNG)
 
-* VIP Check Symantec OTP
+* VIP Check OTP
 ```js
 This node will verify OTP with username. There are no configurable attributes to it.
 ```
@@ -108,7 +108,7 @@ This node gives you a screen where you need to enter credential id generated on 
 This node gives you a screen where you need to enter phone number. There are no configurable attributes to it.
 ```
 
-* VIP Enter SecurityCode/OTP
+* VIP OTP Collector
 ```js
 This node gives you a screen where you need to enter OTP, which appears on given phone number . There are no configurable attributes to it.
 ```
@@ -151,7 +151,7 @@ Attributes to be configured are:
 This node register user in VIP, If user dont exist. There are no configurable attributes to it.
 ```
 
-* VIP Search User
+* VIP Enrollment User
 ```js
 This node search user in VIP and get user info, if user exits. There are no configurable attributes to it.
 ```
@@ -184,7 +184,7 @@ Attributes to be configured are:
 ```
 ![p_4](https://user-images.githubusercontent.com/20396535/54487945-edfa4280-48c1-11e9-941b-6faf14cd6bc5.PNG)
 
-* VIP DR OS Decesion Node
+* VIP DR OS Decesion
 ```js
 This node just verify forDR Data coming from android device or ios device. There are no configurable attributes to it.
 ```
@@ -230,11 +230,13 @@ This node execute Deny Risk request to register new device. There are no configu
 This node makes decision based on score fetch by evaluate risk api.
 
 Attributes to be configured are:
-* low_threshold : Low range of score. By default it is 20.
-* high_threshold : High range of score. By default it is 80.
+* Low Score Threshold Value : Low range of score. By default it is 20.
+* High Score Threshold Value : High range of score. By default it is 80.
 ```
 
-![p_6](https://user-images.githubusercontent.com/20396535/54488293-2734b180-48c6-11e9-84b2-34e5b8c78732.PNG)
+
+![phase2_2](https://user-images.githubusercontent.com/20396535/54925703-d1e74880-4f34-11e9-9719-d2689cb41241.PNG)
+
 
 * VIP SDK Enter CredentialID
 ```js
@@ -277,7 +279,7 @@ this section depicts configuration of VIP Auth Tree
 ```
 * Configure VIP Auth Tree as shown below
 
-![sdk_7](https://user-images.githubusercontent.com/20396535/49303025-a5737080-f4ee-11e8-9f8f-e439b4472729.PNG)
+![phase2_VIP](https://user-images.githubusercontent.com/20396535/54925798-0c50e580-4f35-11e9-8a83-da231a2237e2.PNG)
 
 
 ```js
@@ -301,8 +303,7 @@ this section depicts configuration of VIP Auth Tree
  Nodes To be Configured:
     * VIP Set Configuration : Need to mention all the VIP Service URLs
 ```
-![p_7](https://user-images.githubusercontent.com/20396535/54488586-6dd7db00-48c9-11e9-9186-e310bc6de2a6.PNG)
-
+![phase2_registeration](https://user-images.githubusercontent.com/20396535/54925854-2db1d180-4f35-11e9-8d27-635b2a4203d7.PNG)
 
 
 * Configure Vip-Sdk-VerifyOTP Tree as shown below:
@@ -310,8 +311,7 @@ this section depicts configuration of VIP Auth Tree
  Nodes To be Configured:
     * VIP Set Configuration : Need to mention all the VIP Service URLs
 ```
-![p_8](https://user-images.githubusercontent.com/20396535/54488616-d1fa9f00-48c9-11e9-8e30-ff1bde338fb3.PNG)
-
+![phase2_authentication](https://user-images.githubusercontent.com/20396535/54925914-48844600-4f35-11e9-971c-c29d2bb2b894.PNG)
 
 
 * Configure VIP_DR Tree as shown below:
@@ -321,7 +321,7 @@ this section depicts configuration of VIP Auth Tree
     * VIP DR Data Eval : Need to choose field from drop down to evaluate device hygenie.
     * Set Session Properties : Add key value pair as key-LIMITED_ACCESS value-Rooted_Device
 ```
-![p_9](https://user-images.githubusercontent.com/20396535/54488650-6bc24c00-48ca-11e9-8e75-e05f4b750291.PNG)
+![phase2_VIP_DR](https://user-images.githubusercontent.com/20396535/54925982-6782d800-4f35-11e9-8a11-28cb2c015425.PNG)
 
 
 
@@ -332,8 +332,7 @@ this section depicts configuration of VIP Auth Tree
     * VIP IA Data Collector Node : Enter Script url to get auth data and select true/false to enable/disable login button respectively.
         * Set Session Properties : Add key value pair as key-LIMITED_ACCESS value-Risk_Score
 ```
-![p_10](https://user-images.githubusercontent.com/20396535/54488770-e93a8c00-48cb-11e9-9366-41b70ad265a7.PNG)
-
+![phase2_1](https://user-images.githubusercontent.com/20396535/54926038-84b7a680-4f35-11e9-9588-63e939985365.PNG)
 
 
 * Configure VIP_DR_TXN Tree as shown below:
@@ -343,8 +342,7 @@ this section depicts configuration of VIP Auth Tree
     * VIP DR Data Eval : Need to choose field from drop down to evaluate device hygenie.
     * Set Session Properties : Add key value pair as key-LIMITED_ACCESS_TXN value-Rooted_Device
 ```
-![p_9](https://user-images.githubusercontent.com/20396535/54488650-6bc24c00-48ca-11e9-8e75-e05f4b750291.PNG)
-
+![phase2_VIP_DR_TXN](https://user-images.githubusercontent.com/20396535/54926120-afa1fa80-4f35-11e9-95a3-691741fac9d8.PNG)
 
 
 * Configure VIP_IA_TXN Tree as shown below: 
@@ -354,8 +352,7 @@ this section depicts configuration of VIP Auth Tree
     * VIP IA Data Collector Node : Enter Script url to get auth data and select true/false to enable/disable login button respectively.
     * Set Session Properties : Add key value pair as key-LIMITED_ACCESS_TXN value-Risk_Score
 ```
-![p_10](https://user-images.githubusercontent.com/20396535/54488770-e93a8c00-48cb-11e9-9366-41b70ad265a7.PNG)
-
+![phase2_IA_TXN](https://user-images.githubusercontent.com/20396535/54926084-9d27c100-4f35-11e9-829c-526378e576b2.PNG)
 
 
 * Configure VIP_WITHOUT_DR Tree as shown below: 
@@ -364,9 +361,7 @@ this section depicts configuration of VIP Auth Tree
     * VIP Set Configuration : Need to mention all the VIP Service URLs
     * Set Session Properties : Add key value pair as key-LIMITED_ACCESS_TXN value-Rooted_Device
 ```
-![p_11](https://user-images.githubusercontent.com/20396535/54488834-65cd6a80-48cc-11e9-9638-2e34d6c75b63.PNG)
-
-
+![phase2_VIP_WITHOUT_DR](https://user-images.githubusercontent.com/20396535/54926159-c7797e80-4f35-11e9-81a0-0da79d9b8e9d.PNG)
 
 
 * Configure VIP Transaction With DR Policy Set as shown below:
