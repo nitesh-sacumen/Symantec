@@ -35,6 +35,8 @@ private Logger logger = LoggerFactory.getLogger(CheckVIPOtp.class);
 	 * @throws NodeProcessException
 	 */
 	public String checkOtp(String userName, String otpValue,String key_store,String key_store_pass) throws NodeProcessException {
+        logger.info("Executing check OTP request");
+
 		String payLoad = getViewUserPayload(userName, otpValue);
 		
 		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);

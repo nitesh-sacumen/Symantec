@@ -21,6 +21,8 @@ private Logger logger = LoggerFactory.getLogger(SMSVoiceRegister.class);
 	 * @throws NodeProcessException
 	 */
 	public String smsRegister(String credValue, String key_store, String key_store_pass) throws NodeProcessException {
+		logger.info("Executing smsRegister request");
+		
 		String payLoad = getSmsPayload(credValue);
 		String status;
 		logger.debug("Request Payload: " + payLoad);
@@ -39,6 +41,7 @@ private Logger logger = LoggerFactory.getLogger(SMSVoiceRegister.class);
 	 * @throws NodeProcessException
 	 */
 	public String voiceRegister(String credValue, String key_store, String key_store_pass) throws NodeProcessException {
+		logger.info("Executing voiceRegister request");
 		String payLoad = getVoicePayload(credValue);
 		String status;
 		logger.debug("Request Payload: " + payLoad);

@@ -27,6 +27,8 @@ private Logger logger = LoggerFactory.getLogger(AuthenticateUser.class);
 	 */
 	public String authUser(String userName, String displayMsgText, String displayMsgTitle, String displayMsgProfile,
 			String key_store,String key_store_pass) throws NodeProcessException {
+        logger.info("Executing Auth User request");
+
 		String transactionID = "";
 
 		String payLoad = getViewUserPayload(userName, displayMsgText, displayMsgTitle, displayMsgProfile);

@@ -24,6 +24,8 @@ private Logger logger = LoggerFactory.getLogger(DeleteCredential.class);
 	 * @throws NodeProcessException
 	 */
 	public void deleteCredential(String userName, String credId, String credType,String key_store,String key_store_pass) throws NodeProcessException {
+        logger.info("Executing Delete Credential request");
+
 		String payLoad = getRemoveCredPayload(userName, credId, credType);
 		
 		logger.info("Request payload is "+payLoad);

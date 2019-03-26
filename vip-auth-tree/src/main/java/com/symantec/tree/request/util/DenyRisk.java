@@ -26,6 +26,8 @@ private Logger logger = LoggerFactory.getLogger(DenyRisk.class);
 	 * @throws NodeProcessException
 	 */
 	public String denyRisk(String userName,String eventID, String auth_data, String deviceFriendlyName,String key_store,String key_store_pass) throws NodeProcessException {
+        logger.info("Executing Deny Risk request");
+
 		String payLoad = getPayload(userName,eventID,auth_data,deviceFriendlyName);
 		
 		logger.debug("Deny Risk Request Payload: " + payLoad);

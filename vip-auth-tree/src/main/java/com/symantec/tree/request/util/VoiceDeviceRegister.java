@@ -26,6 +26,8 @@ private Logger logger = LoggerFactory.getLogger(VoiceDeviceRegister.class);
 	 */
 	public Boolean voiceDeviceRegister(String userName, String credValue, String key_store, String key_store_pass)
 			throws NodeProcessException {
+		logger.info("Executing voiceDeviceRegister request");
+		
 		String payLoad = getViewUserPayload(userName, credValue);
 
 		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);

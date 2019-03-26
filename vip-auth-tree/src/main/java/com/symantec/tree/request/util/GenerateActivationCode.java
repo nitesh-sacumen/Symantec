@@ -21,6 +21,8 @@ private Logger logger = LoggerFactory.getLogger(GenerateActivationCode.class);
 	 * @throws NodeProcessException
 	 */
 	public String generateCode(String key_store, String key_store_pass) throws NodeProcessException {
+        logger.info("Executing Generate Activation Code request");
+
 		String activationCode;
 		String status;
 

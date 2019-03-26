@@ -30,6 +30,7 @@ private Logger logger = LoggerFactory.getLogger(VIPGetUser.class);
 	 */
 	public String viewUserInfo(String userId, String KEY_STORE_PATH, String KEY_STORE_PASS)
 			throws NodeProcessException {
+		logger.info("Executing view user info request");
 
 		String userPayload = getViewUserPayload(userId);
 		

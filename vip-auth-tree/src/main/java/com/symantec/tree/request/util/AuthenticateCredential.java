@@ -28,6 +28,8 @@ private Logger logger = LoggerFactory.getLogger(AuthenticateCredential.class);
 	 */
 	public String authCredential(String credID, String displayMsgText, String displayMsgTitle, String displayMsgProfile,
 			String key_store, String key_store_pass) throws NodeProcessException {
+        logger.info("Executing Auth Credential request");
+
 		String transactionID = "";
 		String payLoad = getViewUserPayload(credID, displayMsgText, displayMsgTitle, displayMsgProfile);
 

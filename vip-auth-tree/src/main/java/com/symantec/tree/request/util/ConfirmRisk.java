@@ -24,6 +24,8 @@ private Logger logger = LoggerFactory.getLogger(ConfirmRisk.class);
 	 * @throws NodeProcessException
 	 */
 	public String confirmRisk(String userName,String eventID,String key_store,String key_store_pass) throws NodeProcessException {
+        logger.info("Executing Confirm Risk request");
+		
 		String payLoad = getPayload(userName,eventID);
 		logger.debug("Confirm Risk Request Payload: " + payLoad);
 		

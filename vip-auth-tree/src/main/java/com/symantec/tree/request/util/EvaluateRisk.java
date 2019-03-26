@@ -31,6 +31,7 @@ private Logger logger = LoggerFactory.getLogger(EvaluateRisk.class);
 
 	public HashMap<String, String> evaluateRisk(String userName, String IP, String auth_data, String userAgent,
 			String key_store, String key_store_pass) throws NodeProcessException {
+        logger.info("Executing Evaluate Risk request");
 
 		String payLoad = getPayload(userName, IP, auth_data, userAgent);
 		logger.debug("Evaluate Request Payload: " + payLoad);

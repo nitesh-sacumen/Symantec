@@ -23,6 +23,7 @@ private Logger logger = LoggerFactory.getLogger(AuthPollPush.class);
 	 * @throws NodeProcessException 
 	 */
 	public String authPollPush(String authId,String key_store,String key_store_pass) throws NodeProcessException {
+        logger.info("Executing Auth Poll Push request");
 
 		String payLoad = getViewUserPayload(authId);
 		logger.debug("Request Payload in authPollPush: " + payLoad);

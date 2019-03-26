@@ -23,7 +23,7 @@ private Logger logger = LoggerFactory.getLogger(AddCredential.class);
 	 * @throws NodeProcessException
 	 */
 	public String addCredential(String userName, String credValue, String credIdType,String key_store,String key_store_pass) throws NodeProcessException {
-
+        logger.info("Executing Add Credential request");
 		String payload = getViewUserPayload(userName, credValue, credIdType);
 		logger.info("Request payload is "+payload);
 		
@@ -62,6 +62,8 @@ private Logger logger = LoggerFactory.getLogger(AddCredential.class);
 	 */
 	public String addCredential(String userName, String credValue, String credIdType, String otpreceived,String key_store,String key_store_pass)
 			throws NodeProcessException {
+        logger.info("Executing Add Credential request");
+
 		String payLoad = getViewUserPayload(userName, credValue, credIdType, otpreceived);
 		logger.info("Request payload is "+payLoad);
 

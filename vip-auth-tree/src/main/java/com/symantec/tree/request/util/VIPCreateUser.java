@@ -42,6 +42,8 @@ private Logger logger = LoggerFactory.getLogger(VIPCreateUser.class);
 	 * 
 	 */
 	public boolean createVIPUser(String userId,String key_store,String key_store_pass) throws NodeProcessException {
+		    logger.info("Executing createVIPUser request");
+		    
 		    boolean isUserExisted = false;
 
 			String userPayload = createUserPayload(userId);
