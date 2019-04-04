@@ -22,6 +22,7 @@ import java.util.ResourceBundle;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.callback.TextInputCallback;
 
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.auth.node.api.Action;
@@ -55,8 +56,8 @@ public class VIPEnterOTPTest {
         // Then
         assertThat(result.outcome).isEqualTo(null);
         assertThat(result.callbacks).hasSize(1);
-        assertThat(result.callbacks.get(0)).isInstanceOf(PasswordCallback.class);
-        assertThat(((PasswordCallback) result.callbacks.get(0)).getPrompt()).isEqualTo("Enter Your Security Code/OTP");
+        assertThat(result.callbacks.get(0)).isInstanceOf(TextInputCallback.class);
+        assertThat(((TextInputCallback) result.callbacks.get(0)).getPrompt()).isEqualTo("Enter Your Security Code/OTP");
         assertThat((Object) result.sharedState).isNull();
         assertThat(sharedState).isObject().contains(entry(MOB_NUM, "9112345671"));
     }
@@ -65,8 +66,8 @@ public class VIPEnterOTPTest {
     public void testProcessWithCallbacksAddsToState() {
     	VIPEnterOTP node = new VIPEnterOTP();
         JsonValue sharedState = json(object(field(MOB_NUM, "9112345671")));
-        PasswordCallback callback = new PasswordCallback("prompt", false);
-        callback.setPassword("secret".toCharArray());
+        TextInputCallback callback = new TextInputCallback("prompt");
+        callback.setText("secret");
         
         //when
         Action result = node.process(getContext(sharedState, new PreferredLocales(), singletonList(callback)));

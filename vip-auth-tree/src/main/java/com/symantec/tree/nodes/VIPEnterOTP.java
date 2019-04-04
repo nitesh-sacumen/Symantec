@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import javax.inject.Inject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.callback.TextInputCallback;
 import javax.security.auth.callback.TextOutputCallback;
 import org.forgerock.util.Strings;
 import com.google.common.collect.ImmutableList;
@@ -59,8 +60,8 @@ public class VIPEnterOTP extends SingleOutcomeNode {
         
     	JsonValue sharedState = context.sharedState;
         
-    	return context.getCallback(PasswordCallback.class)
-                .map(PasswordCallback::getPassword)
+    	return context.getCallback(TextInputCallback.class)
+                .map(TextInputCallback::getText)
                 .map(String::new)
                 .filter(password -> !Strings.isNullOrEmpty(password))
                 .map(password -> {
@@ -86,14 +87,14 @@ public class VIPEnterOTP extends SingleOutcomeNode {
 		
 		if (outputError == null) {
 			ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE, getClass().getClassLoader());
-			PasswordCallback pcb = new PasswordCallback(bundle.getString("callback.securecode"), false);
+			TextInputCallback pcb = new TextInputCallback(bundle.getString("callback.securecode"),"Symantec OTP");
 			cbList.add(pcb);
 		} 
 		else {
 			TextOutputCallback tcb = new TextOutputCallback(0, outputError);
 			ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE,
 					getClass().getClassLoader());
-			PasswordCallback pcb = new PasswordCallback(bundle.getString("callback.securecode"), false);
+			TextInputCallback pcb = new TextInputCallback(bundle.getString("callback.securecode"),"Symantec OTP");
 			cbList.add(tcb);
 			cbList.add(pcb);
 		}
