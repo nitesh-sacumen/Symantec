@@ -60,7 +60,7 @@ public class VIPDRDataCollectorTest {
 		PreferredLocales preferredLocales = mock(PreferredLocales.class);
 		
 		String[] outcome = {VIPDR.DEVICE_HYGIENE_VERIFICATION_SUCCESS_MSG,VIPDR.DEVICE_HYGIENE_VERIFICATION_WITH_VIP_SUCCESS_MSG};
-		given(deviceHygieneVerification.validateDHSignatureAndChain(any(),any(),any())).willReturn(outcome);
+		given(deviceHygieneVerification.validateDHSignatureAndChain(any(),any(),any(),any())).willReturn(outcome);
 
 
 		// When
@@ -80,7 +80,7 @@ public class VIPDRDataCollectorTest {
     public void testProcessWithCallbacksInCaseOfWeb() throws NodeProcessException {
 		
 		String[] outcome = {VIPDR.DEVICE_HYGIENE_VERIFICATION_SUCCESS_MSG,VIPDR.DEVICE_HYGIENE_VERIFICATION_WITH_VIP_SUCCESS_MSG};
-		given(deviceHygieneVerification.validateDHSignatureAndChain(any(),any(),any())).willReturn(outcome);
+		given(deviceHygieneVerification.validateDHSignatureAndChain(any(),any(),any(),any())).willReturn(outcome);
 		
 		JsonValue sharedState = json(object(1));
         

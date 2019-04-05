@@ -65,7 +65,7 @@ private Logger logger = LoggerFactory.getLogger(DeviceHygieneVerification.class)
 
 
 	// Validating Device Hygiene 
-	public String[] validateDHSignatureAndChain(String header, String payload, String signature)
+	public String[] validateDHSignatureAndChain(String header, String payload, String signature,String certPath)
 			throws NodeProcessException{
 		String[] result = new String[2];
 		try {
@@ -111,8 +111,7 @@ private Logger logger = LoggerFactory.getLogger(DeviceHygieneVerification.class)
 
 			}
 
-			File f = new File(
-					"C:\\prod-hsm-device-ica-ecc-262151-cert-by-offline-root-SymantecCorporationAuthenticationECCRootCA.pem");
+			File f = new File(certPath);
 			FileInputStream fis;
 			byte[] keyBytes;
 

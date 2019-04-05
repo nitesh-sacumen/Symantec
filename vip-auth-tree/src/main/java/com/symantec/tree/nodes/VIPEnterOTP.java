@@ -8,7 +8,6 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.TextInputCallback;
 import javax.security.auth.callback.TextOutputCallback;
 import org.forgerock.util.Strings;

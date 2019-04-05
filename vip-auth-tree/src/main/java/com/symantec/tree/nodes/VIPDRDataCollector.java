@@ -4,6 +4,7 @@ import static org.forgerock.openam.auth.node.api.Action.send;
 
 import org.apache.commons.codec.binary.Base64;
 import org.forgerock.json.JsonValue;
+import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
@@ -17,6 +18,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.authentication.callbacks.HiddenValueCallback;
 import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 import com.symantec.tree.config.Constants.VIPDR;
+import com.symantec.tree.nodes.VIPSetConfiguration.Config;
 import com.symantec.tree.request.util.DeviceHygieneVerification;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,13 +43,20 @@ import javax.security.auth.callback.Callback;
 public class VIPDRDataCollector extends AbstractDecisionNode {
     private Logger logger = LoggerFactory.getLogger(VIPDRDataCollector.class);
 	private DeviceHygieneVerification deviceHygieneVerification;
+	private final Config config;
+
 
 
 	public interface Config {
+		
+		
+		@Attribute(order = 100, requiredValue = true)
+		String Certificate_To_verify_Device_Hygiene();
 	}
 
 	@Inject
 	public VIPDRDataCollector(@Assisted Config config, DeviceHygieneVerification deviceHygieneVerification) {
+		this.config = config;
 		this.deviceHygieneVerification = deviceHygieneVerification;
 	}
 
@@ -98,7 +107,7 @@ public class VIPDRDataCollector extends AbstractDecisionNode {
 			logger.debug("encoded dr data signature is "+signature);
 			
 			//Verifying Device Hygiene
-			String[] result = deviceHygieneVerification.validateDHSignatureAndChain(header, payload, signature);
+			String[] result = deviceHygieneVerification.validateDHSignatureAndChain(header, payload, signature,config.Certificate_To_verify_Device_Hygiene());
 			
 			if(!result[0].equals(VIPDR.DEVICE_HYGIENE_VERIFICATION_SUCCESS_MSG) && !result[1].equals(VIPDR.DEVICE_HYGIENE_VERIFICATION_WITH_VIP_SUCCESS_MSG)) {
 				return goTo(false).build();
