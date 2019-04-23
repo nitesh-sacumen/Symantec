@@ -172,8 +172,14 @@ Attributes to be configured are:
 
 * VIP DR Data Collector
 ```js
-This node collects DR data(payload, signature, header) in encoded form. There are no configurable attributes to it.
+This node collects DR data(payload, signature, header) in encoded form.
+
+Attributes to be configured are:
+* Certificate Verify Device Hygiene : Path of the certificate, Which is used to verify device hygiene.
 ```
+
+![phase2_deviceVerify_Cert](https://user-images.githubusercontent.com/20396535/56572960-af9d2500-65dd-11e9-83bb-81b507692bd9.PNG)
+
 
 * VIP DR Data Eval
 ```js
@@ -319,7 +325,8 @@ this section depicts configuration of VIP Auth Tree
  Nodes To be Configured:
     * VIP Set Configuration : Need to mention all the VIP Service URLs
     * VIP DR Data Eval : Need to choose field from drop down to evaluate device hygenie.
-    * Set Session Properties : Add key value pair as key-LIMITED_ACCESS value-Rooted_Device
+    * Set Session Properties : Add key value pair as key-LIMITED_ACCESS value-Rooted_Device.
+    * VIP DR Data Collector Node : Path of the public cerificate to verify device hygiene.
 ```
 ![phase2_VIP_DR](https://user-images.githubusercontent.com/20396535/54925982-6782d800-4f35-11e9-8a11-28cb2c015425.PNG)
 
@@ -330,7 +337,7 @@ this section depicts configuration of VIP Auth Tree
  Nodes To be Configured:
     * VIP Set Configuration : Need to mention all the VIP Service URLs
     * VIP IA Data Collector Node : Enter Script url to get auth data and select true/false to enable/disable login button respectively.
-        * Set Session Properties : Add key value pair as key-LIMITED_ACCESS value-Risk_Score
+    * Set Session Properties : Add key value pair as key-LIMITED_ACCESS value-Risk_Score.
 ```
 ![phase2_1](https://user-images.githubusercontent.com/20396535/54926038-84b7a680-4f35-11e9-9588-63e939985365.PNG)
 
@@ -341,6 +348,7 @@ this section depicts configuration of VIP Auth Tree
     * VIP Set Configuration : Need to mention all the VIP Service URLs
     * VIP DR Data Eval : Need to choose field from drop down to evaluate device hygenie.
     * Set Session Properties : Add key value pair as key-LIMITED_ACCESS_TXN value-Rooted_Device
+    * VIP DR Data Collector Node : Path of the public cerificate to verify device hygiene
 ```
 ![phase2_VIP_DR_TXN](https://user-images.githubusercontent.com/20396535/54926120-afa1fa80-4f35-11e9-95a3-691741fac9d8.PNG)
 
