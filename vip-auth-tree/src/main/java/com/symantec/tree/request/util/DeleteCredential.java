@@ -1,101 +1,68 @@
 package com.symantec.tree.request.util;
 
 
-import java.io.StringReader;
-
-
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-
+import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 
-/** 
- * A class to delete invalid credential from VIP 
+/**
+ * 
+ * @author Sacumen(www.sacumen.com) <br> <br> 
+ * @Description Deleting credential id , which is associated with user using
+ *         RemoveCredentialRequest
+ *
  */
 public class DeleteCredential {
+private Logger logger = LoggerFactory.getLogger(DeleteCredential.class);
 
-	// TODO Auto-generated method stub
-
-	/** 
-	 * A method to delete invalid credential from VIP 
+	/**
+	 * 
+	 * @param userName
+	 * @param credId
+	 * @param credType
+	 * @throws NodeProcessException
 	 */
-	public void deleteCredential(String userName, String credId, String credType) {
+	public void deleteCredential(String userName, String credId, String credType,String key_store,String key_store_pass) throws NodeProcessException {
+        logger.info("Executing Delete Credential request");
 
-		//String transactionID = "";
-		HttpClient httpClient = HttpClientUtil.getHttpClient();
-
-		HttpPost post = new HttpPost("https://userservices-auth.vip.symantec.com/vipuserservices/ManagementService_1_8");
-
-		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
+		String payLoad = getRemoveCredPayload(userName, credId, credType);
 		
-		if(credType.equalsIgnoreCase("SMS"))
-			credType="SMS_OTP";
-		else if (credType.equalsIgnoreCase("Voice"))
-			credType="VOICE_OTP";
-		else if (credType.equalsIgnoreCase("VIP"))
-			credType="STANDARD_OTP";
-			
-		
-		// post.setHeader(new Header(HttpHeaders.CONTENT_TYPE,"text/xml;
-		// charset=ISO-8859-1"));
-		String payLoad = getRemoveCredPayload(userName,credId,credType);
-		
-		try {
-			post.setEntity(new StringEntity(payLoad));
+		logger.info("Request payload is "+payLoad);
 
-			HttpResponse response = httpClient.execute(post);
-			HttpEntity entity = response.getEntity();
-			
-			// add header
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
 		
-			String body = IOUtils.toString(entity.getContent());
-			
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			InputSource src = new InputSource();
-			src.setCharacterStream(new StringReader(body));
-			Document doc = builder.parse(src);
-			String status = doc.getElementsByTagName("status").item(0).getTextContent();
-			
-			if ("0000".equals(status)) {
-				
-				//transactionID = doc.getElementsByTagName("transactionId").item(0).getTextContent();
-				
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		//return transactionID;
+		String status = doc.getElementsByTagName("status").item(0).getTextContent();
+		
+		logger.debug("status of delete cred request response is "+status);
+	    
 	}
 
-	/** 
-	 * Payload for Delete credential 
+	/**
+	 * 
+	 * @param userId
+	 * @param credId
+	 * @param credType
+	 * @return RemoveCredentialRequest payload
 	 */
-	public static String getRemoveCredPayload(String userId,String credId,String credType) {
-		StringBuilder str = new StringBuilder();
-		str.append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">");
-		str.append("   <soapenv:Header/>");
-		str.append("   <soapenv:Body>");
-		str.append("      <vip:RemoveCredentialRequest>");
-		str.append("<vip:requestId>"+Math.round(Math.random() * 100000)+"</vip:requestId>");
-		str.append("         <vip:userId>"+userId+"</vip:userId>");
-		str.append("         <vip:credentialId>"+credId+"</vip:credentialId>");
-		str.append("          <vip:credentialType>"+credType+"</vip:credentialType>      ");
-		str.append("      </vip:RemoveCredentialRequest>");
-		str.append("   </soapenv:Body>");
-		str.append("</soapenv:Envelope>");
-		return str.toString();
+	private String getRemoveCredPayload(String userId, String credId, String credType) {
+		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "   <soapenv:Header/>"
+				+ "   <soapenv:Body>" + "      <vip:RemoveCredentialRequest>" + "<vip:requestId>"
+				+ Math.round(Math.random() * 100000) + "</vip:requestId>" + "         <vip:userId>" + userId
+				+ "</vip:userId>" + "         <vip:credentialId>" + credId + "</vip:credentialId>"
+				+ "          <vip:credentialType>" + credType + "</vip:credentialType>      "
+				+ "      </vip:RemoveCredentialRequest>" + "   </soapenv:Body>" + "</soapenv:Envelope>";
 
+	}
+
+	/**
+	 * 
+	 * @return ManagementServiceURL
+	 * @throws NodeProcessException 
+	 */
+	private String getURL() throws NodeProcessException {
+		return GetVIPServiceURL.serviceUrls.get("ManagementServiceURL");
 	}
 
 }

@@ -1,90 +1,106 @@
 package com.symantec.tree.request.util;
 
-import java.io.StringReader;
+import static com.symantec.tree.config.Constants.AUTHENTICATION_FAILED;
+import static com.symantec.tree.config.Constants.DISPLAY_ERROR;
+import static com.symantec.tree.config.Constants.INVALID_CREDENIALS;
+import static com.symantec.tree.config.Constants.OTP_ERROR;
+import static com.symantec.tree.config.Constants.SUCCESS_CODE;
+
 import java.util.Random;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
+import org.forgerock.openam.auth.node.api.Action;
+import org.forgerock.openam.auth.node.api.NodeProcessException;
+import org.forgerock.openam.auth.node.api.TreeContext;
+import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
+import com.symantec.tree.nodes.VIPOTPCheck.Symantec;
 
-/** 
- * A Class to verify OTP entered by the user. 
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
+
+/**
+ * 
+ * @author Sacumen(www.sacumen.com) <br> <br>
+ * @Description: Checking OTP with CheckOtpRequest.
+ *
  */
 public class CheckVIPOtp {
-	/** 
-	 * A Method to verify OTP entered by the user. 
+
+private Logger logger = LoggerFactory.getLogger(CheckVIPOtp.class);
+
+	/**
+	 * 
+	 * @param userName
+	 * @param otpValue
+	 * @return status code of response
+	 * @throws NodeProcessException
 	 */
-	public Boolean checkOtp(String userName,String otpValue) {
-		
-		HttpClient httpClient = HttpClientUtil.getHttpClient();
+	public String checkOtp(String userName, String otpValue,String key_store,String key_store_pass) throws NodeProcessException {
+        logger.info("Executing check OTP request");
 
-		HttpPost post = new HttpPost("https://userservices-auth.vip.symantec.com/vipuserservices/AuthenticationService_1_8");
-
-		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
-		// post.setHeader(new Header(HttpHeaders.CONTENT_TYPE,"text/xml;
-		// charset=ISO-8859-1"));
-		String payLoad = getViewUserPayload(userName,otpValue);
+		String payLoad = getViewUserPayload(userName, otpValue);
 		
-		try {
-			post.setEntity(new StringEntity(payLoad));
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
 
-			HttpResponse response = httpClient.execute(post);
-			HttpEntity entity = response.getEntity();
-		
-			// add header
+		String status;
+		logger.debug("Request Payload: " + payLoad);
 
-			String body = IOUtils.toString(entity.getContent());
-		
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			InputSource src = new InputSource();
-			src.setCharacterStream(new StringReader(body));
-			Document doc = builder.parse(src);
-		//	String status = doc.getElementsByTagName("status").item(0).getTextContent();
-			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
-		
-			
-			
-		if ("success".equalsIgnoreCase(statusMessage)) {
-			return true;
-
-		}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-		
-		
-	}
-
-	/** 
-	 * Payload for otp Verification. 
-	 */
-	public static String getViewUserPayload(String userName,String otpValue) {
-		StringBuilder str = new StringBuilder();
-		str.append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">");
-		str.append("   <soapenv:Header/>");
-		str.append("   <soapenv:Body>");
-		str.append("      <vip:CheckOtpRequest>");
-		str.append("<vip:requestId>"+new Random().nextInt(10)+11111+"</vip:requestId>");
-		str.append("<vip:userId>"+userName+"</vip:userId>");
-		str.append("         <vip:otpAuthData>");
-		str.append("            <vip:otp>"+otpValue+"</vip:otp>           ");
-		str.append("         </vip:otpAuthData>        ");
-		str.append("      </vip:CheckOtpRequest>");
-		str.append("   </soapenv:Body>");
-		str.append("</soapenv:Envelope>");
-		return str.toString();
+		status = doc.getElementsByTagName("status").item(0).getTextContent();
+		return status;
 
 	}
 
+	/**
+	 * 
+	 * @param userName
+	 * @param otpValue
+	 * @return CheckOtpRequest payload
+	 */
+	private String getViewUserPayload(String userName, String otpValue) {
+		logger.info("getting CheckOtpRequest payload");
+		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "   <soapenv:Header/>"
+				+ "   <soapenv:Body>" + "      <vip:CheckOtpRequest>" + "<vip:requestId>" + new Random().nextInt(10)
+				+ 11111 + "</vip:requestId>" + "<vip:userId>" + userName + "</vip:userId>"
+				+ "         <vip:otpAuthData>" + "            <vip:otp>" + otpValue + "</vip:otp>           "
+				+ "         </vip:otpAuthData>        " + "      </vip:CheckOtpRequest>" + "   </soapenv:Body>"
+				+ "</soapenv:Envelope>";
+	}
+
+	/**
+	 * 
+	 * @return AuthenticationServiceURL
+	 * @throws NodeProcessException 
+	 */
+	private String getURL() throws NodeProcessException {
+		return GetVIPServiceURL.serviceUrls.get("AuthenticationServiceURL");
+	}
+	
+	/**
+	 * 
+	 * @param statusCode
+	 * @param context
+	 * @return Action Object.
+	 */
+	public Action sendOutput(String statusCode, TreeContext context) {
+		logger.info("Sending Output....");
+		
+		if (statusCode.equalsIgnoreCase(SUCCESS_CODE)) {
+			return goTo(Symantec.TRUE).build();
+		}
+		
+		else if(statusCode.equalsIgnoreCase(INVALID_CREDENIALS) || statusCode.equalsIgnoreCase(AUTHENTICATION_FAILED)) {
+				context.sharedState.put(OTP_ERROR, "Entered otp Code is Invalid,Please enter valid OTP");
+				return goTo(Symantec.FALSE).build();
+		}
+		
+		else {
+			context.sharedState.put(DISPLAY_ERROR, "Your Credentials is disabled, Please contact your administrator.");
+			return goTo(Symantec.ERROR).build();
+		}
+	}
+	
+	private ActionBuilder goTo(Symantec outcome) {
+		return Action.goTo(outcome.name());
+	}
+	
 }

@@ -14,4 +14,4 @@
 # Copyright 2017-2018 ForgeRock AS.
 #
 
-com.symantec.tree.nodes.VipAuthTreeNodePlugin
+com.symantec.tree.nodes.VIPAuthTreeNodePlugin

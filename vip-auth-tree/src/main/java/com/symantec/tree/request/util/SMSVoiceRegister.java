@@ -1,155 +1,97 @@
 package com.symantec.tree.request.util;
 
-import java.io.StringReader;
 import java.util.Random;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
+import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 /**
- * This class is used to register mobile through Voice.
+ * 
+ * @author Sacumen (www.sacumen.com) <br>
+ *         <br>
+ *         Executing RegisterRequest for SMS and Voice
  */
 public class SMSVoiceRegister {
-
-
-	/**
-	 * This method is used to register mobile through SMS.
-	 */
-	public void smsRegister(String credValue) {
-
-
-	
-		HttpClient httpClient = HttpClientUtil.getHttpClient();
- 		HttpPost post = new HttpPost("https://userservices-auth.vip.symantec.com/vipuserservices/ManagementService_1_8");
- 		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
-// post.setHeader(new Header(HttpHeaders.CONTENT_TYPE,"text/xml;
-// charset=ISO-8859-1"));
-
- 		String payLoad = getSmsPayload(credValue);
-
-
- 		try {
-
- 			post.setEntity(new StringEntity(payLoad));
- 			HttpResponse response = httpClient.execute(post);
- 			HttpEntity entity = response.getEntity();
-
- 			// add header
- 			String body = IOUtils.toString(entity.getContent());
- 			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
- 			InputSource src = new InputSource();
- 			src.setCharacterStream(new StringReader(body));
- 			Document doc = builder.parse(src);
- 			String status = doc.getElementsByTagName("status").item(0).getTextContent();
- 			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
-
- 		} catch (Exception e) {
-
- 			e.printStackTrace();
-
- 		}
-
-}
-
+private Logger logger = LoggerFactory.getLogger(SMSVoiceRegister.class);
 
 	/**
-	 * This class is used to register mobile through Voice.
+	 * 
+	 * @param credValue register SMS
+	 * @throws NodeProcessException
 	 */
-	public void voiceRegister(String credValue) {
+	public String smsRegister(String credValue, String key_store, String key_store_pass) throws NodeProcessException {
+		logger.info("Executing smsRegister request");
+		
+		String payLoad = getSmsPayload(credValue);
+		String status;
+		logger.debug("Request Payload: " + payLoad);
 
-		HttpClient httpClient = HttpClientUtil.getHttpClient();
-		HttpPost post = new HttpPost("https://userservices-auth.vip.symantec.com/vipuserservices/ManagementService_1_8");
-		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
-// post.setHeader(new Header(HttpHeaders.CONTENT_TYPE,"text/xml;
-// charset=ISO-8859-1"));
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
+
+		status = doc.getElementsByTagName("status").item(0).getTextContent();
+
+		return status;
+
+	}
+
+	/**
+	 * 
+	 * @param credValue register voice
+	 * @throws NodeProcessException
+	 */
+	public String voiceRegister(String credValue, String key_store, String key_store_pass) throws NodeProcessException {
+		logger.info("Executing voiceRegister request");
 		String payLoad = getVoicePayload(credValue);
+		String status;
+		logger.debug("Request Payload: " + payLoad);
 
-		try {
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
 
-			post.setEntity(new StringEntity(payLoad));
+		status = doc.getElementsByTagName("status").item(0).getTextContent();
 
-			HttpResponse response = httpClient.execute(post);
-
-			HttpEntity entity = response.getEntity();
-
-			// add header
-
-			String body = IOUtils.toString(entity.getContent());
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			InputSource src = new InputSource();
-			src.setCharacterStream(new StringReader(body));
-			Document doc = builder.parse(src);
-			String status = doc.getElementsByTagName("status").item(0).getTextContent();
-			String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
-
-		} catch (Exception e) {
-
-			e.printStackTrace();
-
-		}
-
-}
-
- 
-	/**
-	 * Payload for SMS Registration.
-	 */
-	public static String getSmsPayload(String credValue) {
-
-		StringBuilder str = new StringBuilder();
-
-		str.append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">");
-		str.append("<soapenv:Header/>");
-		str.append("<soapenv:Body>");
-		str.append("<vip:RegisterRequest>");
-		str.append("<vip:requestId>"+new Random().nextInt(10)+11111+"</vip:requestId>");
-		str.append("");
-		str.append("<vip:smsDeliveryInfo>");
-		str.append("<vip:phoneNumber>"+credValue+"</vip:phoneNumber> ");
-		str.append("</vip:smsDeliveryInfo> ");
-		str.append("</vip:RegisterRequest>");
-		str.append("</soapenv:Body>");
-		str.append("</soapenv:Envelope>");
-
-		return str.toString();
-
-	
-	}
-
-
-	/**
-	 * Payload for Voice Registration.
-	 */
-	public static String getVoicePayload(String credValue) {
-
-		StringBuilder str = new StringBuilder();
-		str.append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">");
-		str.append("<soapenv:Header/>");
-		str.append("<soapenv:Body>");
-		str.append("<vip:RegisterRequest>");
-		str.append("<vip:requestId>"+new Random().nextInt(10)+11111+"</vip:requestId>");
-		str.append("");
-		str.append("<vip:voiceDeliveryInfo>");
-		str.append("<vip:phoneNumber>"+credValue+"</vip:phoneNumber> ");
-		str.append("</vip:voiceDeliveryInfo> ");
-		str.append("</vip:RegisterRequest>");
-		str.append("</soapenv:Body>");
-		str.append("</soapenv:Envelope>");
-
-		return str.toString();
-
+		return status;
 
 	}
 
+	/**
+	 * 
+	 * @param credValue
+	 * @return RegisterRequest payload
+	 */
+	private String getSmsPayload(String credValue) {
+		logger.debug("getting RegisterRequest payload for SMS");
+		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "<soapenv:Header/>"
+				+ "<soapenv:Body>" + "<vip:RegisterRequest>" + "<vip:requestId>" + new Random().nextInt(10) + 11111
+				+ "</vip:requestId>" + "" + "<vip:smsDeliveryInfo>" + "<vip:phoneNumber>" + credValue
+				+ "</vip:phoneNumber> " + "</vip:smsDeliveryInfo> " + "</vip:RegisterRequest>" + "</soapenv:Body>"
+				+ "</soapenv:Envelope>";
+
+	}
+
+	/**
+	 * 
+	 * @param credValue
+	 * @return RegisterRequest payload for voice
+	 */
+	private String getVoicePayload(String credValue) {
+		logger.info("getting RegisterRequest payload for voice");
+		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "<soapenv:Header/>"
+				+ "<soapenv:Body>" + "<vip:RegisterRequest>" + "<vip:requestId>" + new Random().nextInt(10) + 11111
+				+ "</vip:requestId>" + "" + "<vip:voiceDeliveryInfo>" + "<vip:phoneNumber>" + credValue
+				+ "</vip:phoneNumber> " + "</vip:voiceDeliveryInfo> " + "</vip:RegisterRequest>" + "</soapenv:Body>"
+				+ "</soapenv:Envelope>";
+
+	}
+
+	/**
+	 * 
+	 * @return ManagementServiceURL
+	 */
+	private String getURL() {
+		return GetVIPServiceURL.serviceUrls.get("ManagementServiceURL");
+	}
 
 }

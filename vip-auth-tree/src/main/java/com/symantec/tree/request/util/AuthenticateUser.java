@@ -1,95 +1,104 @@
 package com.symantec.tree.request.util;
 
-
-import java.io.StringReader;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
+import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
+import com.symantec.tree.config.Constants.VIPAuthStatusCode;
 
-/** 
- * A class that authenticates user and returns transaction id and status
+/**
+ * 
+ * @author Sacumen (www.sacumen.com) <br> <br> 
+ * Authenticate user using AuthenticateUserWithPushRequest
+ *
  */
 public class AuthenticateUser {
 
-	// TODO Auto-generated method stub
+private Logger logger = LoggerFactory.getLogger(AuthenticateUser.class);
 
-	/** 
-	 * A method that authenticates user and returns transaction id and status
+	/**
+	 * 
+	 * @param userName
+	 * @param displayMsgText
+	 * @param displayMsgTitle
+	 * @param displayMsgProfile
+	 * @return transaction id if success else, null
+	 * @throws NodeProcessException 
 	 */
-	public String authUser(String userName) {
+	public String authUser(String userName, String displayMsgText, String displayMsgTitle, String displayMsgProfile,
+			String key_store,String key_store_pass) throws NodeProcessException {
+        logger.info("Executing Auth User request");
 
 		String transactionID = "";
-		HttpClient httpClient = HttpClientUtil.getHttpClient();
 
-		HttpPost post = new HttpPost(
-				"https://userservices-auth.vip.symantec.com/vipuserservices/AuthenticationService_1_8");
+		String payLoad = getViewUserPayload(userName, displayMsgText, displayMsgTitle, displayMsgProfile);
+		
+		logger.debug("AuthenticateUserWithPushRequest Payload: " + payLoad);
+		
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
 
-		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
-		// post.setHeader(new Header(HttpHeaders.CONTENT_TYPE,"text/xml;
-		// charset=ISO-8859-1"));
-		String payLoad = getViewUserPayload(userName);
+        String status = doc.getElementsByTagName("status").item(0).getTextContent();
 		
-		try {
-			post.setEntity(new StringEntity(payLoad));
-
-			HttpResponse response = httpClient.execute(post);
-			HttpEntity entity = response.getEntity();
-	
-			// add header
-	
-			String body = IOUtils.toString(entity.getContent());
-		
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			InputSource src = new InputSource();
-			src.setCharacterStream(new StringReader(body));
-			Document doc = builder.parse(src);
-			String status = doc.getElementsByTagName("status").item(0).getTextContent();
-		
-		
-			if ("6040".equals(status)) {
+        if (VIPAuthStatusCode.SUCCESS_CODE.equals(status)) {
 				transactionID = doc.getElementsByTagName("transactionId").item(0).getTextContent();
-
 			}
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		return transactionID;
 	}
 
-	/** 
-	 * Payload for user Authentication
+	/**
+	 * 
+	 * @param userId
+	 * @param displayMsgText
+	 * @param displayMsgTitle
+	 * @param displayMsgProfile
+	 * @return AuthenticateUserWithPushRequest payload
 	 */
-	public static String getViewUserPayload(String userId) {
-		StringBuilder str = new StringBuilder();
-		str.append(
-				"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">");
-		str.append("<soapenv:Header/>");
-		str.append("<soapenv:Body>");
-		str.append("<vip:AuthenticateUserWithPushRequest>");
-		str.append("<vip:requestId>"+Math.round(Math.random() * 100000)+"</vip:requestId>");
-		str.append("<!--Optional:-->");
-		str.append("");
-		str.append("<vip:userId>" + userId + "</vip:userId>");
-		str.append("<!--Optional:-->");
-		// str.append("<vip:pin>"+pin+"</vip:pin>");
-		str.append("<vip:pushAuthData>");
-		str.append("<!--0 to 20 repetitions:-->");
-		str.append("");
-		str.append("</vip:pushAuthData>");
-		str.append("</vip:AuthenticateUserWithPushRequest>");
-		str.append("</soapenv:Body>");
-		str.append("</soapenv:Envelope>");
-		return str.toString();
+	private String getViewUserPayload(String userId, String displayMsgText, String displayMsgTitle,
+											 String displayMsgProfile) {
+		logger.info("getting payload for AuthenticateUserWithPushRequest");
 
+		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
+				"xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" +
+				"<soapenv:Header/>" +
+				"<soapenv:Body>" +
+				"<vip:AuthenticateUserWithPushRequest>" +
+				"<vip:requestId>" + Math.round(Math.random() * 100000) + "</vip:requestId>" +
+				"<!--Optional:-->" +
+				"" +
+				"<vip:userId>" + userId + "</vip:userId>" +
+				"<!--Optional:-->" +
+				"<vip:pushAuthData>" +
+				"<!--0 to 20 repetitions:-->" +
+				"<vip:displayParameters>" +
+				"<vip:Key>" + "display.message.text" + "</vip:Key>" +
+				"<vip:Value>" + displayMsgText + "</vip:Value>" +
+				"" +
+				"</vip:displayParameters>" +
+				"<vip:displayParameters>" +
+				"<vip:Key>" + "display.message.title" + "</vip:Key>" +
+				"<vip:Value>" + displayMsgTitle + "</vip:Value>" +
+				"" +
+				"</vip:displayParameters>" +
+				"<vip:displayParameters>" +
+				"<vip:Key>" + "display.message.profile" + "</vip:Key>" +
+				"<vip:Value>" + displayMsgProfile + "</vip:Value>" +
+				"" +
+				"</vip:displayParameters>" +
+				"" +
+				"</vip:pushAuthData>" +
+				"</vip:AuthenticateUserWithPushRequest>" +
+				"</soapenv:Body>" +
+				"</soapenv:Envelope>";
+	}
+
+	/**
+	 * 
+	 * @return AuthenticationServiceURL
+	 * @throws NodeProcessException 
+	 */
+	private String getURL() throws NodeProcessException {
+		return GetVIPServiceURL.serviceUrls.get("AuthenticationServiceURL");
 	}
 
 }

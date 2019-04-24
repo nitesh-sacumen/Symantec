@@ -1,98 +1,85 @@
 package com.symantec.tree.request.util;
 
-import java.io.StringReader;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-
+import org.forgerock.openam.auth.node.api.NodeProcessException;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;
 
 
-/** 
- * A class that authenticates credential that has been entered by the user. 
+/**
+ * 
+ * @author Sacumen(www.sacumen.com) <br>
+ *         <br>
+ *         Authenticate credentials using AuthenticateCredentialsRequest
+ *
  */
 public class AuthenticateCredential {
+private Logger logger = LoggerFactory.getLogger(AuthenticateCredential.class);
 
-	// TODO Auto-generated method stub
-
-	/** 
-	 * A method that authenticates credential that has been entered by the user. 
+	/**
+	 * 
+	 * @param credID
+	 * @param displayMsgText
+	 * @param displayMsgTitle
+	 * @param displayMsgProfile
+	 * @param key_store
+	 * @param key_store_pass
+	 * @return status of AuthenticateCredentialsRequest
+	 * @throws NodeProcessException
 	 */
-	public String authCredential(String credID) {
-		String credType = "STANDARD_OTP";
+	public String authCredential(String credID, String displayMsgText, String displayMsgTitle, String displayMsgProfile,
+			String key_store, String key_store_pass) throws NodeProcessException {
+        logger.info("Executing Auth Credential request");
+
 		String transactionID = "";
-		HttpClient httpClient = HttpClientUtil.getHttpClient();
+		String payLoad = getViewUserPayload(credID, displayMsgText, displayMsgTitle, displayMsgProfile);
 
-		HttpPost post = new HttpPost("https://userservices-auth.vip.symantec.com/vipuserservices/AuthenticationService_1_8");
+        logger.debug("AuthenticateCredentialsRequest Payload: " + payLoad);
+
+		Document doc = HttpClientUtil.getInstance().executeRequst(getURL(), payLoad);
 		String status = null;
-		post.setHeader("CONTENT-TYPE", "text/xml; charset=ISO-8859-1");
-		// post.setHeader(new Header(HttpHeaders.CONTENT_TYPE,"text/xml;
-		// charset=ISO-8859-1"));
-		String payLoad = getViewUserPayload(credID, credType);
-		
-		try {
-			post.setEntity(new StringEntity(payLoad));
 
-			HttpResponse response = httpClient.execute(post);
-			HttpEntity entity = response.getEntity();
-		
-			// add header
-
-			String body = IOUtils.toString(entity.getContent());
-		
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			InputSource src = new InputSource();
-			src.setCharacterStream(new StringReader(body));
-			Document doc = builder.parse(src);
-			status = doc.getElementsByTagName("status").item(0).getTextContent();
-			//String statusMessage = doc.getElementsByTagName("statusMessage").item(0).getTextContent();
-		
-			if(doc.getElementsByTagName("transactionId").item(0) !=null) {
-				transactionID = doc.getElementsByTagName("transactionId").item(0).getTextContent();
-			}
-			else
-				transactionID = " ";
-		
-			/*if ("6040".equals(status)) {
-				transactionID = doc.getElementsByTagName("transactionId").item(0).getTextContent();
-				return transactionID;
-			}*/
-
-		} catch (Exception e) {
-			e.printStackTrace();
+		status = doc.getElementsByTagName("status").item(0).getTextContent();
+		if (doc.getElementsByTagName("transactionId").item(0) != null) {
+			transactionID = doc.getElementsByTagName("transactionId").item(0).getTextContent();
 		}
-		String transtat=status+","+transactionID;
-		
+		String transtat = status + "," + transactionID;
+		logger.debug("Status and TransactionId \t" + transtat);
 		return transtat;
 	}
 
-	/** 
-	 * Payload for Authentication. 
+	/**
+	 * 
+	 * @param credId
+	 * @param displayMsgText
+	 * @param displayMsgTitle
+	 * @param displayMsgProfile
+	 * @return AuthenticateCredentialsRequest payload
 	 */
-	public static String getViewUserPayload(String credId, String credType) {
-		StringBuilder str = new StringBuilder();
-		str.append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">");
-		str.append("   <soapenv:Header/>");
-		str.append("   <soapenv:Body>");
-		str.append("      <vip:AuthenticateCredentialsRequest>");
-		str.append("<vip:requestId>"+Math.round(Math.random() * 100000)+"</vip:requestId>");
-		str.append("           <vip:credentials>");
-		str.append("            <vip:credentialId>"+credId+"</vip:credentialId>");
-		str.append("            <vip:credentialType>"+credType+"</vip:credentialType>");
-		str.append("           </vip:credentials>     ");
-		str.append("         <vip:pushAuthData>");
-		str.append("         </vip:pushAuthData>   ");
-		str.append("       </vip:AuthenticateCredentialsRequest>");
-		str.append("   </soapenv:Body>");
-		str.append("</soapenv:Envelope>");
-		return str.toString();
-
+	private String getViewUserPayload(String credId, String displayMsgText, String displayMsgTitle,
+			String displayMsgProfile) {
+		logger.info("getting payload for AuthenticateCredentialsRequest");
+		return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+				+ "xmlns:vip=\"https://schemas.symantec.com/vip/2011/04/vipuserservices\">" + "   <soapenv:Header/>"
+				+ "   <soapenv:Body>" + "      <vip:AuthenticateCredentialsRequest>" + "<vip:requestId>"
+				+ Math.round(Math.random() * 100000) + "</vip:requestId>" + "           <vip:credentials>"
+				+ "            <vip:credentialId>" + credId + "</vip:credentialId>" + "            <vip:credentialType>"
+				+ com.symantec.tree.config.Constants.STANDARD_OTP + "</vip" + ":credentialType>"
+				+ "           </vip:credentials>     " + "<vip:pushAuthData>" + "<!--0 to 20 repetitions:-->"
+				+ "<vip:displayParameters>" + "<vip:Key>" + "display.message.text" + "</vip:Key>" + "<vip:Value>"
+				+ displayMsgText + "</vip:Value>" + "" + "</vip:displayParameters>" + "<vip:displayParameters>"
+				+ "<vip:Key>" + "display.message.title" + "</vip:Key>" + "<vip:Value>" + displayMsgTitle
+				+ "</vip:Value>" + "" + "</vip:displayParameters>" + "<vip:displayParameters>" + "<vip:Key>"
+				+ "display.message.profile" + "</vip:Key>" + "<vip:Value>" + displayMsgProfile + "</vip:Value>" + ""
+				+ "</vip:displayParameters>" + "" + "</vip:pushAuthData>"
+				+ "       </vip:AuthenticateCredentialsRequest>" + "   </soapenv:Body>" + "</soapenv:Envelope>";
 	}
 
+	/**
+	 * 
+	 * @return AuthenticationServiceURL
+	 * @throws NodeProcessException
+	 */
+	private String getURL() throws NodeProcessException {
+		return GetVIPServiceURL.serviceUrls.get("AuthenticationServiceURL");
+	}
 }
