@@ -18,7 +18,7 @@ A simple authentication node for ForgeRock's Access Manager 6.0 and above.
 
 ## Information
 
-VIP Forgerock offers secondary authentication along with the authentication offered by the openam. Following are the authentication mechanisms available: 1) Push 2) OTP 3)Mobile SDK Registration and Authentication with OpenAM
+VIP Forgerock offers secondary authentication along with the authentication offered by the openam. Following are the authentication mechanisms available: 1) Push 2) OTP 3)Mobile SDK Registration and Authentication with OpenAM 4)Device Reputation 5)Intelligence Auth Verification
 
 ## Installation
 
