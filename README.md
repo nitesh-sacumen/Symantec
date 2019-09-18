@@ -44,11 +44,9 @@ The vip tree nodes are now available in the tree designer to add to authenticati
 
 Following are the nodes that will be available after deploying the jar file:
 
-![phase2_nodes_1](https://user-images.githubusercontent.com/20396535/54925446-51c0e300-4f34-11e9-9573-ce18657f0b9a.PNG)
-
-![phase2_nodes_2](https://user-images.githubusercontent.com/20396535/54925458-59808780-4f34-11e9-871f-04f5f38fded6.PNG)
-
-![phase2_nodes_3](https://user-images.githubusercontent.com/20396535/54925479-61402c00-4f34-11e9-8872-8d9e757df11c.PNG)
+![Screenshot from 2019-09-18 17-59-38](https://user-images.githubusercontent.com/20396535/65148836-912d3f80-da3e-11e9-86ea-addd18dd60e9.png)
+![Screenshot from 2019-09-18 18-00-03](https://user-images.githubusercontent.com/20396535/65148838-912d3f80-da3e-11e9-9a00-1f4c6e2b3eca.png)
+![Screenshot from 2019-09-18 18-00-26](https://user-images.githubusercontent.com/20396535/65148839-912d3f80-da3e-11e9-8661-c9dce1d0a18b.png)
 
 
 * VIP Display Error
@@ -151,7 +149,7 @@ Attributes to be configured are:
 This node register user in VIP, If user dont exist. There are no configurable attributes to it.
 ```
 
-* VIP Enrollment User
+* VIP Enrollment Check
 ```js
 This node search user in VIP and get user info, if user exits. There are no configurable attributes to it.
 ```
@@ -170,7 +168,7 @@ Attributes to be configured are:
 
 ![url_conf](https://user-images.githubusercontent.com/20396535/48860971-68212b80-ede8-11e8-9953-646b9625bb70.PNG)
 
-* VIP DR Data Collector
+* VIP DR Data Collector Node
 ```js
 This node collects DR data(payload, signature, header) in encoded form.
 
@@ -190,7 +188,7 @@ Attributes to be configured are:
 ```
 ![p_4](https://user-images.githubusercontent.com/20396535/54487945-edfa4280-48c1-11e9-941b-6faf14cd6bc5.PNG)
 
-* VIP DR OS Decesion
+* VIP DR OS Decision Node
 ```js
 This node just verify forDR Data coming from android device or ios device. There are no configurable attributes to it.
 ```
@@ -231,7 +229,7 @@ This node execute Evaluate Risk request. There are no configurable attributes to
 This node execute Deny Risk request to register new device. There are no configurable attributes to it.
 ```
 
-* VIP IA Risk Score Decision Node
+* VIP IA Risk Score Decision
 ```js
 This node makes decision based on score fetch by evaluate risk api.
 
